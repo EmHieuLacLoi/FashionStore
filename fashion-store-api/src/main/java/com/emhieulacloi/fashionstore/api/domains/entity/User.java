@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serial;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,4 +45,10 @@ public class User extends BaseEntity<Long, UserRepository> {
 
     @Column(name = "address")
     private String address;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    List<Role> roles;
 }
