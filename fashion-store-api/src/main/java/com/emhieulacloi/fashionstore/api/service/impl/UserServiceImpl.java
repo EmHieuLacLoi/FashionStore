@@ -7,15 +7,13 @@ import com.emhieulacloi.fashionstore.api.repository.UserRepository;
 import com.emhieulacloi.fashionstore.api.service.UserService;
 import com.emhieulacloi.fashionstore.api.service.mapper.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Slf4j
+@Primary
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -28,68 +26,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
+    public UserResponseDTO save(UserRequestDTO dto) {
         // Map DTO to entity
-        User user = userMapper.toEntity(userRequestDTO);
-        
+        User user = userMapper.toEntity(dto);
+
         // Save the user
         User savedUser = userRepository.save(user);
-        
+
         // Map saved entity to response DTO
         return userMapper.entityToResponse(savedUser);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public UserResponseDTO getUserById(Long id) {
-        // Find user by ID or throw exception if not found
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-        
-        // Map entity to response DTO
-        return userMapper.entityToResponse(user);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> getAllUsers() {
-        // Find all users
-        List<User> users = userRepository.findAll();
-        
-        // Map entities to response DTOs
-        return users.stream()
-                .map(userMapper::entityToResponse)
-                .toList();
-    }
-
-    @Override
-    @Transactional
-    public UserResponseDTO updateUser(Long id, UserRequestDTO userRequestDTO) {
+    public UserResponseDTO update(Long id, UserRequestDTO dto) {
         // Find existing user or throw exception if not found
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-        
+
         // Map DTO to existing entity
-        User updatedUser = userMapper.toEntity(userRequestDTO);
+        User updatedUser = userMapper.toEntity(dto);
         updatedUser.setId(existingUser.getId()); // Preserve the ID
-        
+
         // Save the updated user
         User savedUser = userRepository.save(updatedUser);
-        
+
         // Map saved entity to response DTO
         return userMapper.entityToResponse(savedUser);
     }
 
     @Override
-    @Transactional
-    public void deleteUser(Long id) {
+    public Integer delete(Long id) {
         // Check if user exists
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found with id: " + id);
         }
-        
+
         // Delete the user
         userRepository.deleteById(id);
+        return 1;
     }
 }
