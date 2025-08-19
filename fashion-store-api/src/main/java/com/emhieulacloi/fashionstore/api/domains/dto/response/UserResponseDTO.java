@@ -35,6 +35,9 @@ public class UserResponseDTO {
     @JsonProperty("address")
     private String address;
 
+    @JsonProperty("role")
+    private String role;
+
     @JsonProperty("created_by_id")
     private Long createdById;
 

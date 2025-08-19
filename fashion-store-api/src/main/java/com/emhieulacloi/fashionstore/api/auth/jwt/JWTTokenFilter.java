@@ -1,20 +1,18 @@
 package com.emhieulacloi.fashionstore.api.auth.jwt;
 
 import com.emhieulacloi.fashionstore.api.auth.principle.UserDetailsServiceImpl;
-import com.emhieulacloi.fashionstore.api.common.component.MessageResource;
-import com.emhieulacloi.fashionstore.api.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.emhieulacloi.fashionstore.api.common.component.ResponseData;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,74 +24,42 @@ import java.util.List;
 @Slf4j
 public class JWTTokenFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
-    private final UserDetailsServiceImpl userDetailService;
-    private final ObjectMapper objectMapper;
-    private final UserRepository userRepository;
-    private final MessageResource messageSource;
-
-    private static final List<String> EXCLUDED_PATHS = List.of(
-            "/docs",
-            "/docs/",
-            "/docs/index.html",
-            "/docs/**"
-    );
+    private final JwtProvider jwtTokenProvider;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
         try {
-            String path = request.getRequestURI();
-            if (EXCLUDED_PATHS.stream().anyMatch(path::startsWith)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
             String token = getTokenFromRequest(request);
 
-            if (token != null) {
-                String username = null;
-
-                try {
-                    jwtProvider.validateToken(token);
-
-                    username = jwtProvider.getUserNameToken(token);
-
-
-                } catch (ExpiredJwtException e) {
-
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.getWriter().flush();
-                    return;
-                }
-
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userDetailService.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (token != null && this.jwtTokenProvider.validateToken(token)) {
+                String username = this.jwtTokenProvider.getUserNameToken(token);
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                List<SimpleGrantedAuthority> authorities = jwtTokenProvider.getAuthoritiesFromToken(token);
+                if (userDetails != null) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-
-            filterChain.doFilter(request, response);
-
         } catch (Exception e) {
+            ResponseData data = new ResponseData(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            data.setErrorStatus(HttpServletResponse.SC_FORBIDDEN);
+            data.setErrorMessage(e.getMessage());
+            data.setErrorCode("SC_FORBIDDEN");
             log.error("Authentication failed: {}", e.getMessage());
-
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("application/json");
-            response.getWriter().flush();
         }
+
+        chain.doFilter(request, response);
     }
 
-    public String getTokenFromRequest(HttpServletRequest request) {
+    private String getTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
         }
         return null;
     }
-
 }
 

@@ -1,5 +1,6 @@
 package com.emhieulacloi.fashionstore.api.domains.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -30,15 +31,23 @@ public class UserRequestDTO {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
+    @JsonProperty("old_password")
+    private String oldPassword;
+
     @NotBlank(message = "Full name is required")
     @Size(max = 255, message = "Full name must not exceed 255 characters")
+    @JsonProperty("full_name")
     private String fullName;
 
     @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
+    @JsonProperty("phone_number")
     private String phoneNumber;
 
     private Integer status;
 
     @Size(max = 255, message = "Address must not exceed 255 characters")
     private String address;
+
+    @JsonProperty("role_id")
+    private Long roleId;
 }
