@@ -1,0 +1,43 @@
+/* ErrorBoundary.css */
+
+.error-boundary {
+  padding: 40px;
+  background-color: #fff1f0;
+  border: 1px solid #ffa39e;
+  border-radius: 12px;
+  margin: 40px auto;
+  max-width: 600px;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.error-boundary__title {
+  color: #cf1322;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.error-boundary__description {
+  color: #595959;
+  margin-bottom: 12px;
+}
+
+.error-boundary__details {
+  background-color: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.error-boundary__summary {
+  cursor: pointer;
+  color: #cf1322;
+}
+
+.error-boundary__pre {
+  margin-top: 8px;
+  color: #000;
+}

@@ -21,7 +21,28 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Node types */
+    "types": ["node"],
+
+    /* path config */
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["src/*"],
+      "@models/*": ["models/*"],
+      "@components/*": ["components/*"],
+      "@views/*": ["views/*"],
+      "@routes/*": ["routes/*"],
+      "@layouts/*": ["layouts/*"],
+      "@constants/*": ["constants/*"],
+      "@assets/*": ["assets/*"],
+      "@services/*": ["services/*"],
+      "@hooks/*": ["hooks/*"],
+      "@configs/*": ["configs/*"],
+      "@utils/*": ["utils/*"],
+      "@lang/*": ["lang/*"]
+    }
   },
   "include": ["src"]
 }
