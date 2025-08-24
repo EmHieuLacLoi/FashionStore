@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig(async () => {
+export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -31,6 +31,10 @@ export default defineConfig(async () => {
       watch: {
         usePolling: true,
       },
+    },
+    preview: {
+      port: 1420,
+      strictPort: true,
     },
     define: {
       global: "globalThis",

@@ -1,0 +1,374 @@
+// Variables
+$primary-color: #1890ff;
+$error-color: #ff4d4f;
+$text-color: #333;
+$text-color-secondary: #666;
+$text-color-light: #999;
+$border-color: #e8e8e8;
+$border-color-split: #d9d9d9;
+$background-color: #f0f0f0;
+$background-color-light: #f5f5f5;
+$box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+$header-height: 70px;
+$top-bar-height: 40px;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin transition-smooth {
+  transition: all 0.3s ease;
+}
+
+// Main Layout
+.main-layout {
+  min-height: 100vh;
+}
+
+// Top Bar Styles
+.top-bar {
+  background: $background-color-light !important;
+  padding: 0 50px !important;
+  font-size: 14px;
+  height: $top-bar-height;
+  line-height: $top-bar-height;
+  border-bottom: 1px solid $border-color;
+
+  .top-bar-text {
+    color: $text-color-secondary;
+    font-weight: 500;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .hotline-text {
+      color: $text-color-secondary;
+      font-weight: 500;
+    }
+  }
+
+  .close-top-bar {
+    color: $text-color-light;
+    padding: 4px;
+    @include transition-smooth;
+
+    &:hover {
+      color: $text-color;
+      background: rgba(0, 0, 0, 0.04);
+    }
+  }
+}
+
+// Main Header Styles
+.main-header {
+  background: #fff !important;
+  padding: 0 50px !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: $box-shadow;
+  height: $header-height;
+  line-height: $header-height;
+
+  .header-content {
+    height: 100%;
+  }
+
+  .logo {
+    margin: 0 !important;
+    color: $primary-color;
+    font-weight: 600;
+
+    .logo-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+  }
+}
+
+// Menu Styles
+.main-menu {
+  border-bottom: none;
+  justify-content: center;
+
+  .ant-menu-item {
+    font-weight: 500;
+    color: $text-color;
+    margin: 0 20px;
+    @include transition-smooth;
+
+    &:hover {
+      color: $primary-color;
+    }
+
+    &.menu-sale {
+      color: $error-color !important;
+      font-weight: 600 !important;
+    }
+  }
+}
+
+// Header Controls
+.lang-select {
+  width: 120px;
+  margin-right: 16px;
+}
+
+.auth-cart-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .login-btn {
+    color: $text-color-secondary;
+    @include transition-smooth;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  .register-btn {
+    background: $primary-color;
+    border-color: $primary-color;
+    @include transition-smooth;
+  }
+
+  .cart-btn {
+    font-size: 18px;
+    color: $text-color-secondary;
+    @include transition-smooth;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+// Content Styles
+.main-content {
+  padding: 0 !important;
+  min-height: calc(100vh - 200px);
+}
+
+.content-wrapper {
+  padding: 20px 50px;
+}
+
+// Footer Styles
+.main-footer {
+  background: $background-color !important;
+  padding: 40px 0 !important;
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 50px;
+  }
+
+  .footer-title {
+    color: $text-color !important;
+    margin-bottom: 16px !important;
+    font-weight: 600;
+  }
+
+  .footer-info {
+    p {
+      margin-bottom: 8px;
+      color: $text-color-secondary;
+    }
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 8px;
+
+      a {
+        color: $text-color-secondary;
+        text-decoration: none;
+        @include transition-smooth;
+
+        &:hover {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+
+  .newsletter-input {
+    max-width: 300px;
+
+    .ant-input-search-button {
+      background: $primary-color;
+      border-color: $primary-color;
+    }
+  }
+
+  .footer-copyright {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid $border-color-split;
+    color: $text-color-light;
+    text-align: center;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1200px) {
+  .main-header {
+    .main-menu .ant-menu-item {
+      margin: 0 15px;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .main-header {
+    .main-menu .ant-menu-item {
+      margin: 0 10px;
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 0 20px !important;
+
+    .top-bar-text {
+      font-size: 12px;
+    }
+  }
+
+  .main-header {
+    padding: 0 20px !important;
+
+    .main-menu .ant-menu-item {
+      margin: 0 8px;
+      font-size: 12px;
+    }
+
+    .auth-cart-section {
+      flex-direction: column;
+      gap: 4px;
+
+      .login-btn,
+      .register-btn {
+        font-size: 12px;
+        padding: 4px 8px;
+        height: auto;
+      }
+    }
+  }
+
+  .content-wrapper {
+    padding: 20px;
+  }
+
+  .main-footer .footer-content {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-header {
+    height: auto;
+    line-height: normal;
+    padding: 10px 15px !important;
+
+    .header-content {
+      height: auto;
+
+      .ant-row {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    }
+
+    .logo {
+      font-size: 18px;
+    }
+
+    .main-menu {
+      .ant-menu-item {
+        margin: 0 5px;
+        font-size: 11px;
+        padding: 0 8px;
+      }
+    }
+
+    .lang-select {
+      width: 100px;
+      margin-right: 8px;
+    }
+  }
+
+  .top-bar {
+    padding: 0 15px !important;
+
+    .top-bar-text {
+      font-size: 11px;
+    }
+
+    .hotline-text {
+      font-size: 11px;
+    }
+  }
+}
+
+// Animation for top bar close
+.top-bar-enter {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.top-bar-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.top-bar-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.top-bar-exit-active {
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+// Smooth scrolling
+html {
+  scroll-behavior: smooth;
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+
+  &:hover {
+    background: #a8a8a8;
+  }
+}

@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { Suspense } from "react";
 import { routes } from "@routes/index";
 import { GlobalProvider } from "./GlobalContext";
