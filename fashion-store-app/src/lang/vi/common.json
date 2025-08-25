@@ -1,197 +1,35 @@
 {
-  "brand-title": "Phân hệ kế hoạch tác chiến 4.0",
-  "action_list": "Danh sách hành động",
-  "not_found_title": "Tính năng đang phát triển",
-  "not_found_message": "Tính năng này chưa sẵn sàng. Vui lòng quay lại sau!",
-  "not_found_user": "Không tìm thấy thông tin người dùng! Vui lòng đăng nhập lại!",
-  "not_found_permission": "Không tìm thấy thông tin quyền! Vui lòng đăng nhập lại!",
-  "back": "Quay lại",
-  "update": "Cập nhật",
-  "select_all": "Chọn tất cả",
-  "unselect_all": "Bỏ chọn tất cả",
-  "close": "Đóng",
-  "report": "Báo cáo",
-  "no_data": "Không có dữ liệu",
-  "search": "Tìm kiếm",
-  "notification_title": "Thông báo từ {{ value }}",
-  "system": "Hệ thống",
-  "selected": "Đã chọn: {{ value }}",
-  "confirm": "Xác nhận",
-  "save": "Lưu",
-  "cancel": "Hủy",
-  "new": "Mới",
-  "edited": "Đã sửa",
-  "empty": "Không có dữ liệu",
-  "livestream": "Truyền hình trực tiếp",
-  "fullscreen": "Toàn màn hình",
-  "incidentReport": {
-    "success": "Báo cáo sự cố tàu {{code}} thành công.",
-    "fail": "Báo cáo sự cố tàu {{code}} thất bại."
+  "auth": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất"
   },
-  "emergencyStop": {
-    "confirmTitle": "Xác nhận dừng khẩn cấp",
-    "confirmContent": "Bạn có chắc chắn muốn gửi lệnh dừng khẩn cấp cho tàu này không?",
-    "success": "Gửi thông tin dừng khẩn cấp thành công.",
-    "fail": "Gửi thông tin dừng khẩn cấp không thành công."
-  },
-  "runningAgain": {
-    "confirmTitle": "Xác nhận chạy lại tàu",
-    "confirmContent": "Bạn có chắc chắn muốn gửi lệnh chạy lại cho tàu này không?",
-    "success": "Gửi thông tin tiếp tục chạy thành công.",
-    "fail": "Gửi thông tin tiếp tục chạy không thành công."
+  "lang": {
+    "vi": "Tiếng Việt",
+    "en": "English"
   },
   "toolbar": {
-    "monitor": "Giám sát",
-    "trip": "Chuyến đi",
-    "category": "Danh mục",
-    "system": "Hệ thống",
-    "project": "Kế hoạch tác chiến",
-    "symbol": "Kí hiệu"
-  },
-  "tools": {
-    "railway": "Đường sắt",
-    "power": "Điện năng",
-    "timetable": "Thời gian biểu",
-    "trip": "Chuyến tàu",
-    "route": "Hành trình",
-    "schedule": "Lịch trình",
-    "train": "Tàu",
-    "station": "Ga",
-    "user": "Người dùng",
-    "role": "Vai trò",
-    "config": "Cấu hình",
-    "map": "Bản đồ",
-    "system-config": "Cấu hình hệ thống",
-    "train-monitor": "Giám sát tàu",
-    "audit": "Lịch sử thay đổi",
-    "train-schedule-board": "Bảng điều độ tàu",
-    "project": "Kế hoạch tác chiến",
-    "environment": "Môi trường",
-    "vehicle": "Phương tiện",
-    "symbol": "Kí hiệu",
-    "symbol-group": "Lớp kí hiệu",
-    "vehicle-group": "Lớp phương tiện",
-    "project-group": "Cây giai đoạn",
-    "group": "Nhóm"
-  },
-  "action": {
-    "create": "Tạo {{ entity }}",
-    "update": "Cập nhật {{ entity }}",
-    "delete": "Xóa {{ entity }}",
-    "detail": "Chi tiết {{ entity }}",
-    "deleteDesc": "Bạn có chắc muốn xóa {{ entity }} này không? Hành động này không thể hoàn tác.",
-    "table": "Hành động"
+    "products": "Sản phẩm",
+    "design": "Thiết kế",
+    "about": "Giới thiệu",
+    "cart": "Giỏ hàng"
   },
   "button": {
-    "create": "Tạo mới",
-    "cancel": "Đóng",
-    "cancelled": "Đặt trạng thái hủy",
-    "delete": "Xóa",
-    "edit": "Chỉnh sửa",
-    "confirm": "Xác nhận",
-    "search": "Tìm kiếm",
-    "view": "Xem",
-    "ok": "OK",
-    "save": "Lưu",
-    "copy": "Sao chép",
-    "add": "Thêm",
-    "export_pdf": "Xuất file PDF",
-    "create_report": "Quản lý báo cáo",
-    "pending_approval": "Báo cáo kế hoạch tác chiến",
-    "rejected": "Từ chối kế hoạch tác chiến",
-    "approved": "Duyệt kế hoạch tác chiến",
-    "start_project": "Bắt đầu tác chiến",
-    "end_project": "Kết thúc tác chiến",
-    "cancel_project": "Hủy tác chiến",
-    "minimize": "Thu nhỏ",
-    "maximize": "Phóng to",
-    "close": "Đóng"
+    "close-top-bar": "Đóng thanh thông báo",
+    "subscribe": "Đăng ký"
   },
-  "status": {
-    "active": "ĐANG HOẠT ĐỘNG",
-    "inActive": "KHÔNG HOẠT ĐỘNG"
-  },
-  "table": {
-    "of": "trên",
-    "items": "mục",
-    "pages": "trang",
-    "showing": "Hiển thị",
-    "jump_to": "Chuyển tới",
-    "jump_to_confirm": "Xác nhận",
-    "page": "trang"
-  },
-  "message": {
-    "create_success": "Tạo {{ entity }} thành công!",
-    "create_fail": "Tạo {{ entity }} thất bại!",
-    "update_success": "Cập nhật {{ entity }} thành công!",
-    "update_fail": "Cập nhật {{ entity }} thất bại!",
-    "delete_success": "Xóa {{ entity }} thành công!",
-    "delete_fail": "Xóa {{ entity }} thất bại!"
-  },
-  "language": {
-    "en": "Tiếng Anh",
-    "vi": "Tiếng Việt"
-  },
-  "delete": {
-    "delete_confirm_title": "Xác nhận xóa",
-    "delete_multiple_content": "Bạn có chắc muốn xóa các bản ghi đã chọn?",
-    "confirm": "Xóa",
-    "cancel": "Hủy",
-    "delete_success": "Xóa bản ghi {{key}} thành công!",
-    "delete_multiple_success": "Đã xóa thành công {{count}} bản ghi!",
-    "delete_failed": "Xóa thất bại!",
-    "delete_single_content": "Bạn có chắc muốn xóa {{entity}}: {{key}}?"
-  },
-  "cancellation": {
-    "cancel_confirm_title": "Xác nhận đặt trạng thái hủy",
-    "cancel_multiple_content": "Bạn có chắc muốn hủy các bản ghi đã chọn?",
-    "confirm": "OK",
-    "cancel": "Hủy",
-    "cancel_success": "Đặt trạng thái hủy thành công!",
-    "cancel_multiple_success": "Đã đặt trạng thái hủy thành công {{count}} bản ghi!",
-    "cancel_failed": "Đặt trạng thái hủy thất bại!",
-    "cancel_single_content": "Bạn có chắc muốn đặt trạng thái hủy cho bản ghi {{key}}?",
-    "reason": "Nhập lý do"
-  },
-  "copy": {
-    "copy_confirm_title": "Xác nhận sao chép",
-    "copy_multiple_content": "Bạn có chắc muốn sao chép các bản ghi đã chọn?",
-    "confirm": "OK",
-    "cancel": "Hủy",
-    "copy_success": "Sao chép bản ghi {{key}} thành công!",
-    "copy_multiple_success": "Đã sao chép thành công {{count}} bản ghi!",
-    "copy_failed": "Sao chép thất bại!",
-    "copy_single_content": "Bạn có chắc muốn sao chép bản ghi {{key}}?",
-    "reason": "Nhập lý do"
-  },
-  "validate": {
-    "required": "{{field}} là bắt buộc"
-  },
-  "error": {
-    "system_error": "Lỗi hệ thống",
-    "api_error": "Lỗi đường dẫn API"
-  },
-  "change_info": {
-    "created_by": "Tạo bởi",
-    "created_at": "Thời gian tạo",
-    "updated_by": "Cập nhật bởi",
-    "updated_at": "Thời gian cập nhật",
-    "no_detail_data": "Không có dữ liệu chi tiết",
-    "extra_info": "Thông tin bổ sung",
-    "general_info": "Thông tin chung",
-    "total": "Tổng",
-    "detail_info": "Thông tin chi tiết"
-  },
-  "error_message": {
-    "unknown_error": "Lỗi không xác định"
-  },
-  "title": {
-    "block_incident_report": "Báo cáo sự cố block"
-  },
-  "form": {
-    "validation": {
-      "required": "Vui lòng nhập {{field}}"
-    }
+  "slogan": "Ý tưởng của bạn, phong cách của bạn",
+  "footer": {
+    "get_news": "Nhận thông tin khuyến mãi và sản phẩm mới nhất",
+    "address": "Địa chỉ",
+    "phone": "Điện thoại",
+    "email": "Email",
+    "contact": "Liên hệ",
+    "github": "Github",
+    "policy": "Chính sách",
+    "newsletter": "Đăng ký nhận tin",
+    "email_placeholder": "Nhập email của bạn",
+    "copyright": "Bản quyền thuộc về EmHieuLacLoi. All rights reserved."
   },
   "locales": {
     "just_now": "vừa xong",
@@ -207,11 +45,5 @@
     "months": "tháng trước",
     "year": "năm trước",
     "years": "năm trước"
-  },
-  "close_confirm": {
-    "title": "Xác nhận đóng ứng dụng",
-    "close-app-title": "Xác nhận đóng ứng dụng",
-    "close-app-message": "Bạn có chắc chắn muốn đóng ứng dụng không? Tất cả dữ liệu chưa lưu sẽ bị mất.",
-    "logout-note": "Lưu ý: Bạn sẽ được đăng xuất khỏi hệ thống."
   }
 }

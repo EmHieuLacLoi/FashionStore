@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Layout,
   Menu,
@@ -13,23 +13,40 @@ import {
   ShoppingCartOutlined,
   LoginOutlined,
   CloseOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router";
 import "./MainLayout.scss";
-import logoBlack from "@assets/images/shirt-outline.svg";
+import { useTranslation } from "react-i18next";
+import logoBlack from "@assets/images/Logo_black.svg";
+import logoGreen from "@assets/images/Logo_green.svg";
+import logoRed from "@assets/images/Logo_red.svg";
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
 const MainLayout = () => {
-  const [lang, setLang] = useState("vi");
+  const [lang, setLang] = useState("");
   const [showTopBar, setShowTopBar] = useState(true);
+  const [currentLogo, setCurrentLogo] = useState(logoBlack);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const randomNum = Math.floor(Math.random() * 3) + 1;
+    if (randomNum === 1) setCurrentLogo(logoBlack);
+    else if (randomNum === 2) setCurrentLogo(logoGreen);
+    else setCurrentLogo(logoRed);
+
+    const lang = localStorage.getItem("language") || "vi";
+    setLang(lang);
+    i18n.changeLanguage(lang);
+  }, []);
 
   const handleChangeLang = (value: string) => {
     setLang(value);
-    // Nếu dùng i18next:
-    // i18n.changeLanguage(value);
+    localStorage.setItem("language", value);
+    i18n.changeLanguage(value);
   };
 
   const closeTopBar = () => {
@@ -37,7 +54,6 @@ const MainLayout = () => {
   };
 
   const handleMenuClick = (key: string) => {
-    // Handle menu navigation
     switch (key) {
       case "sale":
         navigate("/sale");
@@ -45,14 +61,8 @@ const MainLayout = () => {
       case "products":
         navigate("/products");
         break;
-      case "socks":
-        navigate("/socks");
-        break;
-      case "underwear":
-        navigate("/underwear");
-        break;
-      case "blog":
-        navigate("/blog");
+      case "design":
+        navigate("/design");
         break;
       case "about":
         navigate("/about");
@@ -66,26 +76,17 @@ const MainLayout = () => {
     <Layout className="main-layout">
       {showTopBar && (
         <Header className="top-bar">
-          <Row justify="space-between" align="middle">
-            <Col>
-              <span className="top-bar-text">
-                SỈ LẺ TOÀN QUỐC – MIỄN PHÍ VẬN CHUYỂN CHO ĐƒN HÀNG TỪ 299K
-              </span>
-            </Col>
-            <Col className="top-bar-right">
-              <span className="hotline-text">
-                Hotline: 0522-582-475 (8h30–22h00)
-              </span>
-              <Button
-                type="text"
-                size="small"
-                icon={<CloseOutlined />}
-                onClick={closeTopBar}
-                className="close-top-bar"
-                title="Đóng thanh thông báo"
-              />
-            </Col>
-          </Row>
+          <div className="top-bar-flex">
+            <span className="top-bar-text">{t("common.slogan")}</span>
+            <Button
+              type="text"
+              size="small"
+              icon={<CloseOutlined />}
+              onClick={closeTopBar}
+              className="close-top-bar"
+              title={t("common.button.close-top-bar")}
+            />
+          </div>
         </Header>
       )}
 
@@ -93,42 +94,38 @@ const MainLayout = () => {
         <Row justify="space-between" align="middle" className="header-content">
           <Col>
             <Title level={3} className="logo" onClick={() => navigate("/")}>
-              <img src={logoBlack} alt="logo" className="logo-img" />
-              <span>Fashion Store</span>
+              <img src={currentLogo} alt="logo" className="logo-img" />
             </Title>
           </Col>
 
-          <Col flex="auto">
+          <Col span={13}>
             <Menu
               mode="horizontal"
-              selectable={false}
+              selectable={true}
               className="main-menu"
               onClick={({ key }) => handleMenuClick(key)}
             >
-              <Menu.Item key="sale" className="menu-sale">
-                SALE
+              <Menu.Item key="products">
+                {t("common.toolbar.products")}
               </Menu.Item>
-              <Menu.Item key="products">SẢN PHẨM</Menu.Item>
-              <Menu.Item key="socks">TẤT VỚ</Menu.Item>
-              <Menu.Item key="underwear">ĐỒ LÓT</Menu.Item>
-              <Menu.Item key="blog">BLOG</Menu.Item>
-              <Menu.Item key="about">GIỚI THIỆU</Menu.Item>
+              <Menu.Item key="design">{t("common.toolbar.design")}</Menu.Item>
+              <Menu.Item key="about">{t("common.toolbar.about")}</Menu.Item>
             </Menu>
           </Col>
 
-          <Col>
+          <Col span={2}>
             <Select
               value={lang}
               className="lang-select"
               onChange={handleChangeLang}
               options={[
-                { value: "vi", label: "🇻🇳 Tiếng Việt" },
-                { value: "en", label: "🇬🇧 English" },
+                { value: "vi", label: t("common.lang.vi") },
+                { value: "en", label: t("common.lang.en") },
               ]}
             />
           </Col>
 
-          <Col>
+          <Col span={5}>
             <div className="auth-cart-section">
               <Button
                 type="text"
@@ -136,21 +133,22 @@ const MainLayout = () => {
                 className="login-btn"
                 onClick={() => navigate("/login")}
               >
-                Đăng nhập
+                {t("common.auth.login")}
               </Button>
               <Button
                 type="primary"
+                icon={<UserOutlined />}
                 className="register-btn"
                 onClick={() => navigate("/register")}
               >
-                Đăng ký
+                {t("common.auth.register")}
               </Button>
               <Button
                 type="text"
                 icon={<ShoppingCartOutlined />}
                 className="cart-btn"
                 onClick={() => navigate("/cart")}
-                title="Giỏ hàng"
+                title={t("common.toolbar.cart")}
               />
             </div>
           </Col>
@@ -168,21 +166,32 @@ const MainLayout = () => {
           <Row gutter={[32, 24]}>
             <Col xs={24} md={8}>
               <Title level={5} className="footer-title">
-                Liên hệ
+                {t("common.footer.contact")}
               </Title>
               <div className="footer-info">
                 <p>
-                  <strong>Địa chỉ:</strong> Văn Quang, Xã Nghĩa Hương, Huyện
-                  Quốc Oai, Hà Nội
+                  <strong>{t("common.footer.address")}: </strong>{" "}
+                  <a
+                    target="_blank"
+                    href="https://maps.app.goo.gl/ujaxK7dAk55Vy9YB8"
+                  >
+                    Chu Trần, Tiến Thịnh, Mê Linh, Hà Nội
+                  </a>
                 </p>
                 <p>
-                  <strong>Điện thoại:</strong>
-                  <a href="tel:0972282702">0972-282-702</a>
+                  <strong>{t("common.footer.phone")}: </strong>
+                  <a>0945941389</a>
                 </p>
                 <p>
-                  <strong>Email:</strong>
-                  <a href="mailto:info.simplex.vn@gmail.com">
-                    info.simplex.vn@gmail.com
+                  <strong>{t("common.footer.email")}: </strong>
+                  <a href="mailto:vohieu972003@gmail.com">
+                    vohieu972003@gmail.com
+                  </a>
+                </p>
+                <p>
+                  <strong>{t("common.footer.github")}: </strong>
+                  <a target="_blank" href="https://github.com/EmHieuLacLoi">
+                    EmHieuLacLoi
                   </a>
                 </p>
               </div>
@@ -190,34 +199,28 @@ const MainLayout = () => {
 
             <Col xs={24} md={8}>
               <Title level={5} className="footer-title">
-                Chính sách
+                {t("common.footer.policy")}
               </Title>
               <ul className="footer-links">
                 <li>
-                  <a href="/search">Tìm kiếm</a>
+                  <a href="/about">{t("common.toolbar.about")}</a>
                 </li>
                 <li>
-                  <a href="/return-policy">Chính sách đổi trả</a>
+                  <a href="/products">{t("common.toolbar.products")}</a>
                 </li>
                 <li>
-                  <a href="/privacy-policy">Chính sách bảo mật</a>
-                </li>
-                <li>
-                  <a href="/shipping-policy">Chính sách vận chuyển</a>
-                </li>
-                <li>
-                  <a href="/contact">Liên hệ</a>
+                  <a href="/design">{t("common.toolbar.design")}</a>
                 </li>
               </ul>
             </Col>
 
             <Col xs={24} md={8}>
               <Title level={5} className="footer-title">
-                Đăng ký nhận tin
+                {t("common.footer.newsletter")}
               </Title>
               <Input.Search
-                placeholder="Nhập email của bạn"
-                enterButton="Đăng ký"
+                placeholder={t("common.footer.email_placeholder")}
+                enterButton={t("common.button.subscribe")}
                 className="newsletter-input"
                 onSearch={(value) => {
                   if (value) {
@@ -226,7 +229,7 @@ const MainLayout = () => {
                 }}
               />
               <p style={{ fontSize: "12px", color: "#999", marginTop: "8px" }}>
-                Nhận thông tin khuyến mãi và sản phẩm mới nhất
+                {t("common.footer.get_news")}
               </p>
             </Col>
           </Row>
@@ -234,8 +237,7 @@ const MainLayout = () => {
           <Row justify="center" className="footer-copyright">
             <Col>
               <p>
-                © {new Date().getFullYear()} Bản quyền thuộc về SimpleX. All
-                rights reserved.
+                © {new Date().getFullYear()} {t("common.footer.copyright")}
               </p>
             </Col>
           </Row>
