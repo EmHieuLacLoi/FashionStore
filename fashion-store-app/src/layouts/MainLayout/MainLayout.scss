@@ -1,13 +1,17 @@
 // Variables
 $primary-color: #1890ff;
 $error-color: #ff4d4f;
-$text-color: #333;
-$text-color-secondary: #666;
+$text-color-header: #333;
+$text-color-header-secondary: #666;
+$text-color-footer: #4e81d4;
+$text-color-footer-hover: #60a5fa;
+$text-color: #ffffff;
+$text-color-secondary: #cecdcd;
 $text-color-light: #999;
 $border-color: #e8e8e8;
 $border-color-split: #d9d9d9;
-$background-color: #f0f0f0;
-$background-color-light: #f5f5f5;
+$background-color: #1f2937;
+$background-color-light: #f8f9fa;
 $box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 $header-height: 70px;
 $top-bar-height: 40px;
@@ -76,7 +80,7 @@ $top-bar-height: 40px;
     @include transition-smooth;
 
     &:hover {
-      color: $text-color;
+      color: $text-color-header;
       background: rgba(0, 0, 0, 0.04);
     }
   }
@@ -120,7 +124,7 @@ $top-bar-height: 40px;
 
   .ant-menu-item {
     font-weight: 500;
-    color: $text-color;
+    color: $text-color-header;
     margin: 0 20px;
     @include transition-smooth;
 
@@ -147,7 +151,7 @@ $top-bar-height: 40px;
   gap: 8px;
 
   .login-btn {
-    color: $text-color-secondary;
+    color: $text-color-header-secondary;
     min-width: 121px;
     @include transition-smooth;
 
@@ -164,7 +168,7 @@ $top-bar-height: 40px;
 
   .cart-btn {
     font-size: 18px;
-    color: $text-color-secondary;
+    color: $text-color-header-secondary;
     @include transition-smooth;
 
     &:hover {
@@ -205,6 +209,16 @@ $top-bar-height: 40px;
       margin-bottom: 8px;
       color: $text-color-secondary;
     }
+
+    a {
+      color: $text-color-footer;
+      text-decoration: none;
+      @include transition-smooth;
+
+      &:hover {
+        color: $text-color-footer-hover;
+      }
+    }
   }
 
   .footer-links {
@@ -216,12 +230,12 @@ $top-bar-height: 40px;
       margin-bottom: 8px;
 
       a {
-        color: $text-color-secondary;
+        color: $text-color-footer;
         text-decoration: none;
         @include transition-smooth;
 
         &:hover {
-          color: $primary-color;
+          color: $text-color-footer-hover;
         }
       }
     }
@@ -229,10 +243,13 @@ $top-bar-height: 40px;
 
   .newsletter-input {
     max-width: 300px;
-
+    .ant-input {
+      border: 0;
+      padding-bottom: 6px;
+    }
     .ant-input-search-button {
-      background: $primary-color;
-      border-color: $primary-color;
+      background: $text-color-footer;
+      border-color: $text-color-footer;
     }
   }
 

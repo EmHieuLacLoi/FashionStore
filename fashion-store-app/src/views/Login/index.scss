@@ -1,0 +1,43 @@
+.login-form-container {
+  background: #fff;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 50px auto;
+
+  .switch-link {
+    color: #1677ff;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    color: #222;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .switch-link:hover {
+    color: #0958d9;
+  }
+}
+
+@media (max-width: 500px) {
+  .login-form-container {
+    width: 95vw;
+    padding: 2rem 0.5rem;
+  }
+}
