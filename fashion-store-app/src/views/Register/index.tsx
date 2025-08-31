@@ -68,7 +68,7 @@ const Register = () => {
         </Form.Item>
 
         <Form.Item
-          name="name"
+          name="full_name"
           label={t("auth.register.name")}
           rules={[
             { required: true, message: t("auth.register.name_required") },
@@ -155,7 +155,7 @@ const Register = () => {
           />
         </Form.Item>
 
-        <Form.Item name="phone" label={t("auth.register.phone")}>
+        <Form.Item name="phone_number" label={t("auth.register.phone")}>
           <Input
             autoComplete="off"
             placeholder={t("auth.register.phone_placeholder")}

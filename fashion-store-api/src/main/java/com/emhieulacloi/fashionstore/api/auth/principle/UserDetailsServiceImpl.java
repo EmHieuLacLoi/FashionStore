@@ -29,10 +29,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .or(() -> userRepository.findOneByEmailEqualsIgnoreCase(username))
                 .or(() -> userRepository.findOneByPhoneNumber(username));
 
+        String message = messageResource.getMessage(SystemCodeEnum.ERROR_002.getCode());
         User user = userOptional.orElseThrow(() -> new CommonException()
                 .setStatusCode(HttpStatus.BAD_REQUEST)
                 .setErrorCode(SystemCodeEnum.ERROR_002.getCode(), messageResource)
-                .setMessage(String.format("User does not exist, username: %s", username)));
+                .setMessage(String.format(message + ": %s", username)));
 
         UserDetailsImpl userPrinciple = new UserDetailsImpl();
         userPrinciple.setUser(user);

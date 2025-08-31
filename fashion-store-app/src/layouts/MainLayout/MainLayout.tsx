@@ -8,6 +8,7 @@ import {
   Button,
   Input,
   Select,
+  Dropdown,
 } from "antd";
 import {
   ShoppingCartOutlined,
@@ -22,6 +23,7 @@ import logoBlack from "@assets/images/Logo_black.svg";
 import logoGreen from "@assets/images/Logo_green.svg";
 import logoRed from "@assets/images/Logo_red.svg";
 import { useGlobalContext } from "../../GlobalContext";
+import { getToken, removeToken } from "@utils/auth";
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -32,6 +34,7 @@ const MainLayout = () => {
   const [currentLogo, setCurrentLogo] = useState(logoBlack);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const token = getToken();
 
   useEffect(() => {
     const randomNum = Math.floor(Math.random() * 3) + 1;
@@ -72,6 +75,26 @@ const MainLayout = () => {
         break;
     }
   };
+
+  const menuUser = (
+    <Menu
+      items={[
+        {
+          key: "profile",
+          label: t("common.auth.profile"),
+          onClick: () => navigate("/profile"),
+        },
+        {
+          key: "logout",
+          label: t("common.auth.logout"),
+          onClick: () => {
+            removeToken();
+            navigate("/");
+          },
+        },
+      ]}
+    />
+  );
 
   return (
     <Layout className="main-layout">
@@ -128,29 +151,39 @@ const MainLayout = () => {
 
           <Col span={5}>
             <div className="auth-cart-section">
-              <Button
-                type="text"
-                icon={<LoginOutlined />}
-                className="login-btn"
-                onClick={() => navigate("/login")}
-              >
-                {t("common.auth.login")}
-              </Button>
-              <Button
-                type="primary"
-                icon={<UserOutlined />}
-                className="register-btn"
-                onClick={() => navigate("/register")}
-              >
-                {t("common.auth.register")}
-              </Button>
-              <Button
-                type="text"
-                icon={<ShoppingCartOutlined />}
-                className="cart-btn"
-                onClick={() => navigate("/cart")}
-                title={t("common.toolbar.cart")}
-              />
+              {!token ? (
+                <>
+                  <Button
+                    type="text"
+                    icon={<LoginOutlined />}
+                    className="login-btn"
+                    onClick={() => navigate("/login")}
+                  >
+                    {t("common.auth.login")}
+                  </Button>
+                  <Button
+                    type="primary"
+                    icon={<UserOutlined />}
+                    className="register-btn"
+                    onClick={() => navigate("/register")}
+                  >
+                    {t("common.auth.register")}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Dropdown overlay={menuUser} trigger={["hover"]}>
+                    <UserOutlined className="text-xl cursor-pointer" />
+                  </Dropdown>
+                  <Button
+                    type="text"
+                    icon={<ShoppingCartOutlined />}
+                    className="cart-btn"
+                    onClick={() => navigate("/cart")}
+                    title={t("common.toolbar.cart")}
+                  />
+                </>
+              )}
             </div>
           </Col>
         </Row>

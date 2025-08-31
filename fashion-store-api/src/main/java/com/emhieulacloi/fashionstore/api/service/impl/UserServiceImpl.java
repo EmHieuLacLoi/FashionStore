@@ -12,6 +12,8 @@ import com.emhieulacloi.fashionstore.api.domains.dto.response.UserResponseDTO;
 import com.emhieulacloi.fashionstore.api.domains.entity.Role;
 import com.emhieulacloi.fashionstore.api.domains.entity.User;
 import com.emhieulacloi.fashionstore.api.domains.entity.UserRole;
+import com.emhieulacloi.fashionstore.api.enums.ActivityStatus;
+import com.emhieulacloi.fashionstore.api.enums.RoleEnum;
 import com.emhieulacloi.fashionstore.api.enums.SystemCodeEnum;
 import com.emhieulacloi.fashionstore.api.repository.RoleRepository;
 import com.emhieulacloi.fashionstore.api.repository.UserRepository;
@@ -27,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -95,14 +98,19 @@ public class UserServiceImpl implements UserService {
             this.checkPassword(userRequestDTO.getPassword(), null, null);
             User userNew = userMapper.toEntity(userRequestDTO);
             userNew.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+            userNew.setStatus(ActivityStatus.ACTIVE.getValue());
             User user = this.userRepository.save(userNew);
+
             Long roleId = userRequestDTO.getRoleId();
+            UserRole userRole = new UserRole();
+            userRole.setUserId(user.getId());
             if (roleId != null) {
-                UserRole userRole = new UserRole();
-                userRole.setUserId(user.getId());
                 userRole.setRoleId(roleId);
-                userRoleRepository.save(userRole);
+            } else {
+                userRole.setRoleId(Long.valueOf(RoleEnum.USER.getValue()));
             }
+            userRoleRepository.save(userRole);
+
             return userMapper.entityToResponse(user);
         } catch (CommonException ex) {
             throw ex;
@@ -154,21 +162,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
-        Authentication authentication = authenticationProvider.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequestDTO.getUsername(),
-                        loginRequestDTO.getPassword()
-                )
-        );
+        try {
+            Authentication authentication = authenticationProvider.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequestDTO.getUsername(),
+                            loginRequestDTO.getPassword()
+                    )
+            );
 
-        UserDetailsImpl userPrinciple = (UserDetailsImpl) authentication.getPrincipal();
+            UserDetailsImpl userPrinciple = (UserDetailsImpl) authentication.getPrincipal();
 
-        Set<String> roles = userPrinciple.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
+            Set<String> roles = userPrinciple.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toSet());
 
-        String token = jwtProvider.generateToken(userPrinciple);
-        return new LoginResponseDTO(loginRequestDTO.getUsername(), token, roles);
+            String token = jwtProvider.generateToken(userPrinciple);
+            return new LoginResponseDTO(loginRequestDTO.getUsername(), token, roles);
+        } catch (CommonException e) {
+            throw e;
+        } catch (BadCredentialsException ex) {
+            throw new CommonException()
+                    .setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .setErrorCode(SystemCodeEnum.ERROR_002.getCode(), messageResource);
+        }
     }
 
     @Override

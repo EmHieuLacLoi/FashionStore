@@ -44,8 +44,8 @@ public class ResponseDataConfiguration implements Serializable {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static <T> ResponseEntity<T> error(int status, String massage, String error, HttpStatus httpStatus) {
-        ResponseData<T> responseData = new ResponseData<>(status, massage, error);
+    public static <T> ResponseEntity<T> error(int status, String message, String error, HttpStatus httpStatus) {
+        ResponseData<T> responseData = new ResponseData<>(status, message, error);
         return new ResponseEntity(responseData, httpStatus);
     }
 

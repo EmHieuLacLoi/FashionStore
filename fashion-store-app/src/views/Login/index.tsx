@@ -1,16 +1,41 @@
-import React from "react";
 import { Form, Input, Button, message } from "antd";
 import "./index.scss";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useLogin } from "@hooks/AuthHooks";
+import { getAxiosErrorMessage } from "@utils/axiosUtils";
+import { saveToken } from "@utils/auth";
 
 const Login = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const loginMutation = useLogin();
 
-  const handleFinish = (values: any) => {
-    message.success(`Đăng nhập thành công với email: ${values.email}`);
+  const handleFinish = async () => {
+    const values = await form.validateFields();
+    try {
+      const res = await loginMutation.mutateAsync(values);
+      message.success(
+        `${t("common.message.success", { value: t("auth.login.title") })}`
+      );
+
+      const tokenRes = res?.data?.token;
+      if (tokenRes) {
+        saveToken(tokenRes);
+      }
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (error) {
+      console.log(error);
+      message.error(
+        getAxiosErrorMessage(error) == "Unknown error"
+          ? t("common.message.fail", { value: t("auth.login.title") })
+          : getAxiosErrorMessage(error)
+      );
+    }
   };
 
   return (
@@ -23,16 +48,15 @@ const Login = () => {
         autoComplete="off"
       >
         <Form.Item
-          name="email"
-          label={t("auth.login.email")}
+          name="username"
+          label={t("auth.login.username")}
           rules={[
-            { required: true, message: t("auth.login.email_required") },
-            { type: "email", message: t("auth.login.email_not_valid") },
+            { required: true, message: t("auth.login.username_required") },
           ]}
         >
           <Input
             autoComplete="off"
-            placeholder={t("auth.login.email_placeholder")}
+            placeholder={t("auth.login.username_placeholder")}
           />
         </Form.Item>
         <Form.Item
