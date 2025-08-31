@@ -8,9 +8,6 @@ public interface UserDTO {
     @JsonProperty("id")
     Long getId();
     
-    @JsonProperty("code")
-    String getCode();
-    
     @JsonProperty("username")
     String getUsername();
     

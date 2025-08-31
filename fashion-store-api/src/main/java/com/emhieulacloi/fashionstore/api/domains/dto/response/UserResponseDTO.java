@@ -14,9 +14,6 @@ import java.sql.Timestamp;
 public class UserResponseDTO {
     private Long id;
 
-    @JsonProperty("code")
-    private String code;
-
     @JsonProperty("username")
     private String username;
 

@@ -45,5 +45,9 @@
     "months": "months ago",
     "year": "year ago",
     "years": "years ago"
+  },
+  "message": {
+    "success": "{{value}} successfully",
+    "fail": "{{value}} failed"
   }
 }

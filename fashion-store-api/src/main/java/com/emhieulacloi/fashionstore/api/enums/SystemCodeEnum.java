@@ -25,7 +25,7 @@ public enum SystemCodeEnum {
     ERROR_014("ERROR-014", "File not found"),
     ERROR_015("ERROR-015", "Cannot delete started project"),
     ERROR_016("ERROR-016", null),
-    ERROR_017("ERROR-017", null),
+    ERROR_017("ERROR-017", "Email already exists"),
     ERROR_018("ERROR-018", null),
     ERROR_019("ERROR-019", null),
     ERROR_020("ERROR-020", "Reload new version project"),

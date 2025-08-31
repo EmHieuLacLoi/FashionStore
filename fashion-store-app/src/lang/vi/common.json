@@ -45,5 +45,9 @@
     "months": "tháng trước",
     "year": "năm trước",
     "years": "năm trước"
+  },
+  "message": {
+    "success": "{{value}} thành công",
+    "fail": "{{value}} thất bại"
   }
 }

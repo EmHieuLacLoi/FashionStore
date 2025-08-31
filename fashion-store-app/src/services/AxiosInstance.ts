@@ -12,9 +12,13 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    const language = localStorage.getItem("language") || "vi";
     const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (language) {
+      config.headers["Accept-Language"] = language;
     }
     return config;
   },

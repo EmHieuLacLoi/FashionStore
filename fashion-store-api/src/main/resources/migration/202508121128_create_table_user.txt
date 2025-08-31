@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS `user` (
 `id` bigint NOT NULL AUTO_INCREMENT,
-`code` varchar(20) NOT NULL,
 `username` varchar(50) NOT NULL,
 `email` varchar(255) DEFAULT NULL,
 `password` varchar(255) DEFAULT NULL,

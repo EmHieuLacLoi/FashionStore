@@ -1,16 +1,36 @@
-import React from "react";
 import { Form, Input, Button, message } from "antd";
 import "./index.scss";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useCreate } from "@hooks/UserHooks";
+import { getAxiosErrorMessage } from "@utils/axiosUtils";
 
 const Register = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const registerMutation = useCreate();
+  const handleFinish = async () => {
+    const values = await form.validateFields();
+    try {
+      await registerMutation.mutateAsync(values);
+      message.success(
+        `${t("common.message.success", {
+          value: t("auth.register.title"),
+        })}`
+      );
 
-  const handleFinish = (values: any) => {
-    message.success(`Đăng ký thành công cho: ${values.name}`);
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    } catch (error) {
+      console.log(error);
+      message.error(
+        getAxiosErrorMessage(error) == "Unknown error"
+          ? t("common.message.fail", { value: t("auth.register.title") })
+          : getAxiosErrorMessage(error)
+      );
+    }
   };
 
   return (
@@ -35,6 +55,19 @@ const Register = () => {
         />
 
         <Form.Item
+          name="username"
+          label={t("auth.register.username")}
+          rules={[
+            { required: true, message: t("auth.register.username_required") },
+          ]}
+        >
+          <Input
+            autoComplete="off"
+            placeholder={t("auth.register.username_placeholder")}
+          />
+        </Form.Item>
+
+        <Form.Item
           name="name"
           label={t("auth.register.name")}
           rules={[
@@ -46,37 +79,35 @@ const Register = () => {
             placeholder={t("auth.register.name_placeholder")}
           />
         </Form.Item>
-        <Form.Item
-          name="email"
-          label={t("auth.register.email")}
-          rules={[
-            { required: true, message: t("auth.register.email_required") },
-            { type: "email", message: t("auth.register.email_not_valid") },
-          ]}
-        >
-          <Input
-            autoComplete="off"
-            placeholder={t("auth.register.email_placeholder")}
-          />
-        </Form.Item>
-        <Form.Item
-          name="phone"
-          label={t("auth.register.phone")}
-          rules={[
-            { required: true, message: t("auth.register.phone_required") },
-          ]}
-        >
-          <Input
-            autoComplete="off"
-            placeholder={t("auth.register.phone_placeholder")}
-          />
-        </Form.Item>
+
         <Form.Item
           name="password"
           label={t("auth.register.password")}
           rules={[
             { required: true, message: t("auth.register.password_required") },
-            { min: 6, message: t("auth.register.password_min") },
+            {
+              validator: (_, value) => {
+                if (!value) return Promise.resolve();
+
+                if (value.length < 8) {
+                  return Promise.reject(t("auth.register.password_min"));
+                }
+
+                if (!/[A-Z]/.test(value)) {
+                  return Promise.reject(t("auth.register.password_uppercase"));
+                }
+
+                if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                  return Promise.reject(t("auth.register.password_special"));
+                }
+
+                if (/\s/.test(value)) {
+                  return Promise.reject(t("auth.register.password_whitespace"));
+                }
+
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <Input.Password
@@ -84,6 +115,7 @@ const Register = () => {
             placeholder={t("auth.register.password_placeholder")}
           />
         </Form.Item>
+
         <Form.Item
           name="confirm_password"
           label={t("auth.register.confirm_password")}
@@ -109,6 +141,34 @@ const Register = () => {
             placeholder={t("auth.register.confirm_password_placeholder")}
           />
         </Form.Item>
+
+        <Form.Item
+          name="email"
+          label={t("auth.register.email")}
+          rules={[
+            { type: "email", message: t("auth.register.email_not_valid") },
+          ]}
+        >
+          <Input
+            autoComplete="off"
+            placeholder={t("auth.register.email_placeholder")}
+          />
+        </Form.Item>
+
+        <Form.Item name="phone" label={t("auth.register.phone")}>
+          <Input
+            autoComplete="off"
+            placeholder={t("auth.register.phone_placeholder")}
+          />
+        </Form.Item>
+
+        <Form.Item name={"address"} label={t("auth.register.address")}>
+          <Input
+            autoComplete="off"
+            placeholder={t("auth.register.address_placeholder")}
+          />
+        </Form.Item>
+
         <Form.Item>
           <Button
             type="primary"

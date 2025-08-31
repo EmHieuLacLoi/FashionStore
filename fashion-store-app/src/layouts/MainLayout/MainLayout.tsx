@@ -21,12 +21,13 @@ import { useTranslation } from "react-i18next";
 import logoBlack from "@assets/images/Logo_black.svg";
 import logoGreen from "@assets/images/Logo_green.svg";
 import logoRed from "@assets/images/Logo_red.svg";
+import { useGlobalContext } from "../../GlobalContext";
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
 const MainLayout = () => {
-  const [lang, setLang] = useState("");
+  const { lang, setLang } = useGlobalContext();
   const [showTopBar, setShowTopBar] = useState(true);
   const [currentLogo, setCurrentLogo] = useState(logoBlack);
   const navigate = useNavigate();

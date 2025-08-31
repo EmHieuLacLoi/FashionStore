@@ -5,6 +5,7 @@ import { GlobalProvider } from "./GlobalContext";
 import ErrorBoundary from "@components/ErrorBoundary/ErrorBoundary";
 import { ConfigProvider } from "antd";
 import LoadingOverlay from "@components/LoadingSpinner";
+import "@ant-design/v5-patch-for-react-19";
 
 const App = () => {
   return (

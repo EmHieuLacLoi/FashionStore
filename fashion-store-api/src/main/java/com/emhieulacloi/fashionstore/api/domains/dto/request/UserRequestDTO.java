@@ -14,10 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserRequestDTO {
 
-    @NotBlank(message = "Code is required")
-    @Size(max = 20, message = "Code must not exceed 20 characters")
-    private String code;
-
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     private String username;
@@ -28,7 +24,6 @@ public class UserRequestDTO {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
     @JsonProperty("old_password")

@@ -22,9 +22,6 @@ public class User extends BaseEntity<Long, UserRepository> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "code")
-    private String code;
-
     @Column(name = "username")
     private String username;
 

@@ -74,12 +74,24 @@ public class UserServiceImpl implements UserService {
                 throw new CommonException().setStatusCode(HttpStatus.BAD_REQUEST).setErrorCode(SystemCodeEnum.ERROR_012.getCode(), messageResource);
             }
 
-            Optional<User> userByPhone = userRepository.findOneByPhoneNumber(userRequestDTO.getPhoneNumber());
-            if (userByPhone.isPresent()) {
-                throw new CommonException()
-                        .setStatusCode(HttpStatus.BAD_REQUEST)
-                        .setErrorCode(SystemCodeEnum.ERROR_013.getCode(), messageResource);
+            if (userRequestDTO.getPhoneNumber() != null) {
+                Optional<User> userByPhone = userRepository.findOneByPhoneNumber(userRequestDTO.getPhoneNumber());
+                if (userByPhone.isPresent()) {
+                    throw new CommonException()
+                            .setStatusCode(HttpStatus.BAD_REQUEST)
+                            .setErrorCode(SystemCodeEnum.ERROR_013.getCode(), messageResource);
+                }
             }
+
+            if (userRequestDTO.getEmail() != null) {
+                Optional<User> userByEmail = userRepository.findOneByEmailEqualsIgnoreCase(userRequestDTO.getEmail());
+                if (userByEmail.isPresent()) {
+                    throw new CommonException()
+                            .setStatusCode(HttpStatus.BAD_REQUEST)
+                            .setErrorCode(SystemCodeEnum.ERROR_017.getCode(), messageResource);
+                }
+            }
+
             this.checkPassword(userRequestDTO.getPassword(), null, null);
             User userNew = userMapper.toEntity(userRequestDTO);
             userNew.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
