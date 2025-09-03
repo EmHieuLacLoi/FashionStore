@@ -3,14 +3,16 @@ package com.emhieulacloi.fashionstore.api.enums;
 import lombok.Getter;
 
 @Getter
-public enum ActivityStatus {
-    INACTIVE(0, "không hoạt động"),
-    ACTIVE(1, "hoạt động");
+public enum PaymentMethodEnum {
+    MOMO(0, "MoMo"),
+    ZALOPAY(1, "ZaloPay"),
+    COD(2, "COD"),
+    BANK_TRANSFER(3, "Ngân hàng");
 
     private final Integer value;
     private final String text;
 
-    ActivityStatus(Integer value, String text) {
+    PaymentMethodEnum(Integer value, String text) {
         this.value = value;
         this.text = text;
     }

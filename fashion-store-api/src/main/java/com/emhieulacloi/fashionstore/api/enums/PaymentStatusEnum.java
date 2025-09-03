@@ -3,14 +3,15 @@ package com.emhieulacloi.fashionstore.api.enums;
 import lombok.Getter;
 
 @Getter
-public enum ActivityStatus {
-    INACTIVE(0, "không hoạt động"),
-    ACTIVE(1, "hoạt động");
+public enum PaymentStatusEnum {
+    PENDING(0, "đang chờ"),
+    COMPLETED(3, "đã hoàn thành"),
+    FAILED(4, "thất bại");
 
     private final Integer value;
     private final String text;
 
-    ActivityStatus(Integer value, String text) {
+    PaymentStatusEnum(Integer value, String text) {
         this.value = value;
         this.text = text;
     }

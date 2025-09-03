@@ -2,45 +2,46 @@ package com.emhieulacloi.fashionstore.api.domains.dto.projection;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public interface UserDTO {
+public interface OrderItemDTO {
     @JsonProperty("id")
     Long getId();
     
-    @JsonProperty("username")
-    String getUsername();
+    @JsonProperty("order_id")
+    Long getOrderId();
     
-    @JsonProperty("email")
-    String getEmail();
+    @JsonProperty("product_id")
+    Long getProductId();
     
-    @JsonProperty("full_name")
-    String getFullName();
+    @JsonProperty("product_name")
+    String getProductName();
     
-    @JsonProperty("phone_number")
-    String getPhoneNumber();
+    @JsonProperty("quantity")
+    Integer getQuantity();
     
-    @JsonProperty("status")
-    Integer getStatus();
+    @JsonProperty("unit_price")
+    BigDecimal getUnitPrice();
     
-    @JsonProperty("address")
-    String getAddress();
-
+    @JsonProperty("total_price")
+    BigDecimal getTotalPrice();
+    
     @JsonProperty("created_by_id")
     Long getCreatedById();
-
+    
     @JsonProperty("created_by")
     String getCreatedByName();
-
-    @JsonProperty("updated_by_id")
-    Long getUpdatedById();
-
-    @JsonProperty("updated_by")
-    String getUpdatedByName();
-
+    
     @JsonProperty("created_at")
     Timestamp getCreatedAt();
-
+    
+    @JsonProperty("updated_by_id")
+    Long getUpdatedById();
+    
+    @JsonProperty("updated_by")
+    String getUpdatedByName();
+    
     @JsonProperty("updated_at")
     Timestamp getUpdatedAt();
 }
