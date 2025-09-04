@@ -9,7 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CategoryQueryService extends BaseQueryService<CategoryResponseDTO, CategoryCriteria, Long, Category> {
+public class CategoryQueryService
+        extends BaseQueryService<CategoryResponseDTO, CategoryCriteria, Long, Category> {
 
     public CategoryQueryService(CategoryRepository repository, ModelMapper modelMapper) {
         super(repository, modelMapper, CategoryResponseDTO.class);

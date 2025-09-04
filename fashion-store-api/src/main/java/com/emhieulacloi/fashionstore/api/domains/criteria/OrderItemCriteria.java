@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class OrderItemCriteria extends BaseCriteria {
+public class OrderItemCriteria {
     private Long orderId;
     private Long productId;
     private String productName;

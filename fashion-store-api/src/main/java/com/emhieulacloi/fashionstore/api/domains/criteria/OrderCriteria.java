@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class OrderCriteria extends BaseCriteria {
+public class OrderCriteria {
     private Long customerId;
     private String customerName;
     private String customerEmail;

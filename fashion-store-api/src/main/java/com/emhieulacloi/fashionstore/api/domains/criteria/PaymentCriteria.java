@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PaymentCriteria extends BaseCriteria {
+public class PaymentCriteria {
     private Long orderId;
     private Integer paymentMethod;
     private Integer status;

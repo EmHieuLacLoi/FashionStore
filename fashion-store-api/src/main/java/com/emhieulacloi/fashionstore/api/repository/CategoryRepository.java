@@ -2,6 +2,7 @@ package com.emhieulacloi.fashionstore.api.repository;
 
 import com.emhieulacloi.fashionstore.api.base.repository.BaseRepository;
 import com.emhieulacloi.fashionstore.api.domains.criteria.CategoryCriteria;
+import com.emhieulacloi.fashionstore.api.domains.dto.projection.CategoryDTO;
 import com.emhieulacloi.fashionstore.api.domains.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,25 +10,44 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CategoryRepository extends BaseRepository<Category, Long, CategoryCriteria> {
-    
-//    @Query("""
-//        SELECT c.id as id, c.name as name, c.description as description,
-//               c.createdBy as createdById, c.createdByName as createdByName, c.createdAt as createdAt,
-//               c.updatedBy as updatedById, c.updatedByName as updatedByName, c.updatedAt as updatedAt
-//        FROM Category c
-//        WHERE c.id = :id
-//    """)
-//    <T> T findProjectedById(@Param("id") Long id, Class<T> type);
-//
-//    @Query("""
-//        SELECT c.id as id, c.name as name, c.description as description,
-//               c.createdBy as createdById, c.createdByName as createdByName, c.createdAt as createdAt,
-//               c.updatedBy as updatedById, c.updatedByName as updatedByName, c.updatedAt as updatedAt
-//        FROM Category c
-//    """)
-//    <T> Page<T> findAllProjectedBy(Pageable pageable, Class<T> type);
-//
-//    boolean existsByName(String name);
+    @Query("SELECT g FROM Category g ")
+    Page<Category> findByCriteria(@Param("criteria") CategoryCriteria criteria, Pageable pageable);
+
+    @Query(value = """
+    SELECT 
+            t.*,
+            uc.id AS createdById,
+            uc.username AS createdByName,
+            uu.id AS updatedById,
+            uu.username AS updatedByName
+    FROM `categories` t 
+    LEFT JOIN user uc ON t.created_by = uc.id
+    LEFT JOIN user uu ON t.updated_by = uu.id
+    """,
+            countQuery = """
+    SELECT
+            COUNT(*)
+    FROM `categories` t
+    """,
+            nativeQuery = true)
+    Page<CategoryDTO> findAllByCriteria(@Param("criteria")  CategoryCriteria criteria, Pageable pageable);
+
+    @Query(value = """
+    SELECT 
+            g.*,
+            uc.id AS createdById,
+            uc.username AS createdByName,
+            uu.id AS updatedById,
+            uu.username AS updatedByName
+    FROM `categories` g 
+    LEFT JOIN user uc ON g.created_by = uc.id
+    LEFT JOIN user uu ON g.updated_by = uu.id
+    WHERE g.id = :id
+    """, nativeQuery = true)
+    Optional<CategoryDTO> findByQueryId(@Param("id") Long id);
+
 }

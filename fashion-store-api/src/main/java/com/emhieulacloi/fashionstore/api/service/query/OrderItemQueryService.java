@@ -9,7 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrderItemQueryService extends BaseQueryService<OrderItemResponseDTO, OrderItemCriteria, Long, OrderItem> {
+public class OrderItemQueryService
+        extends BaseQueryService<OrderItemResponseDTO, OrderItemCriteria, Long, OrderItem> {
 
     public OrderItemQueryService(OrderItemRepository repository, ModelMapper modelMapper) {
         super(repository, modelMapper, OrderItemResponseDTO.class);

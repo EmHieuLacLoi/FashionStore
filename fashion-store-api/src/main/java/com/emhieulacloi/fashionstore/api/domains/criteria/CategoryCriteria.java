@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryCriteria extends BaseCriteria {
+public class CategoryCriteria {
     private String name;
     private String description;
     private Boolean active;
