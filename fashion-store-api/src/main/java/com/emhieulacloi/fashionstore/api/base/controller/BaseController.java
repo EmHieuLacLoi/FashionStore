@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
 public class BaseController<IResponse, ICriteria, R, D, ID> {
 
     protected CustomQueryService<IResponse, ICriteria, ID> queryService;
