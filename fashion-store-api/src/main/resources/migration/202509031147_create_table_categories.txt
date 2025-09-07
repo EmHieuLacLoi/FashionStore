@@ -6,4 +6,5 @@ CREATE TABLE categories (
 	`created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_by` int DEFAULT NULL,
 	`updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+	 UNIQUE KEY `name_UNIQUE` (`name`)
 );

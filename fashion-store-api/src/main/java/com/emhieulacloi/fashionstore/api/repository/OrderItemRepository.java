@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -49,4 +50,10 @@ public interface OrderItemRepository extends BaseRepository<OrderItem, Long, Ord
     WHERE oi.id = :id
     """, nativeQuery = true)
     Optional<OrderItemDTO> findByQueryId(@Param("id") Long id);
+
+    boolean existsByProductVariantId(Long productVariantId);
+
+    void deleteAllByOrderId(Long orderId);
+
+    List<OrderItem> findAllByOrderId(Long orderId);
 }

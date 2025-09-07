@@ -20,8 +20,8 @@ public class OrderItem extends BaseEntity<Long, OrderItem> {
     @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "product_id")
-    private Long productId;
+    @Column(name = "product_variant_id")
+    private Long productVariantId;
 
     @Column(name = "quantity")
     private Integer quantity;

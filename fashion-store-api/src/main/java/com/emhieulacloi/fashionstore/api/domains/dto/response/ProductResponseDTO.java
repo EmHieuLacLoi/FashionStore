@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -29,6 +30,9 @@ public class ProductResponseDTO {
     
     @JsonProperty("image_url")
     private String imageUrl;
+
+    @JsonProperty("variants")
+    private List<ProductVariantResponseDTO> variants;
 
     @JsonProperty("created_by_id")
     private Long createdById;

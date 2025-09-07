@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -42,4 +43,7 @@ public class ProductRequestDTO {
     @JsonProperty("image_url")
     @Size(max = 500, message = "Image URL must not exceed 500 characters")
     private String imageUrl;
+
+    @JsonProperty("variants")
+    private List<ProductVariantRequestDTO> variants;
 }

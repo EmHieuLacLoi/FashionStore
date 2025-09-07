@@ -12,25 +12,20 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemResponseDTO {
+public class ProductVariantResponseDTO {
     private Long id;
-    
-    @JsonProperty("order_id")
-    private Long orderId;
 
-    @JsonProperty("product_variant_id")
-    private Long productVariantId;
-    
-    @JsonProperty("product_name")
-    private String productName;
-    
-    private Integer quantity;
-    
-    @JsonProperty("unit_price")
-    private BigDecimal unitPrice;
-    
-    @JsonProperty("total_price")
-    private BigDecimal totalPrice;
+    @JsonProperty("product_id")
+    private Long productId;
+
+    @JsonProperty("color")
+    private String color;
+
+    @JsonProperty("size")
+    private String size;
+
+    @JsonProperty("stock_quantity")
+    private Integer stockQuantity;
 
     @JsonProperty("created_by_id")
     private Long createdById;

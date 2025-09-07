@@ -50,4 +50,6 @@ public interface CategoryRepository extends BaseRepository<Category, Long, Categ
     """, nativeQuery = true)
     Optional<CategoryDTO> findByQueryId(@Param("id") Long id);
 
+    boolean existsByName(String name);
+    boolean existsByNameAndIdNot(String name, Long id);
 }
