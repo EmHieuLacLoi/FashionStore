@@ -9,12 +9,15 @@ import {
   Input,
   Select,
   Dropdown,
+  Badge,
 } from "antd";
 import {
   ShoppingCartOutlined,
   LoginOutlined,
   CloseOutlined,
   UserOutlined,
+  UserAddOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router";
 import "./MainLayout.scss";
@@ -76,21 +79,44 @@ const MainLayout = () => {
     }
   };
 
-  const menuUser = (
+  const menuUser = token ? (
     <Menu
       items={[
         {
           key: "profile",
           label: t("common.auth.profile"),
+          icon: <UserOutlined />,
           onClick: () => navigate("/profile"),
+        },
+        {
+          type: "divider",
         },
         {
           key: "logout",
           label: t("common.auth.logout"),
+          icon: <LogoutOutlined />,
+          danger: true,
           onClick: () => {
             removeToken();
             navigate("/");
           },
+        },
+      ]}
+    />
+  ) : (
+    <Menu
+      items={[
+        {
+          key: "login",
+          label: t("common.auth.login"),
+          icon: <LoginOutlined />,
+          onClick: () => navigate("/login"),
+        },
+        {
+          key: "register",
+          label: t("common.auth.register"),
+          icon: <UserAddOutlined />,
+          onClick: () => navigate("/register"),
         },
       ]}
     />
@@ -115,29 +141,37 @@ const MainLayout = () => {
       )}
 
       <Header className="main-header">
-        <Row justify="space-between" align="middle" className="header-content">
-          <Col>
+        <div className="header-container">
+          {/* Logo Section */}
+          <div className="logo-section">
             <Title level={3} className="logo" onClick={() => navigate("/")}>
               <img src={currentLogo} alt="logo" className="logo-img" />
             </Title>
-          </Col>
+          </div>
 
-          <Col span={13}>
+          {/* Menu Section */}
+          <div className="menu-section">
             <Menu
               mode="horizontal"
-              selectable={true}
+              selectable={false}
+              selectedKeys={[]}
               className="main-menu"
               onClick={({ key }) => handleMenuClick(key)}
             >
-              <Menu.Item key="products">
+              <Menu.Item key="products" className="menu-item">
                 {t("common.toolbar.products")}
               </Menu.Item>
-              <Menu.Item key="design">{t("common.toolbar.design")}</Menu.Item>
-              <Menu.Item key="about">{t("common.toolbar.about")}</Menu.Item>
+              <Menu.Item key="design" className="menu-item">
+                {t("common.toolbar.design")}
+              </Menu.Item>
+              <Menu.Item key="about" className="menu-item">
+                {t("common.toolbar.about")}
+              </Menu.Item>
             </Menu>
-          </Col>
+          </div>
 
-          <Col span={2}>
+          {/* Controls Section */}
+          <div className="controls-section">
             <Select
               value={lang}
               className="lang-select"
@@ -147,46 +181,33 @@ const MainLayout = () => {
                 { value: "en", label: t("common.lang.en") },
               ]}
             />
-          </Col>
 
-          <Col span={5}>
             <div className="auth-cart-section">
-              {!token ? (
-                <>
-                  <Button
-                    type="text"
-                    icon={<LoginOutlined />}
-                    className="login-btn"
-                    onClick={() => navigate("/login")}
-                  >
-                    {t("common.auth.login")}
-                  </Button>
-                  <Button
-                    type="primary"
-                    icon={<UserOutlined />}
-                    className="register-btn"
-                    onClick={() => navigate("/register")}
-                  >
-                    {t("common.auth.register")}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Dropdown overlay={menuUser} trigger={["hover"]}>
-                    <UserOutlined className="text-xl cursor-pointer" />
-                  </Dropdown>
-                  <Button
-                    type="text"
-                    icon={<ShoppingCartOutlined />}
-                    className="cart-btn"
-                    onClick={() => navigate("/cart")}
-                    title={t("common.toolbar.cart")}
-                  />
-                </>
-              )}
+              <Dropdown
+                overlay={menuUser}
+                trigger={["hover"]}
+                placement="bottomCenter"
+                arrow={{ pointAtCenter: true }}
+                overlayClassName="user-dropdown-overlay"
+              >
+                <Button
+                  type="text"
+                  className="user-btn"
+                  icon={<UserOutlined />}
+                />
+              </Dropdown>
+
+              <Badge count={0} size="small">
+                <Button
+                  type="text"
+                  icon={<ShoppingCartOutlined />}
+                  onClick={() => navigate("/cart")}
+                  className="cart-btn"
+                />
+              </Badge>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </Header>
 
       <Content className="main-content">
@@ -198,7 +219,7 @@ const MainLayout = () => {
       <Footer className="main-footer">
         <div className="footer-content">
           <Row gutter={[32, 24]}>
-            <Col xs={24} md={8}>
+            <Col xs={24} md={10}>
               <Title level={5} className="footer-title">
                 {t("common.footer.contact")}
               </Title>
@@ -231,7 +252,7 @@ const MainLayout = () => {
               </div>
             </Col>
 
-            <Col xs={24} md={8}>
+            <Col xs={24} md={6}>
               <Title level={5} className="footer-title">
                 {t("common.footer.policy")}
               </Title>
