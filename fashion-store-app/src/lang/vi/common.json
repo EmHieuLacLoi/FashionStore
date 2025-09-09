@@ -50,5 +50,22 @@
   "message": {
     "success": "{{value}} thành công",
     "fail": "{{value}} thất bại"
+  },
+  "banner": {
+    "slide_1": {
+      "title": "Khuyến Mãi Mùa Hè",
+      "description": "Giảm giá lên đến 50% cho các sản phẩm được chọn. Ưu đãi có thời hạn!",
+      "button_text": "Xem Ưu Đãi"
+    },
+    "slide_2": {
+      "title": "Chất Lượng Cao Cấp",
+      "description": "Trải nghiệm chất liệu và tay nghề tinh xảo trong từng sản phẩm",
+      "button_text": "Khám Phá"
+    },
+    "slide_3": {
+      "title": "Hàng Mới Về",
+      "description": "Những phong cách mới nhất vừa cập bến cửa hàng. Hãy là người đầu tiên sở hữu!",
+      "button_text": "Mua Ngay"
+    }
   }
 }

@@ -1,0 +1,10 @@
+{
+  "order": "Order",
+  "constant": {
+    "PENDING": "Pending",
+    "PROCESSING": "Processing",
+    "SHIPPED": "Shipped",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  }
+}

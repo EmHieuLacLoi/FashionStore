@@ -1,0 +1,12 @@
+{
+  "payment": "Thanh toán",
+  "constant": {
+    "PENDING": "Chờ thanh toán",
+    "COMPLETED": "Thành công",
+    "FAILED": "Thất bại",
+    "MOMO": "Momo",
+    "ZALOPAY": "ZaloPay",
+    "COD": "COD",
+    "BANK_TRANSFER": "Thanh toán qua ngân hàng"
+  }
+}

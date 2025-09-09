@@ -1,0 +1,12 @@
+{
+  "payment": "Payment",
+  "constant": {
+    "PENDING": "Pending",
+    "COMPLETED": "Completed",
+    "FAILED": "Failed",
+    "MOMO": "Momo",
+    "ZALOPAY": "ZaloPay",
+    "COD": "COD",
+    "BANK_TRANSFER": "Bank Transfer"
+  }
+}

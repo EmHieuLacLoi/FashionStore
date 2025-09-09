@@ -50,5 +50,22 @@
   "message": {
     "success": "{{value}} successfully",
     "fail": "{{value}} failed"
+  },
+  "banner": {
+    "slide_1": {
+      "title": "Summer Sale",
+      "description": "Up to 50% off on selected items. Limited time offer!",
+      "button_text": "View Deals"
+    },
+    "slide_2": {
+      "title": "Premium Quality",
+      "description": "Experience the finest materials and craftsmanship in every piece",
+      "button_text": "Explore"
+    },
+    "slide_3": {
+      "title": "New Arrivals",
+      "description": "Fresh styles just landed in our store. Be the first to shop!",
+      "button_text": "Shop New"
+    }
   }
 }

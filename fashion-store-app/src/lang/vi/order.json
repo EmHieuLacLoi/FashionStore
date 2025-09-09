@@ -1,0 +1,10 @@
+{
+  "order": "Đơn hàng",
+  "constant": {
+    "PENDING": "Chờ xử lý",
+    "PROCESSING": "Đang xử lý",
+    "SHIPPED": "Đã giao hàng",
+    "COMPLETED": "Hoàn thành",
+    "CANCELLED": "Hủy bỏ"
+  }
+}

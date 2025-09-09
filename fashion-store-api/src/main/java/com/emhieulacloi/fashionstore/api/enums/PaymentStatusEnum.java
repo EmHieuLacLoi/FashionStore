@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum PaymentStatusEnum {
     PENDING(0, "đang chờ"),
-    COMPLETED(3, "đã hoàn thành"),
-    FAILED(4, "thất bại");
+    COMPLETED(1, "đã hoàn thành"),
+    FAILED(2, "thất bại");
 
     private final Integer value;
     private final String text;
