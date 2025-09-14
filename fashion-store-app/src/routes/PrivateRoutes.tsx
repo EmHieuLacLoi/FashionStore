@@ -1,2 +1,8 @@
 import type { RouteObject } from "react-router";
-export const privateRoutes: RouteObject[] = [];
+import AdminLayout from "@layouts/AdminLayout/AdminLayout";
+export const privateRoutes: RouteObject[] = [
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+  },
+];
