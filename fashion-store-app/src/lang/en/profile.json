@@ -1,0 +1,25 @@
+{
+  "title": "Profile",
+  "full_name": "Full Name",
+  "email": "Email",
+  "phone_number": "Phone Number",
+  "username": "Username",
+  "address": "Address",
+  "edit": "Edit",
+  "cancel": "Cancel",
+  "save": "Save changes",
+  "edit_password": "Edit password (optional)",
+  "current_password": "Current password",
+  "new_password": "New password",
+  "confirm_password": "Confirm new password",
+  "required": {
+    "full_name_min": "Full name must be at least {{value}} characters!",
+    "phone_number_min": "Phone number must be at least {{value}} characters!",
+    "address_min": "Address must be at least {{value}} characters!",
+    "address_required": "Address is required!"
+  },
+  "message": {
+    "success": "Update information successfully!",
+    "fail": "Update information failed!"
+  }
+}

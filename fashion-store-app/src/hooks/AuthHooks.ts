@@ -18,7 +18,7 @@ export const useLogin = () => {
 export const useGetUserInfo = (config: object): any => {
   return useQuery({
     queryKey: [ServerStateKeysEnum.Items],
-    queryFn: () => getUserInfo(),
+    queryFn: getUserInfo,
     ...config,
   });
 };

@@ -5,6 +5,7 @@ import { notFoundRoute } from "@routes/modules/NotFoundRoute";
 import { loginRoute } from "@routes/modules/LoginRoute";
 import { registerRoute } from "@routes/modules/RegisterRoute";
 import { productPageRoute } from "@routes/modules/ProductPageRoute";
+import { profilePageRoute } from "@routes/modules/ProfileRoute";
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -15,6 +16,7 @@ export const publicRoutes: RouteObject[] = [
       ...loginRoute,
       ...registerRoute,
       ...productPageRoute,
+      ...profilePageRoute,
     ],
   },
   {

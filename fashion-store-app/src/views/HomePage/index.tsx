@@ -42,7 +42,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      {/* Hero Banner */}
       <div className="hero-banner">
         <Carousel
           autoplay
@@ -81,7 +80,6 @@ const HomePage: React.FC = () => {
         </Carousel>
       </div>
 
-      {/* Hot Products */}
       <section style={{ margin: "40px 0" }}>
         <Title level={2} style={{ textAlign: "center" }}>
           Sản phẩm siêu hot
@@ -110,7 +108,6 @@ const HomePage: React.FC = () => {
         </Row>
       </section>
 
-      {/* Collections */}
       <section style={{ margin: "40px 0" }}>
         <Title level={2} style={{ textAlign: "center" }}>
           X-Collections
@@ -155,7 +152,6 @@ const HomePage: React.FC = () => {
         </Row>
       </section>
 
-      {/* Blog Section */}
       <section style={{ margin: "40px 0" }}>
         <Title level={2} style={{ textAlign: "center" }}>
           Tin tức mới nhất

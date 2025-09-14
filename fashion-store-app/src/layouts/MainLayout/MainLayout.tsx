@@ -142,14 +142,12 @@ const MainLayout = () => {
 
       <Header className="main-header">
         <div className="header-container">
-          {/* Logo Section */}
           <div className="logo-section">
             <Title level={3} className="logo" onClick={() => navigate("/")}>
               <img src={currentLogo} alt="logo" className="logo-img" />
             </Title>
           </div>
 
-          {/* Menu Section */}
           <div className="menu-section">
             <Menu
               mode="horizontal"
@@ -170,7 +168,6 @@ const MainLayout = () => {
             </Menu>
           </div>
 
-          {/* Controls Section */}
           <div className="controls-section">
             <Select
               value={lang}

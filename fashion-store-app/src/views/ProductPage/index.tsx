@@ -340,40 +340,6 @@ const EcommerceProductPage: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Header
-        style={{
-          backgroundColor: "#fff",
-          padding: "0 24px",
-          borderBottom: "1px solid #f0f0f0",
-        }}
-      >
-        <Row align="middle" justify="space-between">
-          <Col>
-            <Title level={3} style={{ margin: 0, color: "#1890ff" }}>
-              ShopVN
-            </Title>
-          </Col>
-          <Col flex="auto" style={{ maxWidth: 600, margin: "0 24px" }}>
-            <Search
-              placeholder="Tìm kiếm sản phẩm..."
-              allowClear
-              enterButton={<SearchOutlined />}
-              size="large"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </Col>
-          <Col>
-            <Space>
-              <Button icon={<HeartOutlined />}>Yêu thích</Button>
-              <Badge count={5}>
-                <Button icon={<ShoppingCartOutlined />}>Giỏ hàng</Button>
-              </Badge>
-            </Space>
-          </Col>
-        </Row>
-      </Header>
-
       <Layout>
         <Sider
           width={300}
@@ -514,7 +480,7 @@ const EcommerceProductPage: React.FC = () => {
                 <Option value={48}>48</Option>
               </Select>
 
-              <Button.Group>
+              <Space.Compact>
                 <Button
                   type={viewMode === "grid" ? "primary" : "default"}
                   icon={<AppstoreOutlined />}
@@ -525,7 +491,7 @@ const EcommerceProductPage: React.FC = () => {
                   icon={<BarsOutlined />}
                   onClick={() => setViewMode("list")}
                 />
-              </Button.Group>
+              </Space.Compact>
             </Space>
           </div>
 

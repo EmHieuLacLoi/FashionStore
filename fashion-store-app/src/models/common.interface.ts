@@ -6,6 +6,7 @@ export interface User {
   note: string;
   phone_number: string;
   username: string;
+  address: string;
 }
 
 export interface AuthRequest {

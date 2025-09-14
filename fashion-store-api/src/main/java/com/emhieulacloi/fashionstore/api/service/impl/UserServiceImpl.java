@@ -129,10 +129,24 @@ public class UserServiceImpl implements UserService {
                         .setStatusCode(HttpStatus.BAD_REQUEST)
                         .setErrorCode(SystemCodeEnum.ERROR_002.getCode(), messageResource);
             }
+
+            if (userRequestDTO.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                throw new CommonException()
+                        .setStatusCode(HttpStatus.BAD_REQUEST)
+                        .setErrorCode(SystemCodeEnum.ERROR_002.getCode(), messageResource);
+            }
+
+            String password = user.getPassword();
+            String rawPassword = userRequestDTO.getPassword();
+            String oldPassword = userRequestDTO.getOldPassword();
+            this.checkPassword(rawPassword, password, oldPassword);
+            user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+
             user.setEmail(FmsUtil.validateStrings(userRequestDTO.getEmail()));
             user.setFullName(FmsUtil.validateStrings(userRequestDTO.getFullName()));
             user.setPhoneNumber(FmsUtil.validateStrings(userRequestDTO.getPhoneNumber()));
             user.setAddress(FmsUtil.validateStrings(userRequestDTO.getAddress()));
+
             this.userRepository.save(user);
             return userMapper.entityToResponse(user);
         } catch (CommonException e) {

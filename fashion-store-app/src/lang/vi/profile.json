@@ -1,0 +1,25 @@
+{
+  "title": "Thông tin cá nhân",
+  "full_name": "Họ và tên",
+  "email": "Email",
+  "phone_number": "Số điện thoại",
+  "username": "Tên đăng nhập",
+  "address": "Địa chỉ",
+  "edit": "Chỉnh sửa",
+  "cancel": "Hủy",
+  "save": "Lưu thay đổi",
+  "edit_password": "Thay đổi mật khẩu (tùy chọn)",
+  "current_password": "Mật khẩu hiện tại",
+  "new_password": "Mật khẩu mới",
+  "confirm_password": "Xác nhận mật khẩu mới",
+  "required": {
+    "full_name_min": "Họ và tên phải có ít nhất {{value}} ký tự!",
+    "phone_number_min": "Số điện thoại phải có ít nhất {{value}} ký tự!",
+    "address_min": "Địa chỉ phải có ít nhất {{value}} ký tự!",
+    "address_required": "Vui lòng nhập địa chỉ"
+  },
+  "message": {
+    "success": "Cập nhật thông tin thành công!",
+    "fail": "Cập nhật thông tin thất bại!"
+  }
+}
