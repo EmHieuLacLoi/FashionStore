@@ -12,6 +12,8 @@
   "current_password": "Current password",
   "new_password": "New password",
   "confirm_password": "Confirm new password",
+  "show": "Show",
+  "hide": "Hide",
   "required": {
     "full_name_min": "Full name must be at least {{value}} characters!",
     "phone_number_min": "Phone number must be at least {{value}} characters!",

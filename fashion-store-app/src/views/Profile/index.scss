@@ -40,12 +40,46 @@
         .password-divider {
           text-align: left;
 
-          .divider-text {
-            font-weight: 600;
+          .password-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .divider-text {
+              font-weight: 600;
+            }
+
+            .password-toggle-btn {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              padding: 4px 8px;
+              height: auto;
+              font-size: 12px;
+              color: #1890ff;
+              border-radius: 4px;
+              transition: all 0.3s ease;
+
+              &:hover {
+                background-color: rgba(24, 144, 255, 0.1);
+                color: #40a9ff;
+              }
+
+              &:focus {
+                background-color: rgba(24, 144, 255, 0.1);
+                color: #096dd9;
+              }
+
+              .anticon {
+                font-size: 12px;
+              }
+            }
           }
         }
 
         .password-fields {
+          animation: slideDown 0.3s ease-in-out;
+
           .form-col {
             &:not(:last-child) {
               margin-bottom: 16px;
@@ -179,6 +213,19 @@
   }
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 500px;
+  }
+}
+
 @media (max-width: 767px) {
   .user-profile-form {
     padding: 16px;
@@ -191,6 +238,22 @@
 
         .profile-title {
           width: 100%;
+        }
+      }
+
+      .profile-form {
+        .password-section {
+          .password-divider {
+            .password-header {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 8px;
+
+              .password-toggle-btn {
+                align-self: flex-start;
+              }
+            }
+          }
         }
       }
 
@@ -215,6 +278,24 @@
       .address-display {
         background-color: #1f1f1f;
         border-color: #434343;
+      }
+
+      .profile-form {
+        .password-section {
+          .password-divider {
+            .password-header {
+              .password-toggle-btn {
+                &:hover {
+                  background-color: rgba(24, 144, 255, 0.2);
+                }
+
+                &:focus {
+                  background-color: rgba(24, 144, 255, 0.2);
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

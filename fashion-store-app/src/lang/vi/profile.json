@@ -12,6 +12,8 @@
   "current_password": "Mật khẩu hiện tại",
   "new_password": "Mật khẩu mới",
   "confirm_password": "Xác nhận mật khẩu mới",
+  "show": "Hiện",
+  "hide": "Ẩn",
   "required": {
     "full_name_min": "Họ và tên phải có ít nhất {{value}} ký tự!",
     "phone_number_min": "Số điện thoại phải có ít nhất {{value}} ký tự!",

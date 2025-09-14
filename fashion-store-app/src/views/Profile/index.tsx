@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   Input,
   Button,
   Card,
   message,
-  Space,
   Typography,
   Divider,
   Row,
@@ -16,10 +15,11 @@ import {
   MailOutlined,
   PhoneOutlined,
   LockOutlined,
-  HomeOutlined,
   EditOutlined,
   SaveOutlined,
   CloseOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import { useUpdate } from "@hooks/UserHooks";
 import { useGetUserInfo } from "@hooks/AuthHooks";
@@ -34,6 +34,7 @@ const UserProfileForm = () => {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
   const { t } = useTranslation();
 
   const updateMutation = useUpdate();
@@ -67,8 +68,20 @@ const UserProfileForm = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
+    setShowPasswordFields(false);
     form.setFieldsValue(userData);
     form.resetFields();
+  };
+
+  const togglePasswordFields = () => {
+    setShowPasswordFields(!showPasswordFields);
+    if (showPasswordFields) {
+      form.setFieldsValue({
+        old_password: undefined,
+        password: undefined,
+        confirm_password: undefined,
+      });
+    }
   };
 
   const handleSave = async (values: any) => {
@@ -91,6 +104,7 @@ const UserProfileForm = () => {
 
         setUserData((prev: any) => ({ ...prev, ...updateData }));
         setIsEditing(false);
+        setShowPasswordFields(false);
         form.resetFields();
       } else {
         message.error(t("profile.message.fail"));
@@ -117,7 +131,7 @@ const UserProfileForm = () => {
   };
 
   const validateOldPassword = (_: any, value: any) => {
-    if (value && value.length < 8) {
+    if (showPasswordFields && value && value.length < 8) {
       return Promise.reject(
         new Error(t("auth.register.password_min", { value: 8 }))
       );
@@ -126,7 +140,11 @@ const UserProfileForm = () => {
   };
 
   const validateConfirmPassword = (_: any, value: any) => {
-    if (value && value !== form.getFieldValue("password")) {
+    if (
+      showPasswordFields &&
+      value &&
+      value !== form.getFieldValue("password")
+    ) {
       return Promise.reject(
         new Error(t("auth.register.confirm_password_not_match"))
       );
@@ -267,90 +285,126 @@ const UserProfileForm = () => {
             {isEditing && (
               <Col xs={24} className="form-col password-section">
                 <Divider orientation="left" className="password-divider">
-                  <Text strong className="divider-text">
-                    {t("profile.edit_password")}
-                  </Text>
+                  <div className="password-header">
+                    <Text strong className="divider-text">
+                      {t("profile.edit_password")}
+                    </Text>
+                    <Button
+                      type="text"
+                      icon={
+                        showPasswordFields ? (
+                          <EyeInvisibleOutlined />
+                        ) : (
+                          <EyeOutlined />
+                        )
+                      }
+                      onClick={togglePasswordFields}
+                      className="password-toggle-btn"
+                      size="small"
+                    >
+                      {showPasswordFields
+                        ? t("profile.hide")
+                        : t("profile.show")}
+                    </Button>
+                  </div>
                 </Divider>
 
-                <Row gutter={24} className="form-row password-fields">
-                  <Col xs={24} md={8} className="form-col">
-                    <Form.Item
-                      name="old_password"
-                      label={t("profile.current_password")}
-                      rules={[{ validator: validateOldPassword }]}
-                    >
-                      <Input.Password
-                        prefix={<LockOutlined />}
-                        placeholder={t("profile.current_password")}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={8} className="form-col">
-                    <Form.Item
-                      name="password"
-                      label={t("profile.new_password")}
-                      rules={[
-                        {
-                          required: true,
-                          message: t("auth.register.password_required"),
-                        },
-                        {
-                          validator: (_, value) => {
-                            if (!value) return Promise.resolve();
-
-                            if (value.length < 8) {
-                              return Promise.reject(
-                                t("auth.register.password_min")
-                              );
-                            }
-
-                            if (!/[A-Z]/.test(value)) {
-                              return Promise.reject(
-                                t("auth.register.password_uppercase")
-                              );
-                            }
-
-                            if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
-                              return Promise.reject(
-                                t("auth.register.password_special")
-                              );
-                            }
-
-                            if (/\s/.test(value)) {
-                              return Promise.reject(
-                                t("auth.register.password_whitespace")
-                              );
-                            }
-
-                            return Promise.resolve();
+                {showPasswordFields && (
+                  <Row gutter={24} className="form-row password-fields">
+                    <Col xs={24} md={8} className="form-col">
+                      <Form.Item
+                        name="old_password"
+                        label={t("profile.current_password")}
+                        rules={[
+                          {
+                            required: true,
+                            message: t("auth.register.password_required"),
                           },
-                        },
-                      ]}
-                    >
-                      <Input.Password
-                        prefix={<LockOutlined />}
-                        placeholder={t("profile.new_password")}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </Col>
+                          { validator: validateOldPassword },
+                        ]}
+                      >
+                        <Input.Password
+                          prefix={<LockOutlined />}
+                          placeholder={t("profile.current_password")}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </Col>
 
-                  <Col xs={24} md={8} className="form-col">
-                    <Form.Item
-                      name="confirm_password"
-                      label={t("profile.confirm_password")}
-                      rules={[{ validator: validateConfirmPassword }]}
-                    >
-                      <Input.Password
-                        prefix={<LockOutlined />}
-                        placeholder={t("profile.confirm_password")}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
+                    <Col xs={24} md={8} className="form-col">
+                      <Form.Item
+                        name="password"
+                        label={t("profile.new_password")}
+                        rules={[
+                          {
+                            required: showPasswordFields,
+                            message: t("auth.register.password_required"),
+                          },
+                          {
+                            validator: (_, value) => {
+                              if (!showPasswordFields || !value)
+                                return Promise.resolve();
+
+                              if (value.length < 8) {
+                                return Promise.reject(
+                                  t("auth.register.password_min")
+                                );
+                              }
+
+                              if (!/[A-Z]/.test(value)) {
+                                return Promise.reject(
+                                  t("auth.register.password_uppercase")
+                                );
+                              }
+
+                              if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                                return Promise.reject(
+                                  t("auth.register.password_special")
+                                );
+                              }
+
+                              if (/\s/.test(value)) {
+                                return Promise.reject(
+                                  t("auth.register.password_whitespace")
+                                );
+                              }
+
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                      >
+                        <Input.Password
+                          prefix={<LockOutlined />}
+                          placeholder={t("profile.new_password")}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} md={8} className="form-col">
+                      <Form.Item
+                        name="confirm_password"
+                        label={t("profile.confirm_password")}
+                        rules={[
+                          {
+                            required: true,
+                            message: t(
+                              "auth.register.confirm_password_required"
+                            ),
+                          },
+                          { validator: validateConfirmPassword },
+                        ]}
+                      >
+                        <Input.Password
+                          prefix={<LockOutlined />}
+                          placeholder={t("profile.confirm_password")}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                )}
               </Col>
             )}
           </Row>
