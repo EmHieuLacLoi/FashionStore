@@ -1,4 +1,3 @@
-// Variables
 $primary-gradient: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
 $secondary-gradient: linear-gradient(45deg, #667eea, #764ba2);
 $pink-gradient: linear-gradient(45deg, #f093fb, #f5576c);
@@ -25,20 +24,18 @@ $shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.1);
 $transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 $transition-fast: all 0.3s ease;
 
-// Main Layout
 .modern-admin-layout {
   min-height: 100vh;
   background: #f5f7fa;
 
-  // Sidebar
   .modern-admin-sider {
     background: $primary-gradient;
     box-shadow: $shadow-medium;
     border-radius: 0 20px 20px 0;
     overflow: hidden;
     position: relative;
+    height: 100vh;
 
-    // Decorative elements
     .sider-decoration-1 {
       position: absolute;
       top: 20px;
@@ -61,25 +58,40 @@ $transition-fast: all 0.3s ease;
       z-index: 1;
     }
 
-    // Logo section
     .admin-logo {
       height: 80px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      padding: 0 16px;
       background: $white-10;
       backdrop-filter: blur(10px);
       border-bottom: 1px solid $white-10;
       position: relative;
       z-index: 2;
+      transition: opacity 0.3s ease;
 
       .logo-expanded {
-        text-align: center;
+        flex: 1;
+        text-align: left;
+        transition: all 0.5s ease;
+        opacity: 1;
+        transform: translateY(0);
+
+        &.collapsed {
+          .logo-expanded {
+            opacity: 0;
+          }
+          .logo-collapsed {
+            opacity: 1;
+          }
+        }
 
         .logo-title {
           color: white;
           margin: 0;
           font-weight: bold;
+          line-height: 1.2;
         }
 
         .logo-subtitle {
@@ -89,13 +101,23 @@ $transition-fast: all 0.3s ease;
       }
 
       .logo-collapsed {
+        flex: 1;
         color: white;
         font-size: 24px;
         font-weight: bold;
+        text-align: center;
+      }
+
+      .collapse-button {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: 24px;
       }
     }
 
-    // Menu
     .modern-admin-menu {
       background: transparent;
       border: none;
@@ -168,7 +190,6 @@ $transition-fast: all 0.3s ease;
       }
     }
 
-    // User info panel
     .user-info-panel {
       position: absolute;
       bottom: 20px;
@@ -205,11 +226,10 @@ $transition-fast: all 0.3s ease;
     }
   }
 
-  // Main layout area
   .modern-admin-main {
     background: #f5f7fa;
+    height: 100vh;
 
-    // Header
     .modern-admin-header {
       background: $white-90;
       backdrop-filter: blur(20px);
@@ -291,33 +311,8 @@ $transition-fast: all 0.3s ease;
       }
     }
 
-    // Breadcrumb
-    .admin-breadcrumb {
-      padding: 16px 32px 0;
-      margin: 0 20px;
-
-      .ant-breadcrumb {
-        font-size: 14px;
-        color: #666;
-
-        .ant-breadcrumb-link {
-          color: rgba(0, 0, 0, 0.45);
-          transition: color 0.3s ease;
-
-          &:hover {
-            color: #667eea;
-          }
-        }
-
-        .ant-breadcrumb-separator {
-          color: rgba(0, 0, 0, 0.25);
-        }
-      }
-    }
-
-    // Content area
     .modern-admin-content {
-      margin: 24px 32px;
+      margin: 0 32px;
       padding: 32px;
       background: white;
       border-radius: 20px;
@@ -355,7 +350,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Dashboard content styles
 .dashboard-content {
   padding: 0;
 
@@ -500,7 +494,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Animations
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -512,7 +505,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Responsive styles
 @media (max-width: 768px) {
   .modern-admin-layout {
     .modern-admin-sider {
@@ -549,7 +541,7 @@ $transition-fast: all 0.3s ease;
       }
 
       .modern-admin-content {
-        margin: 12px 16px 16px;
+        margin: 0 16px 0;
         padding: 16px;
       }
     }
@@ -608,7 +600,7 @@ $transition-fast: all 0.3s ease;
       }
 
       .modern-admin-content {
-        margin: 8px 12px 12px;
+        margin: 0 12px 0;
         padding: 12px;
       }
     }
@@ -636,7 +628,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Dark theme support
 @media (prefers-color-scheme: dark) {
   .modern-admin-layout {
     background: #141414;
@@ -736,7 +727,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Custom scrollbar
 .modern-admin-layout {
   .ant-layout-sider-children {
     &::-webkit-scrollbar {
@@ -758,7 +748,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Smooth transitions for all elements
 .modern-admin-layout {
   .ant-layout-sider-children {
     overflow-x: hidden;
@@ -790,7 +779,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Additional hover effects
 .modern-admin-layout {
   .modern-admin-header {
     .collapse-button,
@@ -820,7 +808,6 @@ $transition-fast: all 0.3s ease;
   }
 }
 
-// Loading states and micro-interactions
 .modern-admin-layout {
   .stat-card {
     .ant-statistic-content {

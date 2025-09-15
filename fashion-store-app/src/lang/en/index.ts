@@ -3,11 +3,13 @@ import auth from "./auth.json";
 import payment from "./payment.json";
 import order from "./order.json";
 import profile from "./profile.json";
+import admin from "./admin.json";
 
 export default {
   common,
   auth,
   payment,
   order,
+  admin,
   profile,
 };

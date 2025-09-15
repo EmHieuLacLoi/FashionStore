@@ -1,0 +1,20 @@
+{
+  "title": "Trang quản trị",
+  "subtitle": "Hệ thống quản lý",
+  "menu": {
+    "dashboard": "Bảng điều khiển",
+    "products": "Sản phẩm",
+    "categories": "Danh mục",
+    "orders": "Đơn hàng",
+    "payments": "Thanh toán",
+    "users": "Người dùng"
+  },
+  "description": {
+    "dashboard": "Bảng điều khiển",
+    "products": "Quản lý sản phẩm",
+    "categories": "Quản lý danh mục",
+    "orders": "Quản lý đơn hàng",
+    "payments": "Quản lý thanh toán",
+    "users": "Quản lý người dùng"
+  }
+}

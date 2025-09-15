@@ -1,0 +1,20 @@
+{
+  "title": "Admin Dashboard",
+  "subtitle": "System Management",
+  "menu": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "orders": "Orders",
+    "payments": "Payments",
+    "users": "Users"
+  },
+  "description": {
+    "dashboard": "Dashboard",
+    "products": "Manage inventory",
+    "categories": "Product categories",
+    "orders": "Customer orders",
+    "payments": "Transaction history",
+    "users": "Manage users"
+  }
+}

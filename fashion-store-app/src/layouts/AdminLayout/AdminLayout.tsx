@@ -23,11 +23,10 @@ import {
   CreditCardOutlined,
   UserOutlined,
   LogoutOutlined,
-  SettingOutlined,
   BellOutlined,
-  DashboardOutlined,
   TrophyOutlined,
   RiseOutlined,
+  DesktopOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router";
 import "./AdminLayout.scss";
@@ -44,98 +43,63 @@ const AdminLayout: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
-  // Simulate some data for the dashboard
-  const stats = {
-    revenue: 125000,
-    orders: 1250,
-    customers: 850,
-    products: 425,
-  };
-
-  // Menu items configuration
   const menuItems = [
-    {
-      key: "/admin/dashboard",
-      icon: <DashboardOutlined />,
-      label: t("admin.menu.dashboard") || "Dashboard",
-      description: "Overview & Analytics",
-    },
     {
       key: "/admin/products",
       icon: <ShoppingOutlined />,
-      label: t("admin.menu.products") || "Products",
-      description: "Manage inventory",
+      label: t("admin.menu.products"),
+      description: t("admin.description.products"),
     },
     {
       key: "/admin/categories",
       icon: <AppstoreOutlined />,
-      label: t("admin.menu.categories") || "Categories",
-      description: "Product categories",
+      label: t("admin.menu.categories"),
+      description: t("admin.description.categories"),
     },
     {
       key: "/admin/orders",
       icon: <ShoppingCartOutlined />,
-      label: t("admin.menu.orders") || "Orders",
-      badge: { count: 12, color: "#ff4d4f" },
-      description: "Customer orders",
+      label: t("admin.menu.orders"),
+      description: t("admin.description.orders"),
     },
     {
       key: "/admin/payments",
       icon: <CreditCardOutlined />,
-      label: t("admin.menu.payments") || "Payments",
-      description: "Transaction history",
+      label: t("admin.menu.payments"),
+      description: t("admin.description.payments"),
+    },
+    {
+      key: "/admin/users",
+      icon: <UserOutlined />,
+      label: t("admin.menu.users"),
+      description: t("admin.description.users"),
     },
   ];
 
-  // User dropdown menu items
   const userMenuItems = [
     {
-      key: "profile",
-      label: t("common.auth.profile") || "Profile",
-      icon: <UserOutlined />,
-      onClick: () => navigate("/admin/profile"),
-    },
-    {
-      key: "settings",
-      label: t("admin.settings") || "Settings",
-      icon: <SettingOutlined />,
-      onClick: () => navigate("/admin/settings"),
-    },
-    {
-      type: "divider" as const,
-    },
-    {
       key: "logout",
-      label: t("common.auth.logout") || "Logout",
+      label: t("common.auth.logout"),
       icon: <LogoutOutlined />,
       danger: true,
       onClick: handleLogout,
     },
   ];
 
-  // Handle logout
   function handleLogout() {
     removeToken();
     navigate("/login");
   }
 
-  // Get current selected menu key
   const getSelectedKey = () => {
     const currentPath = location.pathname;
-    return (
-      menuItems.find((item) => currentPath.startsWith(item.key))?.key ||
-      menuItems[0].key
-    );
+    return menuItems.find((item) => currentPath.startsWith(item.key))?.key;
   };
 
-  // Handle menu click
   const handleMenuClick = ({ key }: { key: string }) => {
     navigate(key);
   };
 
-  // Breadcrumb removed
-
-  // Render enhanced menu items
   const renderMenuItems = () => {
     return menuItems.map((item) => ({
       key: item.key,
@@ -146,16 +110,6 @@ const AdminLayout: React.FC = () => {
         <div className="menu-item-content">
           <div className="menu-item-main">
             <span className="menu-label">{item.label}</span>
-            {item.badge && (
-              <Badge
-                count={item.badge.count}
-                size="small"
-                className="menu-badge"
-                style={{
-                  backgroundColor: item.badge.color,
-                }}
-              />
-            )}
           </div>
           {!collapsed && (
             <div className="menu-item-description">{item.description}</div>
@@ -165,7 +119,6 @@ const AdminLayout: React.FC = () => {
     }));
   };
 
-  // Dashboard content
   const renderDashboardContent = () => (
     <div className="dashboard-content">
       <div className="welcome-banner">
@@ -185,7 +138,7 @@ const AdminLayout: React.FC = () => {
           <Card className="stat-card stat-card-revenue">
             <Statistic
               title={<span className="stat-title">Total Revenue</span>}
-              value={stats.revenue}
+              value={1}
               precision={0}
               valueStyle={{ color: "white", fontWeight: "bold" }}
               prefix="$"
@@ -205,7 +158,7 @@ const AdminLayout: React.FC = () => {
           <Card className="stat-card stat-card-orders">
             <Statistic
               title={<span className="stat-title">Orders</span>}
-              value={stats.orders}
+              value={1}
               valueStyle={{ color: "white", fontWeight: "bold" }}
               suffix={<ShoppingCartOutlined className="stat-icon" />}
             />
@@ -217,7 +170,7 @@ const AdminLayout: React.FC = () => {
           <Card className="stat-card stat-card-customers">
             <Statistic
               title={<span className="stat-title">Customers</span>}
-              value={stats.customers}
+              value={1}
               valueStyle={{ color: "white", fontWeight: "bold" }}
               suffix={<UserOutlined className="stat-icon" />}
             />
@@ -229,7 +182,7 @@ const AdminLayout: React.FC = () => {
           <Card className="stat-card stat-card-products">
             <Statistic
               title={<span className="stat-title">Products</span>}
-              value={stats.products}
+              value={1}
               valueStyle={{ color: "white", fontWeight: "bold" }}
               suffix={<TrophyOutlined className="stat-icon" />}
             />
@@ -238,15 +191,7 @@ const AdminLayout: React.FC = () => {
         </Col>
       </Row>
 
-      <Card
-        className="quick-actions-card"
-        title="Quick Actions"
-        extra={
-          <Button type="primary" className="view-all-btn">
-            View All
-          </Button>
-        }
-      >
+      <Card className="quick-actions-card" title="Quick Actions">
         <Row gutter={[16, 16]}>
           <Col span={8}>
             <Button size="large" className="quick-action-btn quick-action-add">
@@ -284,32 +229,34 @@ const AdminLayout: React.FC = () => {
         width={280}
         collapsedWidth={80}
       >
-        {/* Decorative background elements */}
         <div className="sider-decoration-1" />
         <div className="sider-decoration-2" />
 
         <div className="admin-logo">
           {!collapsed ? (
-            <div className="logo-expanded">
+            <div className={`logo-expanded ${collapsed ? "collapsed" : ""}`}>
               <Title level={3} className="logo-title">
-                ⚡ AdminPro
+                {t("admin.title")}
               </Title>
-              <Text className="logo-subtitle">Management System</Text>
+              <Text className="logo-subtitle">{t("admin.subtitle")}</Text>
             </div>
-          ) : (
-            <Text className="logo-collapsed">⚡</Text>
-          )}
+          ) : null}
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            className="collapse-button"
+          />
         </div>
 
         <Menu
           mode="inline"
-          selectedKeys={[getSelectedKey()]}
+          selectedKeys={[getSelectedKey() || "/admin"]}
           items={renderMenuItems()}
           onClick={handleMenuClick}
           className="modern-admin-menu"
         />
 
-        {/* User info at bottom with dropdown */}
         {!collapsed && (
           <Dropdown
             menu={{ items: userMenuItems }}
@@ -336,35 +283,12 @@ const AdminLayout: React.FC = () => {
       </Sider>
 
       <Layout className="modern-admin-main">
-        <Header className="modern-admin-header">
-          <div className="header-left">
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              className="collapse-button"
-            />
-          </div>
-
-          <div className="header-right">
-            <Space size="middle">
-              <Badge count={3} size="small">
-                <Button
-                  type="text"
-                  icon={<BellOutlined />}
-                  className="notification-button"
-                />
-              </Badge>
-            </Space>
-          </div>
-        </Header>
-
         <Content className="modern-admin-content">
           <div className="content-wrapper">
             <div className="content-decoration-1" />
 
             <div className="content-inner">
-              {location.pathname === "/admin/dashboard" ? (
+              {location.pathname === "/admin" ? (
                 renderDashboardContent()
               ) : (
                 <ProtectedRoute />

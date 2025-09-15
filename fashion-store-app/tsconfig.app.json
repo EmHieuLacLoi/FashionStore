@@ -39,7 +39,7 @@
       "@assets/*": ["assets/*"],
       "@services/*": ["services/*"],
       "@hooks/*": ["hooks/*"],
-      "@configs/*": ["configs/*"],
+      "@columns/*": ["columns/*"],
       "@utils/*": ["utils/*"],
       "@lang/*": ["lang/*"]
     }
