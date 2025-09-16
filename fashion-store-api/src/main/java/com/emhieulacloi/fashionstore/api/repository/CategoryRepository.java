@@ -14,7 +14,10 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends BaseRepository<Category, Long, CategoryCriteria> {
-    @Query("SELECT g FROM Category g ")
+    @Query(value = "SELECT * FROM categories g WHERE " +
+            "(:#{#criteria.name} IS NULL OR g.name LIKE %:#{#criteria.name}%) AND " +
+            "(:#{#criteria.description} IS NULL OR g.description LIKE %:#{#criteria.description}%)",
+            nativeQuery = true)
     Page<Category> findByCriteria(@Param("criteria") CategoryCriteria criteria, Pageable pageable);
 
     @Query(value = """
@@ -27,6 +30,9 @@ public interface CategoryRepository extends BaseRepository<Category, Long, Categ
     FROM `categories` t 
     LEFT JOIN user uc ON t.created_by = uc.id
     LEFT JOIN user uu ON t.updated_by = uu.id
+    WHERE
+       (:#{#criteria.name} IS NULL OR t.name LIKE :#{#criteria.name}) AND 
+       (:#{#criteria.description} IS NULL OR t.description LIKE :#{#criteria.description})
     """,
             countQuery = """
     SELECT
@@ -34,7 +40,7 @@ public interface CategoryRepository extends BaseRepository<Category, Long, Categ
     FROM `categories` t
     """,
             nativeQuery = true)
-    Page<CategoryDTO> findAllByCriteria(@Param("criteria")  CategoryCriteria criteria, Pageable pageable);
+    Page<CategoryDTO> findAllByCriteria(@Param("criteria") CategoryCriteria criteria, Pageable pageable);
 
     @Query(value = """
     SELECT 

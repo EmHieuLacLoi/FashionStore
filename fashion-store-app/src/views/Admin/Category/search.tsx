@@ -13,12 +13,10 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   const { t } = useTranslation();
   const { handleSearch, initialValues } = props;
   const [form] = Form.useForm();
-  const [codeValue, setCodeValue] = useState("");
   const [nameValue, setNameValue] = useState("");
-  const debouncedCodeValue = useDebounce(codeValue, 700);
   const debouncedNameValue = useDebounce(nameValue, 700);
 
-  const [maxWidthInput, width] = [250, "100%"];
+  const maxWidthInput = 250;
 
   useEffect(() => {
     if (initialValues) {
@@ -29,16 +27,6 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
       form.setFieldsValue(formValues);
     }
   }, [initialValues, form]);
-
-  useEffect(() => {
-    if (debouncedCodeValue !== undefined) {
-      const currentValues = form.getFieldsValue();
-      if (currentValues.code === debouncedCodeValue && handleSearch) {
-        const payload = prepareSearchPayload(currentValues);
-        handleSearch(payload);
-      }
-    }
-  }, [debouncedCodeValue]);
 
   useEffect(() => {
     if (debouncedNameValue !== undefined) {
@@ -69,10 +57,6 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   };
 
   const onValuesChange = (changedValues: any, allValues: any) => {
-    if ("code" in changedValues) {
-      setCodeValue(changedValues.code || "");
-      return;
-    }
     if ("name" in changedValues) {
       setNameValue(changedValues.name || "");
       return;
@@ -83,11 +67,6 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
     if (handleSearch) {
       handleSearch(payload);
     }
-  };
-
-  const handleCodeChange = (e: any) => {
-    const newValue = e.target.value;
-    setCodeValue(newValue);
   };
 
   const handleNameChange = (e: any) => {
@@ -103,29 +82,15 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
       onValuesChange={onValuesChange}
     >
       <Row gutter={16} align="bottom" wrap={false}>
-        {/* Code */}
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("environment.form.code")} name="code">
+          <Form.Item label={t("category.form.name")} name="name">
             <Input
               className="w-full"
               allowClear
-              placeholder={t("environment.form.codePlaceholder")}
-              onChange={handleCodeChange}
-              value={codeValue}
-              maxLength={20}
-              autoComplete="off"
-            />
-          </Form.Item>
-        </Col>
-        {/* Name */}
-        <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("environment.form.name")} name="name">
-            <Input
-              placeholder={t("environment.form.namePlaceholder")}
-              allowClear
+              placeholder={t("category.form.namePlaceholder")}
               onChange={handleNameChange}
               value={nameValue}
-              maxLength={255}
+              maxLength={20}
               autoComplete="off"
             />
           </Form.Item>

@@ -17,7 +17,13 @@
   },
   "button": {
     "close-top-bar": "Close top bar",
-    "subscribe": "Subscribe"
+    "subscribe": "Subscribe",
+    "create": "Create",
+    "search": "Search",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "slogan": "Your idea, your style",
   "footer": {
@@ -49,7 +55,13 @@
   },
   "message": {
     "success": "{{value}} successfully",
-    "fail": "{{value}} failed"
+    "fail": "{{value}} failed",
+    "create_success": "Create {{value}} successfully",
+    "create_fail": "Create {{value}} failed",
+    "update_success": "Update {{value}} successfully",
+    "update_fail": "Update {{value}} failed",
+    "delete_success": "Delete {{value}} successfully",
+    "delete_fail": "Delete {{value}} failed"
   },
   "banner": {
     "slide_1": {
@@ -67,5 +79,21 @@
       "description": "Fresh styles just landed in our store. Be the first to shop!",
       "button_text": "Shop New"
     }
+  },
+  "table": {
+    "showing": "Showing",
+    "of": "of",
+    "total": "total",
+    "items": "items"
+  },
+  "empty": "No data available",
+  "action": {
+    "table": "Action"
+  },
+  "delete": {
+    "delete_confirm_title": "Confirm delete",
+    "delete_single_content": "Are you sure you want to delete this record?",
+    "cancel": "Cancel",
+    "confirm": "Delete"
   }
 }

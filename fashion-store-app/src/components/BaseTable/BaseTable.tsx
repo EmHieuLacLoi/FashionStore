@@ -153,7 +153,6 @@ const BaseTable: React.FC<BaseTableProps> = ({
     width: 70,
     render: (_, record) => (
       <Space size="small">
-        (
         <Tooltip title={t("common.button.edit")}>
           <Button
             type="text"
@@ -162,16 +161,7 @@ const BaseTable: React.FC<BaseTableProps> = ({
             disabled={selectedRowKeys.includes(record.id)}
           />
         </Tooltip>
-        ) (
-        <Tooltip title={t("common.button.cancelled")}>
-          <Button
-            type="text"
-            icon={<StopOutlined />}
-            onClick={() => handleCancelRecord(record)}
-            disabled={selectedRowKeys.includes(record.id)}
-          />
-        </Tooltip>
-        ) (
+
         <Tooltip title={t("common.button.delete")}>
           <Button
             type="text"
@@ -185,7 +175,7 @@ const BaseTable: React.FC<BaseTableProps> = ({
             }
           />
         </Tooltip>
-        ){customActions && customActions(record)}
+        {customActions && customActions(record)}
       </Space>
     ),
   };
@@ -194,7 +184,7 @@ const BaseTable: React.FC<BaseTableProps> = ({
     if (!columnsConfig) {
       const fetchColumns = async () => {
         try {
-          const module = await import(`@configs/columns/${entity}.tsx`);
+          const module = await import(`@columns/${entity}.tsx`);
           setColumnModel(module.columns || []);
         } catch (error) {
           console.error(
@@ -390,30 +380,6 @@ const BaseTable: React.FC<BaseTableProps> = ({
     });
   };
 
-  const showMultipleDeleteConfirm = (onDelete: () => void) => {
-    Modal.confirm({
-      title: t("common.delete.delete_confirm_title"),
-      content: t("common.delete.delete_multiple_content"),
-      okText: t("common.delete.confirm"),
-      cancelText: t("common.delete.cancel"),
-      okButtonProps: {
-        style: {
-          backgroundColor: "#d9534f",
-          borderColor: "#d43f3a",
-          color: "#fff",
-        },
-      },
-      cancelButtonProps: {
-        style: {
-          color: "#333",
-        },
-      },
-      onOk() {
-        onDelete();
-      },
-    });
-  };
-
   const handleCancelRecord = (record: any) => {
     const key = keyName ? record[keyName] : record.code;
     if (onCancel) {
@@ -441,29 +407,6 @@ const BaseTable: React.FC<BaseTableProps> = ({
           const rest = await onDelete(id);
           if (rest && rest.error_status === 1) {
             message.success(t("common.delete.delete_success", { key }));
-          } else {
-            message.error(t("common.delete.delete_failed"));
-          }
-        } catch (error) {
-          message.destroy();
-          message.error(t("common.delete.delete_failed"));
-        }
-      });
-    }
-  };
-
-  const handleMultipleDeleteRecord = () => {
-    if (onMultipleDelete) {
-      showMultipleDeleteConfirm(async () => {
-        try {
-          const rest = await onMultipleDelete(selectedRowKeys);
-          if (rest && rest.error_status === 1) {
-            message.success(
-              t("common.delete.delete_multiple_success", {
-                count: selectedRowKeys.length,
-              })
-            );
-            setSelectedRowKeys([]);
           } else {
             message.error(t("common.delete.delete_failed"));
           }
@@ -540,45 +483,15 @@ const BaseTable: React.FC<BaseTableProps> = ({
   return (
     <>
       <div className="page-container" ref={tableRef}>
-        <Row gutter={[12, 12]}>
-          <Col span={24}>
-            <Row align={"middle"} justify={"space-between"}>
-              <Col className="header-page"> {t(`${entity}.name`)}</Col>
-              <Col>
-                {selectedRowKeys.length == 0 ? (
-                  <Space size="small">
-                    (
-                    <Button
-                      onClick={() => create && create("create")}
-                      size="middle"
-                      type="primary"
-                      icon={<PlusOutlined />}
-                      className="btn-create"
-                    >
-                      {t("common.button.create")}
-                    </Button>
-                    )
-                  </Space>
-                ) : (
-                  <Space size="small">
-                    <span>
-                      {t("common.selected", { value: selectedRowKeys.length })}
-                    </span>
-                    (
-                    <Button
-                      onClick={() => handleMultipleDeleteRecord()}
-                      size="middle"
-                      icon={<DeleteOutlined />}
-                    >
-                      {t("common.button.delete")}
-                    </Button>
-                    )
-                  </Space>
-                )}
-              </Col>
-            </Row>
-          </Col>
-          <Col span={24} style={{ display: "flex" }}>
+        <Row gutter={[12, 12]} style={{ margin: 0 }}>
+          <Col
+            span={24}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: 0,
+            }}
+          >
             {Filter && (
               <Filter
                 ref={filterRef}
@@ -586,7 +499,8 @@ const BaseTable: React.FC<BaseTableProps> = ({
                 initialValues={currentFilterValues}
               />
             )}
-            {!hideSearchButton && (
+
+            <div style={{ display: "flex", gap: "8px" }}>
               <Space size="small" className="space-search-btn">
                 <Button
                   onClick={() => handleSearch()}
@@ -596,15 +510,23 @@ const BaseTable: React.FC<BaseTableProps> = ({
                   {t("common.button.search")}
                 </Button>
               </Space>
-            )}
+
+              <Space size="small" className="space-search-btn">
+                <Button
+                  onClick={() => create && create("create")}
+                  size="middle"
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  className="btn-create"
+                >
+                  {t("common.button.create")}
+                </Button>
+              </Space>
+            </div>
           </Col>
 
-          <Col span={24} className="content-page">
-            <div
-              className="table-content-wrapper"
-              style={{ paddingTop: "16px" }}
-              ref={tableRef}
-            >
+          <Col span={24} className="content-page" style={{ padding: 0 }}>
+            <div className="table-content-wrapper" ref={tableRef}>
               <Table
                 rowKey="id"
                 rowSelection={
@@ -623,10 +545,9 @@ const BaseTable: React.FC<BaseTableProps> = ({
                 columns={columns}
                 bordered
                 size={size}
-                scroll={{
-                  y: tableHeight < 800 ? 52 * 9 : 52 * 13,
-                }}
                 dataSource={data}
+                scroll={{ y: "70vh" }}
+                className="table-content"
                 locale={{
                   emptyText: (
                     <Empty

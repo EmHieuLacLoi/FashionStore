@@ -10,7 +10,10 @@ export const create = async (data: any) => {
 };
 
 export const update = async (data: any) => {
-  const response = await axiosInstance.put("/v1/categories", data);
+  if (data.id == undefined || data.id == null || data.id == 0) {
+    return;
+  }
+  const response = await axiosInstance.put(`/v1/categories/${data.id}`, data);
   return response.data;
 };
 

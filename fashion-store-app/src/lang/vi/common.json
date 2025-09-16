@@ -17,7 +17,13 @@
   },
   "button": {
     "close-top-bar": "Đóng thanh thông báo",
-    "subscribe": "Đăng ký"
+    "subscribe": "Đăng ký",
+    "create": "Tạo mới",
+    "search": "Tìm kiếm",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy"
   },
   "slogan": "Ý tưởng của bạn, phong cách của bạn",
   "footer": {
@@ -49,7 +55,13 @@
   },
   "message": {
     "success": "{{value}} thành công",
-    "fail": "{{value}} thất bại"
+    "fail": "{{value}} thất bại",
+    "create_success": "Tạo {{value}} thành công",
+    "create_fail": "Tạo {{value}} thất bại",
+    "update_success": "Cập nhật {{value}} thành công",
+    "update_fail": "Cập nhật {{value}} thất bại",
+    "delete_success": "Xóa {{value}} thành công",
+    "delete_fail": "Xóa {{value}} thất bại"
   },
   "banner": {
     "slide_1": {
@@ -67,5 +79,21 @@
       "description": "Những phong cách mới nhất vừa cập bến cửa hàng. Hãy là người đầu tiên sở hữu!",
       "button_text": "Mua Ngay"
     }
+  },
+  "table": {
+    "showing": "Hiển thị",
+    "of": "trong",
+    "total": "tổng",
+    "items": "bản ghi"
+  },
+  "empty": "Không có dữ liệu",
+  "action": {
+    "table": "Thao tác"
+  },
+  "delete": {
+    "delete_confirm_title": "Xác nhận xóa",
+    "delete_single_content": "Bạn có chắc chắn muốn xóa bản ghi này?",
+    "cancel": "Hủy",
+    "confirm": "Xóa"
   }
 }

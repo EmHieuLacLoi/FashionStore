@@ -229,9 +229,6 @@ const AdminLayout: React.FC = () => {
         width={280}
         collapsedWidth={80}
       >
-        <div className="sider-decoration-1" />
-        <div className="sider-decoration-2" />
-
         <div className="admin-logo">
           {!collapsed ? (
             <div className={`logo-expanded ${collapsed ? "collapsed" : ""}`}>
@@ -284,16 +281,12 @@ const AdminLayout: React.FC = () => {
 
       <Layout className="modern-admin-main">
         <Content className="modern-admin-content">
-          <div className="content-wrapper">
-            <div className="content-decoration-1" />
-
-            <div className="content-inner">
-              {location.pathname === "/admin" ? (
-                renderDashboardContent()
-              ) : (
-                <ProtectedRoute />
-              )}
-            </div>
+          <div className="content-inner">
+            {location.pathname === "/admin" ? (
+              renderDashboardContent()
+            ) : (
+              <ProtectedRoute />
+            )}
           </div>
         </Content>
       </Layout>

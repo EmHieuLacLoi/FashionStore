@@ -72,16 +72,18 @@ const FormComponent: React.FC<FormComponentProps> = ({
       await form.validateFields();
       const formData = form.getFieldsValue();
       formData.name = formData.name.trim();
+      formData.description = formData.description.trim();
 
       let res: any;
       if (type === "create") {
         res = await insertMutation.mutateAsync(formData);
       } else {
+        console.log(dataEdit, formData);
         res = await updateMutation.mutateAsync({ ...dataEdit, ...formData });
       }
       if (res && (res.error_status === 1 || res.data?.error_status === 1)) {
         message.success(
-          t(`common.message.${type}_success`, { entity: t(`environment.name`) })
+          t(`common.message.${type}_success`, { value: t(`category.name`) })
         );
         queryClient.invalidateQueries({
           queryKey: [CategoryServerStateKeysEnum.Items],
@@ -89,20 +91,21 @@ const FormComponent: React.FC<FormComponentProps> = ({
         closeForm();
       } else {
         message.error(
-          t(`common.message.${type}_fail`, { entity: t(`environment.name`) })
+          t(`common.message.${type}_fail`, { value: t(`category.name`) })
         );
       }
     } catch (error: any) {
-      if (!error?.errorFields) {
+      console.log(error);
+      if (error?.response?.data?.error_message) {
         message.destroy();
         message.error(
-          t(`common.message.${type}_fail`, { entity: t(`environment.name`) }) +
-            " " +
-            error?.detail?.error_message
+          t(`common.message.${type}_fail`, { value: t(`category.name`) }) +
+            ": " +
+            error?.response?.data?.error_message
         );
       } else {
         message.error(
-          t(`common.message.${type}_fail`, { entity: t(`environment.name`) })
+          t(`common.message.${type}_fail`, { value: t(`category.name`) })
         );
       }
     } finally {
@@ -127,26 +130,45 @@ const FormComponent: React.FC<FormComponentProps> = ({
     >
       <div
         className="text-[18px] font-semibold p-4"
-        style={{ maxWidth: "95%" }}
+        style={{ maxWidth: "95%", marginBottom: "4px" }}
       >
-        {t(`environment.title.${type}`)} {dataEdit?.code || ""}
+        {t(`category.title.${type}`)} {dataEdit?.name || ""}
       </div>
-      <div className="max-h-[600px] custom-scrollbar overflow-y-auto px-4">
+      <div className="max-h-[600px] custom-scrollbar px-4">
         <Form form={form} layout="vertical">
-          <Row gutter={[4, 4]}>
+          <Row gutter={[2, 2]}>
             <Col span={24}>
               <Form.Item
-                label={t("environment.form.name")}
+                label={t("category.form.name")}
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: t("environment.form.namePlaceholder"),
+                    message: t("category.form.namePlaceholder"),
                   },
                 ]}
               >
                 <Input
-                  placeholder={t("environment.form.namePlaceholder")}
+                  placeholder={t("category.form.namePlaceholder")}
+                  maxLength={255}
+                  autoComplete="off"
+                />
+              </Form.Item>
+            </Col>
+
+            <Col span={24}>
+              <Form.Item
+                label={t("category.form.description")}
+                name="description"
+                rules={[
+                  {
+                    required: true,
+                    message: t("category.form.descriptionPlaceholder"),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={t("category.form.descriptionPlaceholder")}
                   maxLength={255}
                   autoComplete="off"
                 />
@@ -159,12 +181,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
         <Button disabled={loadingFetch} onClick={closeForm} type="text">
           {t("common.button.cancel")}
         </Button>
-        <Button
-          loading={loadingFetch}
-          onClick={submitForm}
-          type="primary"
-          className="btn-save"
-        >
+        <Button loading={loadingFetch} onClick={submitForm} type="primary">
           {t("common.button.save")} <SaveOutlined />
         </Button>
       </div>

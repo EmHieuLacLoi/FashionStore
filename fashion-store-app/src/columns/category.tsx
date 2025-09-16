@@ -2,14 +2,8 @@ import type { ColumnModelBaseTable } from "@components/BaseTable/BaseTable";
 import type { TFunction } from "i18next";
 
 export const columns = (t: TFunction): ColumnModelBaseTable[] => [
-  {
-    dataIndex: "code",
-    width: 120,
-    fixed: "left",
-    isPrimary: true,
-    render: (code, record) => <span>{code}</span>,
-  },
   { dataIndex: "name", width: 150, isPrimary: false },
+  { dataIndex: "description", width: 150, isPrimary: false },
   {
     dataIndex: "created_by",
     width: 100,

@@ -1,0 +1,21 @@
+{
+  "name": "Danh mục",
+  "title": {
+    "create": "Tạo mới",
+    "update": "Cập nhật"
+  },
+  "attribute": {
+    "name": "Tên",
+    "description": "Mô tả",
+    "created_at": "Ngày tạo",
+    "created_by": "Người tạo",
+    "updated_at": "Ngày cập nhật",
+    "updated_by": "Người cập nhật"
+  },
+  "form": {
+    "name": "Tên",
+    "namePlaceholder": "Nhập tên",
+    "description": "Mô tả",
+    "descriptionPlaceholder": "Nhập mô tả"
+  }
+}

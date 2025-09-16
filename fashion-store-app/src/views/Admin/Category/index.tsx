@@ -14,11 +14,10 @@ const CategoryView = () => {
     "create"
   );
   const [showModalCreate, setShowModalCreate] = useState<boolean>(false);
-  const [enabledTable, setEnabledTable] = useState<boolean>(false);
 
   const { t } = useTranslation();
 
-  const [data, setData] = useState<Category[]>([]);
+  const [dataResult, setDataResult] = useState<Category[]>([]);
 
   const [pagination, setPagination] = useState<{
     current: number;
@@ -31,7 +30,11 @@ const CategoryView = () => {
 
   const [searchParams, setSearchParams] = useState<any>({});
   const [lastSearchParams, setLastSearchParams] = useState({});
-  const { isFetching: tableLoading, refetch } = useGetCategoryList(
+  const {
+    data,
+    isFetching: tableLoading,
+    refetch,
+  } = useGetCategoryList(
     {
       page: pagination.current - 1,
       size: pagination.pageSize,
@@ -39,11 +42,11 @@ const CategoryView = () => {
       ...searchParams,
     },
     {
-      enabled: enabledTable,
+      enabled: true,
       onSuccess: (res: any) => {
         const result = res.data.content;
         setPagination((prev) => ({ ...prev, total: res.data.totalElements }));
-        setData(result);
+        setDataResult(result);
       },
       onError: (error: unknown) => {
         console.error(error);
@@ -98,11 +101,16 @@ const CategoryView = () => {
     }
   };
 
+  useEffect(() => {
+    setDataResult(data?.data?.content);
+    setPagination((prev) => ({ ...prev, total: data?.data?.totalElements }));
+  }, [data]);
+
   return (
     <>
       <BaseTable
-        entity={"environment"}
-        data={data}
+        entity={"category"}
+        data={dataResult}
         loading={tableLoading}
         onChange={(page, pageSize) => {
           setPagination((prev) => ({
@@ -121,7 +129,7 @@ const CategoryView = () => {
         handleEdit={handleEditData}
         handleDelete={handleDeleteData}
         onDelete={onDelete}
-        keyName={"code"}
+        keyName={"name"}
         hideMultipleDeleteButton={true}
       />
       <FormComponent

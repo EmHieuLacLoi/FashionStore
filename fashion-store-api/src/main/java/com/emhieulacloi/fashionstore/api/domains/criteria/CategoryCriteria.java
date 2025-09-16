@@ -8,5 +8,4 @@ import lombok.Setter;
 public class CategoryCriteria {
     private String name;
     private String description;
-    private Boolean active;
 }
