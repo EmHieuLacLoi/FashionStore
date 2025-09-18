@@ -1,7 +1,10 @@
 package com.emhieulacloi.fashionstore.api.repository;
 
 import com.emhieulacloi.fashionstore.api.base.repository.BaseRepository;
+import com.emhieulacloi.fashionstore.api.domains.criteria.ProductCriteria;
 import com.emhieulacloi.fashionstore.api.domains.criteria.UserCriteria;
+import com.emhieulacloi.fashionstore.api.domains.dto.projection.ProductDTO;
+import com.emhieulacloi.fashionstore.api.domains.dto.projection.UserDTO;
 import com.emhieulacloi.fashionstore.api.domains.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,9 +13,27 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserRepository extends BaseRepository<User, Long, UserCriteria> {
+public interface UserRepository extends BaseRepository<User, Long, UserCriteria, UserDTO> {
     @Query("SELECT g FROM User g ")
     Page<User> findByCriteria(@Param("criteria") UserCriteria criteria, Pageable pageable);
+
+    @Query(value = """
+    SELECT 
+            p.*
+    FROM `users` p 
+    """,
+            countQuery = """
+    SELECT
+            COUNT(*)
+    FROM `users` p
+    """,
+            nativeQuery = true)
+    Page<UserDTO> findAllByCriteria(@Param("criteria") UserCriteria criteria, Pageable pageable);
+
+    @Query(value = """
+    SELECT t.* FROM users t WHERE t.id = :id
+    """, nativeQuery = true)
+    Optional<UserDTO> findByQueryId(Long id);
 
     Optional<User> findOneByPhoneNumber(String number);
 

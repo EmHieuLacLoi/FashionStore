@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OrderItemRepository extends BaseRepository<OrderItem, Long, OrderItemCriteria> {
+public interface OrderItemRepository extends BaseRepository<OrderItem, Long, OrderItemCriteria, OrderItemDTO> {
     @Query("SELECT oi FROM OrderItem oi ")
     Page<OrderItem> findByCriteria(@Param("criteria") OrderItemCriteria criteria, Pageable pageable);
     

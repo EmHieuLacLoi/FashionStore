@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PaymentRepository extends BaseRepository<Payment, Long, PaymentCriteria> {
+public interface PaymentRepository extends BaseRepository<Payment, Long, PaymentCriteria, PaymentDTO> {
     @Query("SELECT p FROM Payment p ")
     Page<Payment> findByCriteria(@Param("criteria") PaymentCriteria criteria, Pageable pageable);
     

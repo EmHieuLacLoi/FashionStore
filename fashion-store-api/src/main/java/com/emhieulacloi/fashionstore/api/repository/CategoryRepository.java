@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CategoryRepository extends BaseRepository<Category, Long, CategoryCriteria> {
+public interface CategoryRepository extends BaseRepository<Category, Long, CategoryCriteria, CategoryDTO> {
     @Query(value = "SELECT * FROM categories g WHERE " +
             "(:#{#criteria.name} IS NULL OR g.name LIKE %:#{#criteria.name}%) AND " +
             "(:#{#criteria.description} IS NULL OR g.description LIKE %:#{#criteria.description}%)",

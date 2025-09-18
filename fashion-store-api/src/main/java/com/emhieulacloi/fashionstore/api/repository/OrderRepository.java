@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface OrderRepository extends BaseRepository<Order, Long, OrderCriteria> {
+public interface OrderRepository extends BaseRepository<Order, Long, OrderCriteria, OrderDTO> {
     @Query("SELECT o FROM Order o ")
     Page<Order> findByCriteria(@Param("criteria") OrderCriteria criteria, Pageable pageable);
     

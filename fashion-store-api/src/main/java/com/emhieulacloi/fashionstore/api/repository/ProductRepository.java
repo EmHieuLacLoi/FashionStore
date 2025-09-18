@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends BaseRepository<Product, Long, ProductCriteria> {
+public interface ProductRepository extends BaseRepository<Product, Long, ProductCriteria, ProductDTO> {
     @Query("SELECT p FROM Product p ")
     Page<Product> findByCriteria(@Param("criteria") ProductCriteria criteria, Pageable pageable);
     
