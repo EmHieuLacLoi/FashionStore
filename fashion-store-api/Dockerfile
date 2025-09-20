@@ -1,5 +1,5 @@
 # Build
-FROM oracle/graalvm-ce:21-lts-ol9 AS builder
+FROM ghcr.io/graalvm/jdk-community:21.0.2-ol9 AS builder
 
 # Folder
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 # Run
-FROM oracle/graalvm-ce:21-lts-ol9 AS runner
+FROM ghcr.io/graalvm/jdk-community:21.0.2-ol9 AS runner
 
 #Config language, timezone, JVM
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
