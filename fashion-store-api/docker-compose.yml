@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   app:
+    container_name: fashion-store-api
     build:
       context: .
       dockerfile: Dockerfile
