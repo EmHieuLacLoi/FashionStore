@@ -23,15 +23,14 @@ ENV JAVA_OPTIONS="-Xms512M -Xmx512M -XX:+UseZGC -XX:+ZGenerational"
 
 # Run install config
 RUN set -eux && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo "$TZ" > /etc/timezone && \
-    microdnf update && \
-    microdnf install -y telnet ca-certificates freetype fontconfig && \
-    microdnf clean all && \
-    mkdir /deployments && \
-    chown 1001 /deployments && \
-    chmod "g+rwX" /deployments && \
-    chown 1001:root /deployments && \
-    echo "securerandom.source=file:/dev/urandom" >> /usr/lib64/graalvm/graalvm-community-java21/lib/security/java.security
+    ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends ca-certificates fontconfig tzdata && \
+        rm -rf /var/lib/apt/lists/* && \
+        mkdir /deployments && \
+        chown 1001 /deployments && \
+        chmod "g+rwX" /deployments && \
+        chown 1001:root /deployments
 
 # Run app
 WORKDIR /app
