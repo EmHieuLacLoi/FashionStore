@@ -9,4 +9,13 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - default
+      - nginx_proxy
     restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
+  nginx_proxy:
+    external: true
