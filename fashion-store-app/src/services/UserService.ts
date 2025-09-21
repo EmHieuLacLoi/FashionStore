@@ -1,24 +1,24 @@
 import axiosInstance from "@services/AxiosInstance";
 
 export const getList = async (data: any) => {
-  const response = await axiosInstance.get("/v1/users", { params: data });
+  const response = await axiosInstance.get("api/v1/users", { params: data });
   return response.data;
 };
 export const create = async (data: any) => {
-  const response = await axiosInstance.post("/v1/users", data);
+  const response = await axiosInstance.post("api/v1/users", data);
   return response.data;
 };
 
 export const update = async (data: any) => {
-  const response = await axiosInstance.put("/v1/users", data);
+  const response = await axiosInstance.put("api/v1/users", data);
   return response.data;
 };
 
 export const deleteData = async (id: number) => {
-  return await axiosInstance.delete(`/v1/users/${id}`);
+  return await axiosInstance.delete(`api/v1/users/${id}`);
 };
 export const deleteMultipleData = async (ids: any) => {
-  return await axiosInstance.delete(`/v1/users`, {
+  return await axiosInstance.delete(`api/v1/users`, {
     data: ids,
   });
 };
