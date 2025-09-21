@@ -64,7 +64,6 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(URL.getFirst()).permitAll()
                         .requestMatchers(HttpMethod.POST, URL.get(1)).permitAll()
                         .requestMatchers(HttpMethod.PUT, URL.get(1)).permitAll()
