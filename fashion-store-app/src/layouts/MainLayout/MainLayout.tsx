@@ -38,6 +38,8 @@ const MainLayout = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const token = getToken();
+  const { cartItems } = useGlobalContext();
+  const totalCartQty = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   useEffect(() => {
     const randomNum = Math.floor(Math.random() * 3) + 1;
@@ -194,7 +196,7 @@ const MainLayout = () => {
                 />
               </Dropdown>
 
-              <Badge count={0} size="small">
+              <Badge count={totalCartQty} size="small">
                 <Button
                   type="text"
                   icon={<ShoppingCartOutlined />}

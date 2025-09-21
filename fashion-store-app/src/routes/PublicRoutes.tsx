@@ -6,6 +6,10 @@ import { loginRoute } from "@routes/modules/LoginRoute";
 import { registerRoute } from "@routes/modules/RegisterRoute";
 import { productPageRoute } from "@routes/modules/ProductPageRoute";
 import { profilePageRoute } from "@routes/modules/ProfileRoute";
+import { cartRoute } from "@routes/modules/CartRoute";
+import { checkoutRoute } from "@routes/modules/CheckoutRoute";
+import { designRoute } from "@routes/modules/DesignRoute";
+import { aboutRoute } from "@routes/modules/AboutRoute";
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -17,6 +21,10 @@ export const publicRoutes: RouteObject[] = [
       ...registerRoute,
       ...productPageRoute,
       ...profilePageRoute,
+      ...cartRoute,
+      ...checkoutRoute,
+      ...designRoute,
+      ...aboutRoute,
     ],
   },
   {

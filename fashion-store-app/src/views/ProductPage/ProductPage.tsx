@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router";
+
 import {
   Layout,
   Card,
@@ -17,7 +19,9 @@ import {
   Checkbox,
   Divider,
   Badge,
+  message,
 } from "antd";
+
 import {
   SearchOutlined,
   ShoppingCartOutlined,
@@ -26,6 +30,7 @@ import {
   AppstoreOutlined,
   BarsOutlined,
 } from "@ant-design/icons";
+import { useGlobalContext } from "../../GlobalContext";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -47,7 +52,13 @@ interface Product {
   inStock: boolean;
 }
 
-const EcommerceProductPage: React.FC = () => {
+interface ProductPageProps {
+  onProductClick?: (productId: number) => void;
+}
+
+const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
+  const navigate = useNavigate();
+  const { addToCart } = useGlobalContext();
   // Mock data
   const allProducts: Product[] = Array.from({ length: 120 }, (_, i) => ({
     id: i + 1,
@@ -166,6 +177,14 @@ const EcommerceProductPage: React.FC = () => {
     return price.toLocaleString("vi-VN") + "đ";
   };
 
+  const handleProductClick = (productId: number) => {
+    if (onProductClick) {
+      onProductClick(productId);
+      return;
+    }
+    navigate(`/products/${productId}`);
+  };
+
   const renderProductCard = (product: Product) => {
     const discount = product.originalPrice
       ? Math.round(
@@ -178,6 +197,8 @@ const EcommerceProductPage: React.FC = () => {
       <Card
         key={product.id}
         hoverable
+        onClick={() => handleProductClick(product.id)}
+        style={{ cursor: "pointer" }}
         cover={
           <div style={{ position: "relative" }}>
             <img
@@ -200,6 +221,7 @@ const EcommerceProductPage: React.FC = () => {
                 type="text"
                 icon={<HeartOutlined />}
                 style={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
           </div>
@@ -210,11 +232,27 @@ const EcommerceProductPage: React.FC = () => {
             type="primary"
             icon={<ShoppingCartOutlined />}
             disabled={!product.inStock}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!product.inStock) return;
+              const key = `${product.id}-SKU-${product.id}`;
+              addToCart({
+                key,
+                productId: product.id,
+                name: product.name,
+                sku: `SKU-${product.id}`,
+                color: "Default",
+                storage: undefined,
+                price: product.price,
+                image: product.image,
+                quantity: 1,
+              });
+              message.success("Đã thêm vào giỏ hàng");
+            }}
           >
             {product.inStock ? "Thêm giỏ hàng" : "Hết hàng"}
           </Button>,
         ]}
-        style={{ height: "100%" }}
       >
         <Card.Meta
           title={
@@ -276,7 +314,12 @@ const EcommerceProductPage: React.FC = () => {
       : product.discount;
 
     return (
-      <Card key={product.id} style={{ marginBottom: 16 }}>
+      <Card
+        key={product.id}
+        style={{ marginBottom: 16, cursor: "pointer" }}
+        hoverable
+        onClick={() => handleProductClick(product.id)}
+      >
         <Row gutter={16} align="middle">
           <Col span={6}>
             <div style={{ position: "relative" }}>
@@ -323,11 +366,31 @@ const EcommerceProductPage: React.FC = () => {
               )}
             </div>
             <Space>
-              <Button icon={<HeartOutlined />} />
+              <Button
+                icon={<HeartOutlined />}
+                onClick={(e) => e.stopPropagation()}
+              />
               <Button
                 type="primary"
                 icon={<ShoppingCartOutlined />}
                 disabled={!product.inStock}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!product.inStock) return;
+                  const key = `${product.id}-SKU-${product.id}`;
+                  addToCart({
+                    key,
+                    productId: product.id,
+                    name: product.name,
+                    sku: `SKU-${product.id}`,
+                    color: "Default",
+                    storage: undefined,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1,
+                  });
+                  message.success("Đã thêm vào giỏ hàng");
+                }}
               >
                 {product.inStock ? "Thêm giỏ hàng" : "Hết hàng"}
               </Button>
@@ -538,4 +601,4 @@ const EcommerceProductPage: React.FC = () => {
   );
 };
 
-export default EcommerceProductPage;
+export default ProductPage;

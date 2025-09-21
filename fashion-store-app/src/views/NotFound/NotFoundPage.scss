@@ -1,0 +1,70 @@
+.not-found-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 48vh;
+  text-align: center;
+  background-color: #f5f5f5;
+  padding: 0 20px;
+
+  .status-code {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #ff4d4f;
+    margin: 0;
+  }
+
+  .message-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem;
+  }
+
+  .message-description {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 500px;
+    margin-bottom: 1.5rem;
+  }
+
+  .back-home-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #1890ff;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    line-height: 1.2;
+
+    &:hover {
+      background-color: #40a9ff;
+      color: #fff;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .not-found-page {
+    .status-code {
+      font-size: 5rem;
+    }
+
+    .message-title {
+      font-size: 1.5rem;
+    }
+
+    .message-description {
+      font-size: 1rem;
+    }
+
+    .back-home-btn {
+      font-size: 0.9rem;
+      padding: 0.6rem 1.2rem;
+    }
+  }
+}

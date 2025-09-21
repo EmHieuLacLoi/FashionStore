@@ -1,0 +1,223 @@
+// ====================================================================
+// ==                DESIGN SYSTEM (Consistent with others)          ==
+// ====================================================================
+// Variables
+$primary-color: #1890ff;
+$danger-color: #ff4d4f;
+$text-color: #262626;
+$text-secondary: #8c8c8c;
+$border-color: #f0f0f0;
+$bg-light: #fafafa;
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.06);
+$shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+$border-radius: 12px;
+$border-radius-small: 8px;
+$spacing-xs: 8px;
+$spacing-sm: 16px;
+$spacing-md: 24px;
+$spacing-lg: 32px;
+
+// Mixins
+@mixin card-shadow {
+  box-shadow: $shadow-light;
+  border: 1px solid $border-color;
+  background-color: #fff;
+}
+
+@mixin hover-effect {
+  transition: all 0.3s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-medium;
+  }
+}
+
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Keyframes
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ====================================================================
+// ==                 CHECKOUT PAGE SPECIFIC STYLES                  ==
+// ====================================================================
+.checkout-page {
+  padding: $spacing-md;
+  background: $bg-light;
+  min-height: 100vh;
+  animation: slideInUp 0.5s ease-out;
+
+  .page-header {
+    margin-bottom: $spacing-lg;
+    padding: 0 $spacing-sm;
+  }
+
+  // --- Payment Details Card (Left side) ---
+  .payment-details-card {
+    border-radius: $border-radius;
+    @include card-shadow;
+
+    .ant-card-body {
+      padding: $spacing-md;
+    }
+
+    .qr-section {
+      text-align: center;
+      padding-right: $spacing-md;
+      border-right: 1px solid $border-color;
+
+      .ant-image-img {
+        border-radius: $border-radius-small;
+        border: 1px solid $border-color;
+        padding: $spacing-xs;
+        margin-bottom: $spacing-sm;
+      }
+
+      .qr-note {
+        font-size: 13px;
+        color: $text-secondary;
+      }
+    }
+
+    .info-section {
+      padding-left: $spacing-md;
+
+      .info-row {
+        @include flex-between;
+        padding: $spacing-sm 0;
+        border-bottom: 1px solid $border-color;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .info-label {
+          color: $text-secondary;
+        }
+
+        .info-value {
+          font-weight: 500;
+          color: $text-color;
+          display: flex;
+          align-items: center;
+          gap: $spacing-xs;
+        }
+
+        .total-amount {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: $danger-color;
+        }
+
+        .transfer-note-guide {
+          font-size: 12px;
+          color: $text-secondary;
+          margin-top: $spacing-xs;
+          display: block;
+          text-align: right;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  // --- Order Summary Card (Right side) ---
+  .order-summary-card {
+    border-radius: $border-radius;
+    @include card-shadow;
+    position: sticky;
+    top: $spacing-md;
+
+    .ant-card-head {
+      border-bottom-color: $border-color;
+    }
+
+    .ant-card-body {
+      padding: $spacing-md;
+    }
+
+    .order-item-list {
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: $spacing-sm;
+      padding-right: $spacing-xs; // for scrollbar
+    }
+
+    .order-item {
+      @include flex-between;
+      margin-bottom: $spacing-sm;
+    }
+
+    .summary-total {
+      @include flex-between;
+      padding-top: $spacing-sm;
+      margin-top: $spacing-sm;
+      border-top: 1px solid $border-color;
+
+      .total-label {
+        font-size: 16px;
+      }
+
+      .total-value {
+        font-size: 20px;
+        color: $danger-color;
+        font-weight: 700;
+      }
+    }
+
+    .action-buttons {
+      margin-top: $spacing-md;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      .confirm-payment-btn {
+        background: linear-gradient(135deg, $primary-color 0%, #40a9ff 100%);
+        border: none;
+        border-radius: $border-radius-small;
+        height: 48px;
+        font-weight: 600;
+        font-size: 16px;
+        @include hover-effect;
+      }
+
+      .back-to-cart-btn {
+        border-radius: $border-radius-small;
+        height: 40px;
+      }
+    }
+  }
+
+  // --- Responsive Design ---
+  @media (max-width: 992px) {
+    // lg breakpoint of Ant Design
+    .payment-details-card {
+      .qr-section {
+        border-right: none;
+        border-bottom: 1px solid $border-color;
+        padding-right: 0;
+        padding-bottom: $spacing-md;
+        margin-bottom: $spacing-md;
+      }
+      .info-section {
+        padding-left: 0;
+      }
+    }
+    .order-summary-card {
+      position: static;
+      margin-top: $spacing-lg;
+    }
+  }
+}

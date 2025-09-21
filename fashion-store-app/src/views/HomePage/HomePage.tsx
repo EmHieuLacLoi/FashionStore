@@ -85,26 +85,32 @@ const HomePage: React.FC = () => {
           Sản phẩm siêu hot
         </Title>
         <Row gutter={[16, 16]}>
-          {Array.from({ length: 4 }).map((_, idx) => (
-            <Col span={6} key={idx}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    alt="product"
-                    src={`https://via.placeholder.com/300x200?text=Product+${
-                      idx + 1
-                    }`}
+          {(() => {
+            const productImages = [
+              "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop", // shirt
+              "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop", // jacket
+              "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop", // shirt alt (repeat)
+              "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop", // jacket alt (repeat)
+            ];
+            return Array.from({ length: 4 }).map((_, idx) => (
+              <Col span={6} key={idx}>
+                <Card
+                  hoverable
+                  cover={
+                    <img
+                      alt="product"
+                      src={productImages[idx % productImages.length]}
+                    />
+                  }
+                >
+                  <Card.Meta
+                    title={`Sản phẩm ${idx + 1}`}
+                    description="Giá: 199.000₫"
                   />
-                }
-              >
-                <Card.Meta
-                  title={`Sản phẩm ${idx + 1}`}
-                  description="Giá: 199.000₫"
-                />
-              </Card>
-            </Col>
-          ))}
+                </Card>
+              </Col>
+            ));
+          })()}
         </Row>
       </section>
 
@@ -113,42 +119,29 @@ const HomePage: React.FC = () => {
           X-Collections
         </Title>
         <Row gutter={[16, 16]}>
-          <Col span={8}>
-            <Card
-              cover={
-                <img
-                  src="https://via.placeholder.com/400x250?text=Best+Sale"
-                  alt="Best Sale"
-                />
-              }
-            >
-              <Card.Meta title="Best Sale" />
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card
-              cover={
-                <img
-                  src="https://via.placeholder.com/400x250?text=X-Socks"
-                  alt="X-Socks"
-                />
-              }
-            >
-              <Card.Meta title="X-Socks" />
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card
-              cover={
-                <img
-                  src="https://via.placeholder.com/400x250?text=X-Underwear"
-                  alt="X-Underwear"
-                />
-              }
-            >
-              <Card.Meta title="X-Underwear" />
-            </Card>
-          </Col>
+          {(() => {
+            const collections = [
+              {
+                title: "Best Sale",
+                img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
+              },
+              {
+                title: "X-Socks",
+                img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
+              },
+              {
+                title: "X-Underwear",
+                img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
+              },
+            ];
+            return collections.map((c) => (
+              <Col span={8} key={c.title}>
+                <Card cover={<img src={c.img} alt={c.title} />}>
+                  <Card.Meta title={c.title} />
+                </Card>
+              </Col>
+            ));
+          })()}
         </Row>
       </section>
 
@@ -157,26 +150,28 @@ const HomePage: React.FC = () => {
           Tin tức mới nhất
         </Title>
         <Row gutter={[16, 16]}>
-          {Array.from({ length: 3 }).map((_, idx) => (
-            <Col span={8} key={idx}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    alt="blog"
-                    src={`https://via.placeholder.com/350x200?text=Blog+${
-                      idx + 1
-                    }`}
+          {(() => {
+            const blogImages = [
+              "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
+              "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
+              "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
+            ];
+            return Array.from({ length: 3 }).map((_, idx) => (
+              <Col span={8} key={idx}>
+                <Card
+                  hoverable
+                  cover={
+                    <img alt="blog" src={blogImages[idx % blogImages.length]} />
+                  }
+                >
+                  <Card.Meta
+                    title={`Bài viết ${idx + 1}`}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                   />
-                }
-              >
-                <Card.Meta
-                  title={`Bài viết ${idx + 1}`}
-                  description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-              </Card>
-            </Col>
-          ))}
+                </Card>
+              </Col>
+            ));
+          })()}
         </Row>
         <Row justify="center" style={{ marginTop: 24 }}>
           <Button type="primary">Xem thêm</Button>
