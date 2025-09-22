@@ -97,5 +97,9 @@
     "delete_single_content": "Bạn có chắc chắn muốn xóa bản ghi này?",
     "cancel": "Hủy",
     "confirm": "Xóa"
-  }
+  },
+  "hot": "Sản phẩm siêu hot",
+  "premium": "Thời trang cao cấp",
+  "trending": "Xu hướng hot",
+  "limited": "Phiên bản giới hạn"
 }

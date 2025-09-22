@@ -36,6 +36,7 @@ import { useGetCategoryList } from "@hooks/CategoryHooks";
 import { useGetProductList } from "@hooks/ProductHooks";
 import type { Category } from "@models/category.interface";
 import type { Product } from "@models/product.interface";
+import { formatPrice } from "@utils/formatPrice";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -115,10 +116,6 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredProducts.slice(startIndex, startIndex + pageSize);
   }, [filteredProducts, currentPage, pageSize]);
-
-  const formatPrice = (price: number) => {
-    return price.toLocaleString("vi-VN") + "đ";
-  };
 
   const handleProductClick = (productId: number) => {
     if (onProductClick) {

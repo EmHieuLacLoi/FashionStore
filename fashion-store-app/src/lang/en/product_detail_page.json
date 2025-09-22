@@ -1,0 +1,35 @@
+{
+  "error": {
+    "product_detail": "Error loading product details"
+  },
+  "alert": {
+    "select_color_size": "Please select color and size"
+  },
+  "message": {
+    "add_to_cart": "Product added to cart",
+    "buy_now": "Product added to cart"
+  },
+  "loading": {
+    "product_detail": "Loading product details"
+  },
+  "home": "Home",
+  "products": "Products",
+  "product": "products",
+  "sold": "Sold",
+  "color": "Color",
+  "size": "Size",
+  "out_of_stock": "Out of stock",
+  "product_out_of_stock": "This product is currently out of stock.",
+  "out_of_stock_message": "Please select a different color/size or contact us for assistance.",
+  "stock_quantity": "Stock quantity",
+  "low_stock": "Low stock",
+  "quantity": "Quantity",
+  "add_to_cart": "Add to cart",
+  "buy_now": "Buy now",
+  "free_shipping": "Free shipping for orders over 500,000 VND",
+  "free_return": "Free returns within 7 days",
+  "description": "Description",
+  "introduction": "Introduction",
+  "reviews": "Reviews ({{count}})",
+  "related_products": "Related products"
+}

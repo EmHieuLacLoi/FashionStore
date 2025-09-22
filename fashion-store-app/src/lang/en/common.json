@@ -97,5 +97,9 @@
     "delete_single_content": "Are you sure you want to delete this record?",
     "cancel": "Cancel",
     "confirm": "Delete"
-  }
+  },
+  "hot": "Hot products",
+  "premium": "Premium Fashion",
+  "trending": "Trending Now",
+  "limited": "Limited Edition"
 }

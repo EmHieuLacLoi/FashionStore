@@ -1,0 +1,35 @@
+{
+  "error": {
+    "product_detail": "Lỗi khi tải thông tin sản phẩm"
+  },
+  "alert": {
+    "select_color_size": "Vui lòng chọn màu và kích thước"
+  },
+  "message": {
+    "add_to_cart": "Đã thêm vào giỏ hàng",
+    "buy_now": "Đã thêm vào giỏ hàng"
+  },
+  "loading": {
+    "product_detail": "Đang tải thông tin sản phẩm"
+  },
+  "home": "Trang chủ",
+  "products": "Sản phẩm",
+  "product": "sản phẩm",
+  "sold": "Đã bán",
+  "color": "Màu sắc",
+  "size": "Kích thước",
+  "out_of_stock": "Hết hàng",
+  "stock_quantity": "Số lượng còn lại",
+  "product_out_of_stock": "Sản phẩm này hiện đã hết hàng.",
+  "out_of_stock_message": "Vui lòng chọn màu/dung lượng khác hoặc liên hệ để được tư vấn.",
+  "low_stock": "Sắp hết hàng",
+  "quantity": "Số lượng",
+  "add_to_cart": "Thêm vào giỏ hàng",
+  "buy_now": "Mua ngay",
+  "free_shipping": "Miễn phí vận chuyển cho đơn hàng từ 500.000đ",
+  "free_return": "Đổi trả miễn phí trong 7 ngày",
+  "description": "Mô tả sản phẩm",
+  "introduction": "Giới thiệu về sản phẩm",
+  "reviews": "Đánh giá ({{count}})",
+  "related_products": "Sản phẩm liên quan"
+}

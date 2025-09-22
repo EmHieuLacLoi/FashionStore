@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Carousel, Row, Col, Card, Typography, Button } from "antd";
 import thumb1 from "@assets/images/thumb_1.png";
 import thumb2 from "@assets/images/thumb_2.jpg";
 import thumb3 from "@assets/images/thumb_3.jpg";
 import "./HomePage.scss";
 import { useTranslation } from "react-i18next";
+import { useGlobalContext } from "../../GlobalContext";
 
 const { Title, Paragraph } = Typography;
 import { useNavigate } from "react-router";
+import { formatPrice } from "@utils/formatPrice";
 
 const HomePage: React.FC = () => {
   const { t } = useTranslation();
+  const { allProducts } = useGlobalContext();
+
+  const randomProducts = useMemo(() => {
+    if (!allProducts || allProducts.length < 4) {
+      return allProducts || [];
+    }
+
+    const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 4);
+  }, [allProducts]);
+
   const navigate = useNavigate();
   const slides = [
     {
@@ -82,30 +95,33 @@ const HomePage: React.FC = () => {
 
       <section style={{ margin: "40px 0" }}>
         <Title level={2} style={{ textAlign: "center" }}>
-          Sản phẩm siêu hot
+          {t("common.hot")}
         </Title>
         <Row gutter={[16, 16]}>
           {(() => {
-            const productImages = [
-              "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop", // shirt
-              "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop", // jacket
-              "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop", // shirt alt (repeat)
-              "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop", // jacket alt (repeat)
-            ];
-            return Array.from({ length: 4 }).map((_, idx) => (
+            return randomProducts.map((product, idx) => (
               <Col span={6} key={idx}>
                 <Card
                   hoverable
+                  className="product-card"
                   cover={
-                    <img
-                      alt="product"
-                      src={productImages[idx % productImages.length]}
-                    />
+                    <div className="product-image-container">
+                      <img
+                        alt="product"
+                        src={product.image_url[0]}
+                        className="product-image"
+                      />
+                    </div>
                   }
+                  onClick={() => navigate(`/products/${product.id}`)}
                 >
                   <Card.Meta
-                    title={`Sản phẩm ${idx + 1}`}
-                    description="Giá: 199.000₫"
+                    title={<div className="product-title">{product.name}</div>}
+                    description={
+                      <div className="product-price">
+                        {formatPrice(product.price)}
+                      </div>
+                    }
                   />
                 </Card>
               </Col>
@@ -122,59 +138,42 @@ const HomePage: React.FC = () => {
           {(() => {
             const collections = [
               {
-                title: "Best Sale",
-                img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
+                title: t("common.premium"),
+                img: allProducts[allProducts.length - 1]?.image_url[0],
+                productId: allProducts[allProducts.length - 1]?.id,
               },
               {
-                title: "X-Socks",
-                img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
+                title: t("common.trending"),
+                img: allProducts[allProducts.length - 2]?.image_url[0],
+                productId: allProducts[allProducts.length - 2]?.id,
               },
               {
-                title: "X-Underwear",
-                img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
+                title: t("common.limited"),
+                img: allProducts[allProducts.length - 3]?.image_url[0],
+                productId: allProducts[allProducts.length - 3]?.id,
               },
             ];
             return collections.map((c) => (
               <Col span={8} key={c.title}>
-                <Card cover={<img src={c.img} alt={c.title} />}>
+                <Card
+                  className="collection-card"
+                  cover={
+                    <div className="collection-image-container">
+                      <img
+                        src={c.img}
+                        alt={c.title}
+                        className="collection-image"
+                      />
+                    </div>
+                  }
+                  hoverable
+                  onClick={() => navigate(`/products/${c.productId}`)}
+                >
                   <Card.Meta title={c.title} />
                 </Card>
               </Col>
             ));
           })()}
-        </Row>
-      </section>
-
-      <section style={{ margin: "40px 0" }}>
-        <Title level={2} style={{ textAlign: "center" }}>
-          Tin tức mới nhất
-        </Title>
-        <Row gutter={[16, 16]}>
-          {(() => {
-            const blogImages = [
-              "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
-              "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
-              "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
-            ];
-            return Array.from({ length: 3 }).map((_, idx) => (
-              <Col span={8} key={idx}>
-                <Card
-                  hoverable
-                  cover={
-                    <img alt="blog" src={blogImages[idx % blogImages.length]} />
-                  }
-                >
-                  <Card.Meta
-                    title={`Bài viết ${idx + 1}`}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                  />
-                </Card>
-              </Col>
-            ));
-          })()}
-        </Row>
-        <Row justify="center" style={{ marginTop: 24 }}>
-          <Button type="primary">Xem thêm</Button>
         </Row>
       </section>
     </div>

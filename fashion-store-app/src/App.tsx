@@ -6,6 +6,7 @@ import ErrorBoundary from "@components/ErrorBoundary/ErrorBoundary";
 import { ConfigProvider } from "antd";
 import LoadingOverlay from "@components/LoadingSpinner";
 import "@ant-design/v5-patch-for-react-19";
+import ScrollToTop from "@components/ScrollToTop";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <ErrorBoundary>
             <GlobalProvider>
               <Suspense fallback={<LoadingOverlay />}>
+                <ScrollToTop />
                 <Routes>
                   {routes.map((route, index) => (
                     <Route

@@ -42,6 +42,7 @@ import type { Product } from "@models/product.interface";
 import type { ProductVariant } from "@models/productVariant.interface";
 import { useGetProductDetail } from "@hooks/ProductHooks";
 import { useTranslation } from "react-i18next";
+import { formatPrice } from "@utils/formatPrice";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -188,10 +189,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       return [];
     }
     return product.image_url as string[];
-  };
-
-  const formatPrice = (price: number) => {
-    return price.toLocaleString("vi-VN") + "đ";
   };
 
   const handleQuantityChange = (value: number | null) => {
