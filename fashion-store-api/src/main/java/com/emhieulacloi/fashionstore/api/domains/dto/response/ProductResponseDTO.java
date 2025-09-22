@@ -18,6 +18,9 @@ public class ProductResponseDTO {
     private String name;
     private String description;
     private BigDecimal price;
+
+    @JsonProperty("original_price")
+    private BigDecimal originalPrice;
     
     @JsonProperty("stock_quantity")
     private Integer stockQuantity;
@@ -27,6 +30,9 @@ public class ProductResponseDTO {
     
     @JsonProperty("category_name")
     private String categoryName;
+
+    @JsonProperty("is_available")
+    private Boolean isAvailable;
     
     @JsonProperty("image_url")
     private String imageUrl;

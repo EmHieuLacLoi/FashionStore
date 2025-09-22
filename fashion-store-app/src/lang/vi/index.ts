@@ -5,6 +5,8 @@ import order from "./order.json";
 import profile from "./profile.json";
 import admin from "./admin.json";
 import category from "./category.json";
+import product_page from "./product_page.json";
+import product_detail_page from "./product_detail_page.json";
 
 export default {
   common,
@@ -14,4 +16,6 @@ export default {
   admin,
   profile,
   category,
+  product_page,
+  product_detail_page,
 };

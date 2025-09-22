@@ -26,6 +26,12 @@ public class Product extends BaseEntity<Long, Product> {
     @Column(name = "price")
     private BigDecimal price;
 
+    @Column(name = "original_price")
+    private BigDecimal originalPrice;
+
+    @Column(name = "is_available")
+    private Boolean isAvailable;
+
     @Column(name = "stock_quantity")
     private Integer stockQuantity;
 

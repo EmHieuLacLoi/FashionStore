@@ -183,6 +183,29 @@ const CheckoutPage: React.FC = () => {
                 disabled={cartItems.length === 0}
                 icon={<CheckCircleOutlined />}
                 onClick={() => {
+                  // Tạo mock order và lưu vào localStorage để hiển thị ở trang Hồ sơ
+                  const mockOrder = {
+                    id: transferNote,
+                    items: cartItems,
+                    total: subtotal,
+                    status: "Đang chờ xác nhận thanh toán",
+                    createdAt: new Date().toISOString(),
+                    paymentMethod: "Chuyển khoản ngân hàng",
+                  };
+
+                  try {
+                    // Lưu đơn gần nhất (giữ tương thích)
+                    localStorage.setItem("lastOrder", JSON.stringify(mockOrder));
+
+                    // Thêm vào danh sách lịch sử đơn hàng
+                    const raw = localStorage.getItem("orders");
+                    const orders = raw ? JSON.parse(raw) : [];
+                    orders.push(mockOrder);
+                    localStorage.setItem("orders", JSON.stringify(orders));
+                  } catch (e) {
+                    // ignore storage errors
+                  }
+
                   message.success(
                     "Cảm ơn bạn! Đơn hàng sẽ được xử lý sau khi chúng tôi nhận được thanh toán."
                   );

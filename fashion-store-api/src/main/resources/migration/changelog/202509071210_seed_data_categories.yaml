@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071210
+      author: vohieu
+      comment: Seed data categories
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO `categories` (`name`, `description`, `created_by`, `updated_by`)
+              SELECT 'Áo phông', 'Áo phông', '1', '1'
+              WHERE NOT EXISTS (
+              SELECT 1 FROM `categories` WHERE `name` = 'Áo phông'
+              );
+        - sql:
+            sql: >
+              INSERT INTO `categories` (`name`, `description`, `created_by`, `updated_by`)
+              SELECT 'Áo polo', 'Áo polo', '1', '1'
+              WHERE NOT EXISTS (
+              SELECT 1 FROM `categories` WHERE `name` = 'Áo polo'
+              );
+        - sql:
+            sql: >
+              INSERT INTO `categories` (`name`, `description`, `created_by`, `updated_by`)
+              SELECT 'Áo sơ mi', 'Áo sơ mi', '1', '1'
+              WHERE NOT EXISTS (
+              SELECT 1 FROM `categories` WHERE `name` = 'Áo sơ mi'
+              );
+        - sql:
+            sql: >
+              INSERT INTO `categories` (`name`, `description`, `created_by`, `updated_by`)
+              SELECT 'Áo khoác', 'Áo khoác', '1', '1'
+              WHERE NOT EXISTS (
+              SELECT 1 FROM `categories` WHERE `name` = 'Áo khoác'
+              );

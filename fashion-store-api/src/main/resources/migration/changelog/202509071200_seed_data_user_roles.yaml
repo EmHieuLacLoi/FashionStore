@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071200
+      author: vohieu
+      comment: Seed data user roles
+      sql: >
+        INSERT INTO `user_roles` (`user_id`, `role_id`, `created_by`, `updated_by`)
+        SELECT '1', '1', '1', '1'
+        WHERE NOT EXISTS (
+        SELECT 1 FROM `user_roles` WHERE `user_id` = '1' AND `role_id` = '1'
+        );

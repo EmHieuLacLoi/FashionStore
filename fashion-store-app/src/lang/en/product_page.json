@@ -1,0 +1,24 @@
+{
+  "error": {
+    "category_list": "Error loading category list",
+    "product_list": "Error loading product list"
+  },
+  "added_to_cart": "Added to cart",
+  "add_to_cart": "Add to cart",
+  "out_of_stock": "Out of stock",
+  "filter": "Filter",
+  "category": "Category",
+  "price_range": "Price range",
+  "clear_filter": "Clear filter",
+  "home": "Home",
+  "products": "Products",
+  "sort_by": "Sort by",
+  "default": "Default",
+  "price_asc": "Price ascending",
+  "price_desc": "Price descending",
+  "name_asc": "Name ascending",
+  "name_desc": "Name descending",
+  "show": "Show",
+  "of": "of",
+  "not_found_product": "Not found product"
+}

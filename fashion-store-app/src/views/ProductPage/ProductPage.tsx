@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import {
@@ -31,26 +31,16 @@ import {
   BarsOutlined,
 } from "@ant-design/icons";
 import { useGlobalContext } from "../../GlobalContext";
+import { useTranslation } from "react-i18next";
+import { useGetCategoryList } from "@hooks/CategoryHooks";
+import { useGetProductList } from "@hooks/ProductHooks";
+import type { Category } from "@models/category.interface";
+import type { Product } from "@models/product.interface";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { Search } = Input;
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviews: number;
-  category: string;
-  brand: string;
-  tags: string[];
-  discount?: number;
-  inStock: boolean;
-}
 
 interface ProductPageProps {
   onProductClick?: (productId: number) => void;
@@ -58,96 +48,58 @@ interface ProductPageProps {
 
 const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
   const navigate = useNavigate();
-  const { addToCart } = useGlobalContext();
-  // Mock data
-  const allProducts: Product[] = Array.from({ length: 120 }, (_, i) => ({
-    id: i + 1,
-    name: `Sản phẩm ${i + 1} - ${
-      [
-        "iPhone 15",
-        "Samsung Galaxy",
-        "Laptop Dell",
-        "Áo thun",
-        "Giày Nike",
-        "Tai nghe Sony",
-      ][i % 6]
-    }`,
-    price: Math.floor(Math.random() * 10000000) + 500000,
-    originalPrice:
-      Math.random() > 0.5
-        ? Math.floor(Math.random() * 15000000) + 1000000
-        : undefined,
-    image: `https://picsum.photos/300/300?random=${i + 1}`,
-    rating: Math.floor(Math.random() * 5) + 1,
-    reviews: Math.floor(Math.random() * 1000) + 10,
-    category: ["Điện thoại", "Laptop", "Thời trang", "Giày dép", "Phụ kiện"][
-      i % 5
-    ],
-    brand: ["Apple", "Samsung", "Dell", "Nike", "Sony", "Adidas"][i % 6],
-    tags: ["Bán chạy", "Giảm giá", "Mới", "Hot"].slice(
-      0,
-      Math.floor(Math.random() * 3) + 1
-    ),
-    discount:
-      Math.random() > 0.6 ? Math.floor(Math.random() * 50) + 5 : undefined,
-    inStock: Math.random() > 0.1,
-  }));
+  const { addToCart, allProducts } = useGlobalContext();
+  const { t } = useTranslation();
 
-  // States
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [sortBy, setSortBy] = useState("default");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-  const [selectedBrand, setSelectedBrand] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000000]);
-  const [minRating, setMinRating] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<number[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
 
-  // Categories and brands for filters
-  const categories = [
-    "Điện thoại",
-    "Laptop",
-    "Thời trang",
-    "Giày dép",
-    "Phụ kiện",
-  ];
-  const brands = ["Apple", "Samsung", "Dell", "Nike", "Sony", "Adidas"];
+  const [categories, setCategories] = useState<Category[]>([]);
+  const { data: categoryData } = useGetCategoryList(
+    {
+      size: 999999999,
+    },
+    {
+      enabled: true,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      onError: (error: any) => {
+        console.log(error);
+        message.error(t("product_page.error.category_list"));
+      },
+    }
+  );
 
-  // Filter and sort products
+  useEffect(() => {
+    setCategories(categoryData?.data?.content);
+  }, [categoryData]);
+
   const filteredProducts = useMemo(() => {
-    let filtered = allProducts.filter((product) => {
+    let filtered = (allProducts ?? []).filter((product) => {
       const matchesSearch = product.name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesCategory =
         selectedCategory.length === 0 ||
-        selectedCategory.includes(product.category);
-      const matchesBrand =
-        selectedBrand.length === 0 || selectedBrand.includes(product.brand);
+        selectedCategory.includes(product.category_id);
       const matchesPrice =
         product.price >= priceRange[0] && product.price <= priceRange[1];
-      const matchesRating = product.rating >= minRating;
 
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesBrand &&
-        matchesPrice &&
-        matchesRating
-      );
+      return matchesSearch && matchesCategory && matchesPrice;
     });
 
-    // Sort products
     switch (sortBy) {
       case "price-asc":
         filtered.sort((a, b) => a.price - b.price);
         break;
       case "price-desc":
         filtered.sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
         break;
       case "name":
         filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -157,17 +109,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
     }
 
     return filtered;
-  }, [
-    allProducts,
-    searchTerm,
-    selectedCategory,
-    selectedBrand,
-    priceRange,
-    minRating,
-    sortBy,
-  ]);
+  }, [allProducts, searchTerm, selectedCategory, priceRange, sortBy]);
 
-  // Paginated products
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredProducts.slice(startIndex, startIndex + pageSize);
@@ -185,13 +128,18 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
     navigate(`/products/${productId}`);
   };
 
+  const showOption = [
+    { value: 12, label: "12" },
+    { value: 24, label: "24" },
+    { value: 48, label: "48" },
+  ];
   const renderProductCard = (product: Product) => {
-    const discount = product.originalPrice
+    const discount = product.original_price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
+          ((product.original_price - product.price) / product.original_price) *
             100
         )
-      : product.discount;
+      : 0;
 
     return (
       <Card
@@ -203,27 +151,12 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
           <div style={{ position: "relative" }}>
             <img
               alt={product.name}
-              src={product.image}
+              src={product.image_url[0]}
               style={{ width: "100%", height: 200, objectFit: "cover" }}
             />
-            {discount && <Badge.Ribbon text={`-${discount}%`} color="red" />}
-            <div
-              style={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-              }}
-            >
-              <Button
-                type="text"
-                icon={<HeartOutlined />}
-                style={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
+            {discount > 0 && (
+              <Badge.Ribbon text={`-${discount}%`} color="red" />
+            )}
           </div>
         }
         actions={[
@@ -231,26 +164,27 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
             key="cart"
             type="primary"
             icon={<ShoppingCartOutlined />}
-            disabled={!product.inStock}
+            disabled={!product.stock_quantity}
             onClick={(e) => {
               e.stopPropagation();
-              if (!product.inStock) return;
+              if (!product.stock_quantity) return;
               const key = `${product.id}-SKU-${product.id}`;
               addToCart({
                 key,
                 productId: product.id,
                 name: product.name,
-                sku: `SKU-${product.id}`,
                 color: "Default",
-                storage: undefined,
+                size: "Default",
                 price: product.price,
-                image: product.image,
+                image: product.image_url[0],
                 quantity: 1,
               });
-              message.success("Đã thêm vào giỏ hàng");
+              message.success(t("product_page.add_to_cart"));
             }}
           >
-            {product.inStock ? "Thêm giỏ hàng" : "Hết hàng"}
+            {product.stock_quantity
+              ? t("product_page.add_to_cart")
+              : t("product_page.out_of_stock")}
           </Button>,
         ]}
       >
@@ -260,44 +194,24 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
               <Text strong ellipsis={{ tooltip: product.name }}>
                 {product.name}
               </Text>
-              <div style={{ marginTop: 4 }}>
-                {product.tags.map((tag) => (
-                  <Tag key={tag} color="blue">
-                    {tag}
-                  </Tag>
-                ))}
-              </div>
             </div>
           }
           description={
             <div>
-              <div style={{ marginBottom: 8 }}>
-                <Rate
-                  disabled
-                  defaultValue={product.rating}
-                  style={{ fontSize: 14 }}
-                />
-                <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
-                  ({product.reviews})
-                </Text>
-              </div>
               <div>
                 <Text strong style={{ color: "#ff4d4f", fontSize: 16 }}>
                   {formatPrice(product.price)}
                 </Text>
-                {product.originalPrice && (
+                {product.original_price && (
                   <Text
                     delete
                     type="secondary"
                     style={{ marginLeft: 8, fontSize: 14 }}
                   >
-                    {formatPrice(product.originalPrice)}
+                    {formatPrice(product.original_price)}
                   </Text>
                 )}
               </div>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {product.brand}
-              </Text>
             </div>
           }
         />
@@ -306,12 +220,12 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
   };
 
   const renderProductList = (product: Product) => {
-    const discount = product.originalPrice
+    const discount = product.original_price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
+          ((product.original_price - product.price) / product.original_price) *
             100
         )
-      : product.discount;
+      : 0;
 
     return (
       <Card
@@ -325,7 +239,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
             <div style={{ position: "relative" }}>
               <img
                 alt={product.name}
-                src={product.image}
+                src={product.image_url[0]}
                 style={{ width: "100%", height: 150, objectFit: "cover" }}
               />
               {discount && <Badge.Ribbon text={`-${discount}%`} color="red" />}
@@ -335,32 +249,16 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
             <Title level={4} ellipsis={{ rows: 2 }}>
               {product.name}
             </Title>
-            <div style={{ marginBottom: 8 }}>
-              {product.tags.map((tag) => (
-                <Tag key={tag} color="blue">
-                  {tag}
-                </Tag>
-              ))}
-            </div>
-            <div style={{ marginBottom: 8 }}>
-              <Rate disabled defaultValue={product.rating} />
-              <Text type="secondary" style={{ marginLeft: 8 }}>
-                ({product.reviews} đánh giá)
-              </Text>
-            </div>
-            <Text type="secondary">
-              {product.brand} - {product.category}
-            </Text>
           </Col>
           <Col span={6} style={{ textAlign: "right" }}>
             <div style={{ marginBottom: 16 }}>
               <Text strong style={{ color: "#ff4d4f", fontSize: 18 }}>
                 {formatPrice(product.price)}
               </Text>
-              {product.originalPrice && (
+              {product.original_price && (
                 <div>
                   <Text delete type="secondary">
-                    {formatPrice(product.originalPrice)}
+                    {formatPrice(product.original_price)}
                   </Text>
                 </div>
               )}
@@ -373,26 +271,27 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
               <Button
                 type="primary"
                 icon={<ShoppingCartOutlined />}
-                disabled={!product.inStock}
+                disabled={!product.stock_quantity}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!product.inStock) return;
+                  if (!product.stock_quantity) return;
                   const key = `${product.id}-SKU-${product.id}`;
                   addToCart({
                     key,
                     productId: product.id,
                     name: product.name,
-                    sku: `SKU-${product.id}`,
                     color: "Default",
-                    storage: undefined,
+                    size: "Default",
                     price: product.price,
-                    image: product.image,
+                    image: product.image_url[0],
                     quantity: 1,
                   });
-                  message.success("Đã thêm vào giỏ hàng");
+                  message.success(t("product_page.added_to_cart"));
                 }}
               >
-                {product.inStock ? "Thêm giỏ hàng" : "Hết hàng"}
+                {product.stock_quantity
+                  ? t("product_page.add_to_cart")
+                  : t("product_page.out_of_stock")}
               </Button>
             </Space>
           </Col>
@@ -411,14 +310,17 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
           <Space direction="vertical" style={{ width: "100%" }} size="large">
             <div>
               <Title level={5}>
-                <FilterOutlined /> Bộ lọc
+                <FilterOutlined /> {t("product_page.filter")}
               </Title>
             </div>
 
             <div>
-              <Text strong>Danh mục</Text>
+              <Text strong>{t("product_page.category")}</Text>
               <Checkbox.Group
-                options={categories}
+                options={(categories || []).map((category) => ({
+                  label: category.name,
+                  value: category.id,
+                }))}
                 value={selectedCategory}
                 onChange={setSelectedCategory}
                 style={{
@@ -429,31 +331,13 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
               />
             </div>
 
-            <Divider />
-
             <div>
-              <Text strong>Thương hiệu</Text>
-              <Checkbox.Group
-                options={brands}
-                value={selectedBrand}
-                onChange={setSelectedBrand}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: 8,
-                }}
-              />
-            </div>
-
-            <Divider />
-
-            <div>
-              <Text strong>Khoảng giá</Text>
+              <Text strong>{t("product_page.price_range")}</Text>
               <Slider
                 range
                 min={0}
-                max={20000000}
-                step={100000}
+                max={1000000}
+                step={10000}
                 value={priceRange}
                 onChange={(value) => setPriceRange(value as [number, number])}
                 tooltip={{
@@ -473,33 +357,26 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
               </div>
             </div>
 
-            <Divider />
-
-            <div>
-              <Text strong>Đánh giá tối thiểu</Text>
-              <div style={{ marginTop: 8 }}>
-                <Rate value={minRating} onChange={setMinRating} allowClear />
-              </div>
-            </div>
-
             <Button
               onClick={() => {
                 setSelectedCategory([]);
-                setSelectedBrand([]);
-                setPriceRange([0, 20000000]);
-                setMinRating(0);
+                setPriceRange([0, 1000000]);
                 setSearchTerm("");
               }}
             >
-              Xóa bộ lọc
+              {t("product_page.clear_filter")}
             </Button>
           </Space>
         </Sider>
 
         <Layout style={{ padding: "0 24px 24px" }}>
           <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>Trang chủ</Breadcrumb.Item>
-            <Breadcrumb.Item>Sản phẩm</Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <a style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+                {t("product_page.home")}
+              </a>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>{t("product_page.products")}</Breadcrumb.Item>
           </Breadcrumb>
 
           <div
@@ -512,35 +389,39 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
           >
             <div>
               <Text>
-                Hiển thị {(currentPage - 1) * pageSize + 1}-
-                {Math.min(currentPage * pageSize, filteredProducts.length)} của{" "}
-                {filteredProducts.length} sản phẩm
+                {t("product_page.show")} {(currentPage - 1) * pageSize + 1}-
+                {Math.min(currentPage * pageSize, filteredProducts.length)}{" "}
+                {t("product_page.of")} {filteredProducts.length}{" "}
+                {t("product_page.products")}
               </Text>
             </div>
 
             <Space>
-              <Text>Sắp xếp theo:</Text>
+              <Text>{t("product_page.sort_by")}</Text>
               <Select
                 value={sortBy}
                 onChange={setSortBy}
                 style={{ width: 150 }}
               >
-                <Option value="default">Mặc định</Option>
-                <Option value="name">Tên A-Z</Option>
-                <Option value="price-asc">Giá thấp đến cao</Option>
-                <Option value="price-desc">Giá cao đến thấp</Option>
-                <Option value="rating">Đánh giá cao nhất</Option>
+                <Option value="default">{t("product_page.default")}</Option>
+                <Option value="name">{t("product_page.name_asc")}</Option>
+                <Option value="price-asc">{t("product_page.price_asc")}</Option>
+                <Option value="price-desc">
+                  {t("product_page.price_desc")}
+                </Option>
               </Select>
 
-              <Text>Hiển thị:</Text>
+              <Text>{t("product_page.show")}:</Text>
               <Select
                 value={pageSize}
                 onChange={setPageSize}
                 style={{ width: 80 }}
               >
-                <Option value={12}>12</Option>
-                <Option value={24}>24</Option>
-                <Option value={48}>48</Option>
+                {showOption.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
               </Select>
 
               <Space.Compact>
@@ -575,7 +456,9 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
 
             {paginatedProducts.length === 0 && (
               <div style={{ textAlign: "center", padding: "50px 0" }}>
-                <Text type="secondary">Không tìm thấy sản phẩm nào</Text>
+                <Text type="secondary">
+                  {t("product_page.not_found_product")}
+                </Text>
               </div>
             )}
 
@@ -587,9 +470,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
                   pageSize={pageSize}
                   onChange={setCurrentPage}
                   showSizeChanger={false}
-                  showQuickJumper
                   showTotal={(total, range) =>
-                    `${range[0]}-${range[1]} của ${total} sản phẩm`
+                    `${range[0]}-${range[1]} ${t(
+                      "product_page.of"
+                    )} ${total} ${t("product_page.products")}`
                   }
                 />
               </div>

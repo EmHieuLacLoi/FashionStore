@@ -6,6 +6,12 @@ export const getList = async (data: any) => {
   });
   return response.data;
 };
+
+export const getDetail = async (id: number) => {
+  const response = await axiosInstance.get(`api/v1/products/${id}`);
+  return response.data;
+};
+
 export const create = async (data: any) => {
   const response = await axiosInstance.post("api/v1/products", data);
   return response.data;

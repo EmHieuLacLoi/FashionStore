@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071211
+      author: vohieu
+      comment: Seed data products
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO `products` (`name`, `description`, `price`, `stock_quantity`, `category_id`, `image_url`, `created_by`, `updated_by`)
+              VALUES
+              ('Áo phông nam Cotton', 'Áo phông nam chất liệu cotton cao cấp, thoáng mát.', 150000, 100, 1, '["category_1/1-1.webp", "category_1/1-2.webp", "category_1/1-3.webp"]', '1', '1'),
+              ('Áo Thun Trơn – Basic Tee', 'Áo Thun Trơn – Basic Tee, màu trắng trơn, dễ phối đồ.', 140000, 120, 1, '["category_1/7_1_hj5oi8.webp", "category_1/6-4_z7a6cg.webp"]', '1', '1'),
+              ('Áo phông oversize', 'Áo phông form rộng, phong cách Hàn Quốc.', 160000, 90, 1, '["category_1/8-1_bj0hx7.webp", "category_1/6-3_vyckfa.webp"]', '1', '1'),
+              ('Áo phông trơn', 'Áo phông trơn nhiều màu sắc, chất liệu cotton mềm.', 135000, 150, 1, '["category_1/7_1_hj5oi8.webp", "category_1/7-3_ooa7fm.webp"]', '1', '1'),
+
+              ('Áo polo nam cổ bẻ', 'Áo polo nam vải cotton pique, thấm hút mồ hôi tốt.', 250000, 75, 2, '["category_2/10-3_rdk4l4.png", "category_2/10-2_ey2opk.png"]', '1', '1'),
+              ('Áo polo kẻ sọc', 'Áo polo nam kẻ sọc ngang, phong cách trẻ trung.', 260000, 65, 2, '["category_2/10-1_ewmxpw.jpg", "category_2/9-4_tb6sr0.png"]', '1', '1'),
+              ('Áo polo slim fit', 'Áo polo form ôm, tôn dáng, nhiều màu lựa chọn.', 255000, 70, 2, '["category_2/2-4_f3avck.webp", "category_2/2-3_srrrrn.webp"]', '1', '1'),
+              ('Áo polo thể thao', 'Áo polo chuyên dụng cho các hoạt động thể thao.', 270000, 95, 2, '["category_2/2-2_i3iis2.webp", "category_2/2-1_x55jvj.webp"]', '1', '1'),
+
+              ('Áo sơ mi trắng công sở', 'Áo sơ mi trắng dài tay, chất liệu vải poplin.', 300000, 50, 3, '["category_3/13-2_jsibll.jpg", "category_3/13-1_dtxq2z.jpg"]', '1', '1'),
+              ('Áo sơ mi denim', 'Áo sơ mi denim nam, phong cách bụi bặm.', 350000, 45, 3, '["category_3/12-3_b76a0h.jpg", "category_3/12-4_ryjv8j.jpg"]', '1', '1'),
+              ('Áo sơ mi cộc tay', 'Áo sơ mi cộc tay nam, phong cách năng động.', 280000, 70, 3, '["category_3/12-2_rh0emj.jpg", "category_3/12-1_uwjii6.jpg"]', '1', '1'),
+              
+              ('Áo khoác đen', 'Áo khoác đen chất liệu nỉ bông dày dặn.', 380000, 60, 4, '["category_4/14-4_amtuwk.jpg", "category_4/15-2_vdrava.webp"]', '1', '1'),
+              ('Áo khoác kaki', 'Áo khoác kaki nam, form dáng chuẩn, dễ phối đồ.', 420000, 45, 4, '["category_4/15-1_tqxwxe.jpg", "category_4/14-1_f46659.jpg"]', '1', '1'),
+              ('Áo khoác cardigan', 'Áo khoác cardigan len mỏng, phù hợp thời tiết se lạnh.', 390000, 35, 4, '["category_4/14-1_f46659.jpg", "category_4/14-3_fgtfvi.jpg"]', '1', '1');

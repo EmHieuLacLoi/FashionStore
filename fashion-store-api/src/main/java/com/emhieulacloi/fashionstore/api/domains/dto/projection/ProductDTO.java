@@ -18,6 +18,9 @@ public interface ProductDTO {
     
     @JsonProperty("price")
     BigDecimal getPrice();
+
+    @JsonProperty("original_price")
+    BigDecimal getOriginalPrice();
     
     @JsonProperty("stock_quantity")
     Integer getStockQuantity();
@@ -30,6 +33,9 @@ public interface ProductDTO {
     
     @JsonProperty("image_url")
     String getImageUrl();
+
+    @JsonProperty("is_available")
+    Boolean getIsAvailable();
     
     @JsonProperty("created_by_id")
     Long getCreatedById();

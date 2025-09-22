@@ -38,45 +38,14 @@ import {
   WarningOutlined,
 } from "@ant-design/icons";
 import { useGlobalContext } from "../../GlobalContext";
+import type { Product } from "@models/product.interface";
+import type { ProductVariant } from "@models/productVariant.interface";
+import { useGetProductDetail } from "@hooks/ProductHooks";
+import { useTranslation } from "react-i18next";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
-const { Option } = Select;
-
-interface ProductVariant {
-  id: string;
-  color: string;
-  colorCode: string;
-  storage?: string;
-  stockQuantity: number;
-  price: number;
-  originalPrice?: number;
-  sku: string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  basePrice: number;
-  images: { [key: string]: string[] }; // images by color
-  rating: number;
-  totalReviews: number;
-  category: string;
-  brand: string;
-  tags: string[];
-  discount?: number;
-  description: string;
-  specifications: { [key: string]: string };
-  features: string[];
-  warranty: string;
-  variants: ProductVariant[];
-  seller: {
-    name: string;
-    rating: number;
-    totalSales: number;
-  };
-}
 
 interface Review {
   id: number;
@@ -98,208 +67,42 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 }) => {
   const navigate = useNavigate();
   const params = useParams();
-  const { addToCart } = useGlobalContext();
+  const { addToCart, cloudinaryUrl, allProducts } = useGlobalContext();
   const resolvedProductId = (productId ?? Number(params.id)) || 1;
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedStorage, setSelectedStorage] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string | null>("");
+  const [selectedSize, setSelectedSize] = useState<string | null>("");
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     null
   );
+  const { t } = useTranslation();
 
-  // Mock product data với variants (memoized to avoid re-creation on each render)
-  const product: Product = useMemo(
-    (): Product => ({
-      id: resolvedProductId,
-      name: `iPhone 15 Pro Max - Chính hãng VN/A`,
-      basePrice: 29990000,
-      images: {
-        "Titan Tự Nhiên": [
-          `https://picsum.photos/600/600?random=${resolvedProductId}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 1}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 2}`,
-        ],
-        "Titan Xanh": [
-          `https://picsum.photos/600/600?random=${resolvedProductId + 10}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 11}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 12}`,
-        ],
-        "Titan Trắng": [
-          `https://picsum.photos/600/600?random=${resolvedProductId + 20}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 21}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 22}`,
-        ],
-        "Titan Đen": [
-          `https://picsum.photos/600/600?random=${resolvedProductId + 30}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 31}`,
-          `https://picsum.photos/600/600?random=${resolvedProductId + 32}`,
-        ],
-      },
-      rating: 4.5,
-      totalReviews: 1284,
-      category: "Điện thoại",
-      brand: "Apple",
-      tags: ["Chính hãng", "Bảo hành 12 tháng", "Freeship"],
-      discount: 9,
-      description: `iPhone 15 Pro Max là chiếc điện thoại cao cấp nhất trong dòng iPhone 15 series với nhiều tính năng đột phá. 
-    Máy sở hữu chip A17 Pro mạnh mẽ, camera chuyên nghiệp với zoom quang học 5x, và thiết kế titanium cao cấp.`,
-      specifications: {
-        "Màn hình": "6.7 inch, Super Retina XDR OLED",
-        Chip: "Apple A17 Pro 6-core",
-        RAM: "8GB",
-        "Camera sau": "48MP chính + 12MP telephoto + 12MP ultrawide",
-        "Camera trước": "12MP TrueDepth",
-        Pin: "4441 mAh",
-        "Hệ điều hành": "iOS 17",
-        "Kết nối": "5G, Wi-Fi 6E, Bluetooth 5.3",
-        "Chất liệu": "Khung titanium, mặt lưng kính",
-      },
-      features: [
-        "Chip A17 Pro với GPU 6-core mạnh mẽ",
-        "Camera telephoto với zoom quang học 5x",
-        "Thiết kế khung titanium siêu nhẹ",
-        "Màn hình Always-On Display",
-        "Sạc nhanh 27W, sạc không dây MagSafe 15W",
-        "Kháng nước IP68",
-      ],
-      warranty: "12 tháng chính hãng Apple Việt Nam",
-      variants: [
-        // Titan Tự Nhiên
-        {
-          id: "natural-256",
-          color: "Titan Tự Nhiên",
-          colorCode: "#F5F5DC",
-          storage: "256GB",
-          stockQuantity: 15,
-          price: 29990000,
-          originalPrice: 32990000,
-          sku: "IP15PM-NAT-256",
-        },
-        {
-          id: "natural-512",
-          color: "Titan Tự Nhiên",
-          colorCode: "#F5F5DC",
-          storage: "512GB",
-          stockQuantity: 8,
-          price: 34990000,
-          originalPrice: 37990000,
-          sku: "IP15PM-NAT-512",
-        },
-        {
-          id: "natural-1tb",
-          color: "Titan Tự Nhiên",
-          colorCode: "#F5F5DC",
-          storage: "1TB",
-          stockQuantity: 3,
-          price: 39990000,
-          originalPrice: 42990000,
-          sku: "IP15PM-NAT-1TB",
-        },
-        // Titan Xanh
-        {
-          id: "blue-256",
-          color: "Titan Xanh",
-          colorCode: "#4682B4",
-          storage: "256GB",
-          stockQuantity: 12,
-          price: 29990000,
-          originalPrice: 32990000,
-          sku: "IP15PM-BLU-256",
-        },
-        {
-          id: "blue-512",
-          color: "Titan Xanh",
-          colorCode: "#4682B4",
-          storage: "512GB",
-          stockQuantity: 0,
-          price: 34990000,
-          originalPrice: 37990000,
-          sku: "IP15PM-BLU-512",
-        },
-        {
-          id: "blue-1tb",
-          color: "Titan Xanh",
-          colorCode: "#4682B4",
-          storage: "1TB",
-          stockQuantity: 5,
-          price: 39990000,
-          originalPrice: 42990000,
-          sku: "IP15PM-BLU-1TB",
-        },
-        // Titan Trắng
-        {
-          id: "white-256",
-          color: "Titan Trắng",
-          colorCode: "#FFFFFF",
-          storage: "256GB",
-          stockQuantity: 20,
-          price: 29990000,
-          originalPrice: 32990000,
-          sku: "IP15PM-WHT-256",
-        },
-        {
-          id: "white-512",
-          color: "Titan Trắng",
-          colorCode: "#FFFFFF",
-          storage: "512GB",
-          stockQuantity: 7,
-          price: 34990000,
-          originalPrice: 37990000,
-          sku: "IP15PM-WHT-512",
-        },
-        {
-          id: "white-1tb",
-          color: "Titan Trắng",
-          colorCode: "#FFFFFF",
-          storage: "1TB",
-          stockQuantity: 2,
-          price: 39990000,
-          originalPrice: 42990000,
-          sku: "IP15PM-WHT-1TB",
-        },
-        // Titan Đen
-        {
-          id: "black-256",
-          color: "Titan Đen",
-          colorCode: "#2F2F2F",
-          storage: "256GB",
-          stockQuantity: 25,
-          price: 29990000,
-          originalPrice: 32990000,
-          sku: "IP15PM-BLK-256",
-        },
-        {
-          id: "black-512",
-          color: "Titan Đen",
-          colorCode: "#2F2F2F",
-          storage: "512GB",
-          stockQuantity: 6,
-          price: 34990000,
-          originalPrice: 37990000,
-          sku: "IP15PM-BLK-512",
-        },
-        {
-          id: "black-1tb",
-          color: "Titan Đen",
-          colorCode: "#2F2F2F",
-          storage: "1TB",
-          stockQuantity: 4,
-          price: 39990000,
-          originalPrice: 42990000,
-          sku: "IP15PM-BLK-1TB",
-        },
-      ],
-      seller: {
-        name: "FPT Shop Official",
-        rating: 4.8,
-        totalSales: 15420,
-      },
-    }),
-    [resolvedProductId]
-  );
+  const { data: productData } = useGetProductDetail(resolvedProductId, {
+    enabled: !!resolvedProductId,
+    onError: () => {
+      message.error(t("product_detail_page.error.product_detail"));
+    },
+  });
 
-  // Mock reviews data
+  const product: Product = useMemo((): Product => {
+    if (!productData?.data) {
+      return {} as Product;
+    }
+    const rawProductData = productData.data;
+
+    const imageUrlsArray: string[] = rawProductData.image_url
+      ? JSON.parse(rawProductData.image_url)
+      : [];
+    const fullImageUrls = imageUrlsArray.map(
+      (publicId: string) => `${cloudinaryUrl}${publicId}`
+    );
+    return {
+      ...rawProductData,
+      image_url: fullImageUrls,
+    };
+  }, [productData, cloudinaryUrl]);
+
   const reviews: Review[] = [
     {
       id: 1,
@@ -330,37 +133,37 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     },
   ];
 
-  // Get unique colors and storages
-  const uniqueColors = useMemo(
-    () => Array.from(new Set(product.variants.map((v) => v.color))),
-    [product]
-  );
-  const getStorageOptions = (): string[] => {
-    if (!selectedColor) return [];
+  const uniqueColors = useMemo(() => {
+    if (!product?.variants) {
+      return [];
+    }
+    return Array.from(new Set(product.variants.map((v: any) => v.color)));
+  }, [product]);
+
+  const getSizeOptions = (): string[] => {
+    if (!product?.variants || !selectedColor) return [];
     return Array.from(
       new Set(
         product.variants
-          .filter((v) => v.color === selectedColor && v.storage != null)
-          .map((v) => v.storage as string)
+          .filter((v: any) => v.color === selectedColor && v.size != null)
+          .map((v: any) => v.size as string)
       )
     );
   };
 
-  // Find current variant
   useEffect(() => {
-    if (selectedColor && selectedStorage) {
+    if (product?.variants && selectedColor && selectedSize) {
       const variant = product.variants.find(
-        (v) => v.color === selectedColor && v.storage === selectedStorage
+        (v: any) => v.color === selectedColor && v.size === selectedSize
       );
       setSelectedVariant(variant || null);
-      setQuantity(1); // Reset quantity when variant changes
-      setSelectedImage(0); // Reset image selection
+      setQuantity(1);
+      setSelectedImage(0);
     } else {
       setSelectedVariant(null);
     }
-  }, [selectedColor, selectedStorage]);
+  }, [selectedColor, selectedSize, product?.variants]);
 
-  // Initialize with first available variant
   useEffect(() => {
     if (!selectedColor && uniqueColors.length > 0) {
       setSelectedColor(uniqueColors[0]);
@@ -368,23 +171,23 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   }, [uniqueColors, selectedColor]);
 
   useEffect(() => {
-    const storageOptions = getStorageOptions();
-    if (selectedColor && !selectedStorage && storageOptions.length > 0) {
-      setSelectedStorage(storageOptions[0]);
+    const sizeOptions = getSizeOptions();
+    if (selectedColor && !selectedSize && sizeOptions.length > 0) {
+      setSelectedSize(sizeOptions[0]);
     } else if (
       selectedColor &&
-      selectedStorage &&
-      !storageOptions.includes(selectedStorage)
+      selectedSize &&
+      !sizeOptions.includes(selectedSize)
     ) {
-      setSelectedStorage(storageOptions[0] || "");
+      setSelectedSize(sizeOptions[0] || "");
     }
-  }, [selectedColor, selectedStorage]);
+  }, [selectedColor, selectedSize]);
 
-  const getCurrentImages = () => {
-    if (selectedColor && product.images[selectedColor]) {
-      return product.images[selectedColor];
+  const getCurrentImages = (): string[] => {
+    if (!product || !product.image_url) {
+      return [];
     }
-    return product.images[uniqueColors[0]] || [];
+    return product.image_url as string[];
   };
 
   const formatPrice = (price: number) => {
@@ -396,7 +199,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       value &&
       value > 0 &&
       selectedVariant &&
-      value <= selectedVariant.stockQuantity
+      value <= selectedVariant.stock_quantity
     ) {
       setQuantity(value);
     }
@@ -404,44 +207,50 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   const handleAddToCart = () => {
     if (!selectedVariant) {
-      alert("Vui lòng chọn màu và dung lượng");
+      alert(t("product_detail_page.alert.select_color_size"));
       return;
     }
-    const key = `${resolvedProductId}-${selectedVariant.sku}`;
-    const image = getCurrentImages()[0];
+    const key = `${resolvedProductId}-${selectedVariant.id}`;
+    const images = getCurrentImages();
+
+    if (images.length === 0) {
+      return;
+    }
+
+    const image = images[0];
     addToCart({
       key,
       productId: resolvedProductId,
-      name: `${product.name} ${
-        selectedStorage ? `- ${selectedStorage}` : ""
-      }`.trim(),
-      sku: selectedVariant.sku,
+      name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ""}`.trim(),
       color: selectedVariant.color,
-      storage: selectedVariant.storage,
-      price: selectedVariant.price,
+      size: selectedVariant.size,
+      price: product.price,
       image,
       quantity,
     });
-    message.success("Đã thêm vào giỏ hàng");
+    message.success(t("product_detail_page.message.add_to_cart"));
   };
 
   const handleBuyNow = () => {
     if (!selectedVariant) {
-      alert("Vui lòng chọn màu và dung lượng");
+      alert(t("product_detail_page.alert.select_color_size"));
       return;
     }
-    const key = `${resolvedProductId}-${selectedVariant.sku}`;
-    const image = getCurrentImages()[0];
+    const key = `${resolvedProductId}-${selectedVariant.id}`;
+    const images = getCurrentImages();
+
+    if (images.length === 0) {
+      return;
+    }
+
+    const image = images[0];
     addToCart({
       key,
       productId: resolvedProductId,
-      name: `${product.name} ${
-        selectedStorage ? `- ${selectedStorage}` : ""
-      }`.trim(),
-      sku: selectedVariant.sku,
+      name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ""}`.trim(),
       color: selectedVariant.color,
-      storage: selectedVariant.storage,
-      price: selectedVariant.price,
+      size: selectedVariant.size,
+      price: product.price,
       image,
       quantity,
     });
@@ -461,11 +270,28 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     navigate("/products");
   };
 
-  const isOutOfStock = selectedVariant?.stockQuantity === 0;
+  const isOutOfStock = selectedVariant?.stock_quantity === 0;
   const isLowStock =
     selectedVariant &&
-    selectedVariant.stockQuantity > 0 &&
-    selectedVariant.stockQuantity <= 5;
+    selectedVariant.stock_quantity > 0 &&
+    selectedVariant.stock_quantity <= 5;
+
+  const randomProducts = useMemo(() => {
+    if (!allProducts || allProducts.length < 4 || !resolvedProductId) {
+      return allProducts || [];
+    }
+
+    const filteredProducts = allProducts.filter(
+      (product) => product.id !== resolvedProductId
+    );
+
+    const shuffled = [...filteredProducts].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 4);
+  }, [allProducts, resolvedProductId]);
+
+  if (!product.id) {
+    return <div>{t("product_detail_page.loading.product_detail")}</div>;
+  }
 
   return (
     <Layout style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
@@ -473,23 +299,29 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         <Breadcrumb style={{ margin: "16px 0" }}>
           <Breadcrumb.Item>
             <a onClick={handleBack} style={{ cursor: "pointer" }}>
-              Trang chủ
+              {t("product_detail_page.home")}
             </a>
           </Breadcrumb.Item>
           <Breadcrumb.Item>
             <a onClick={handleBack} style={{ cursor: "pointer" }}>
-              Sản phẩm
+              {t("product_detail_page.products")}
             </a>
           </Breadcrumb.Item>
-          <Breadcrumb.Item>{product.category}</Breadcrumb.Item>
+          <Breadcrumb.Item>{product.category_name}</Breadcrumb.Item>
           <Breadcrumb.Item>{product.name}</Breadcrumb.Item>
         </Breadcrumb>
 
         <Row gutter={[24, 24]}>
-          {/* Product Images */}
           <Col xs={24} md={10}>
             <Card style={{ padding: 16 }}>
-              <div style={{ marginBottom: 16 }}>
+              <div
+                style={{
+                  marginBottom: 16,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <Image
                   src={getCurrentImages()[selectedImage]}
                   alt={product.name}
@@ -497,7 +329,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 />
               </div>
               <Row gutter={[8, 8]}>
-                {getCurrentImages().map((image, index) => (
+                {getCurrentImages().map((image: string, index: number) => (
                   <Col span={6} key={index}>
                     <img
                       src={image}
@@ -521,7 +353,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             </Card>
           </Col>
 
-          {/* Product Info */}
           <Col xs={24} md={14}>
             <Card>
               <Space
@@ -529,42 +360,30 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 size="middle"
                 style={{ width: "100%" }}
               >
-                {/* Title and Rating */}
                 <div>
                   <Title level={2} style={{ marginBottom: 8 }}>
                     {product.name}
-                    {selectedStorage && ` ${selectedStorage}`}
+                    {selectedSize && ` ${selectedSize}`}
                   </Title>
                   <Space>
-                    <Rate disabled value={product.rating} allowHalf />
-                    <Text>({product.totalReviews} đánh giá)</Text>
-                    <Divider type="vertical" />
-                    <Text type="secondary">Đã bán 2.5k</Text>
+                    <Text type="secondary">
+                      {t("product_detail_page.sold")}{" "}
+                      {Math.floor(Math.random() * 100)}
+                    </Text>
                   </Space>
-                  <div style={{ marginTop: 8 }}>
-                    {product.tags.map((tag) => (
-                      <Tag key={tag} color="blue">
-                        {tag}
-                      </Tag>
-                    ))}
-                  </div>
                 </div>
 
-                <Divider />
-
-                {/* Color Selection */}
                 <div>
                   <Text strong style={{ marginBottom: 12, display: "block" }}>
-                    Màu sắc: {selectedColor}
+                    {t("product_detail_page.color")}: {selectedColor}
                   </Text>
                   <Space wrap>
                     {uniqueColors.map((color) => {
-                      const colorVariant = product.variants.find(
-                        (v) => v.color === color
-                      );
                       const totalStock = product.variants
-                        .filter((v) => v.color === color)
-                        .reduce((sum, v) => sum + v.stockQuantity, 0);
+                        ? product.variants
+                            .filter((v) => v.color === color)
+                            .reduce((sum, v) => sum + v.stock_quantity, 0)
+                        : 0;
 
                       return (
                         <div key={color} style={{ position: "relative" }}>
@@ -606,7 +425,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                                 fontSize: 10,
                               }}
                             >
-                              Hết hàng
+                              {t("product_detail_page.out_of_stock")}
                             </div>
                           )}
                         </div>
@@ -615,23 +434,21 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   </Space>
                 </div>
 
-                {/* Storage Selection */}
                 {selectedColor && (
                   <div>
                     <Text strong style={{ marginBottom: 12, display: "block" }}>
-                      Dung lượng:
+                      {t("product_detail_page.size")}:
                     </Text>
                     <Space wrap>
-                      {getStorageOptions().map((storage) => {
+                      {getSizeOptions().map((size) => {
                         const variant = product.variants.find(
-                          (v) =>
-                            v.color === selectedColor && v.storage === storage
+                          (v) => v.color === selectedColor && v.size === size
                         );
-                        const isSelected = selectedStorage === storage;
-                        const stockEmpty = variant?.stockQuantity === 0;
+                        const isSelected = selectedSize === size;
+                        const stockEmpty = variant?.stock_quantity === 0;
 
                         return (
-                          <div key={storage} style={{ position: "relative" }}>
+                          <div key={size} style={{ position: "relative" }}>
                             <Button
                               type={isSelected ? "primary" : "default"}
                               style={{
@@ -647,11 +464,11 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                                 opacity: stockEmpty ? 0.5 : 1,
                               }}
                               onClick={() =>
-                                !stockEmpty && setSelectedStorage(storage)
+                                !stockEmpty && setSelectedSize(size)
                               }
                               disabled={stockEmpty}
                             >
-                              <Text strong>{storage}</Text>
+                              <Text strong>{size}</Text>
                             </Button>
                             {stockEmpty && (
                               <div
@@ -667,7 +484,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                                   fontSize: 10,
                                 }}
                               >
-                                Hết hàng
+                                {t("product_detail_page.out_of_stock")}
                               </div>
                             )}
                           </div>
@@ -677,9 +494,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   </div>
                 )}
 
-                <Divider />
-
-                {/* Price */}
                 {selectedVariant && (
                   <div
                     style={{
@@ -690,42 +504,37 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   >
                     <Space align="baseline">
                       <Title level={2} style={{ color: "#ff4d4f", margin: 0 }}>
-                        {formatPrice(selectedVariant.price)}
+                        {formatPrice(product.price)}
                       </Title>
-                      {selectedVariant.originalPrice && (
+                      {product.original_price && (
                         <>
                           <Text
                             delete
                             type="secondary"
                             style={{ fontSize: 16 }}
                           >
-                            {formatPrice(selectedVariant.originalPrice)}
+                            {formatPrice(product.original_price)}
                           </Text>
                           <Badge
                             count={`-${Math.round(
-                              (1 -
-                                selectedVariant.price /
-                                  selectedVariant.originalPrice) *
-                                100
+                              (1 - product.price / product.original_price) * 100
                             )}%`}
                             style={{ backgroundColor: "#ff4d4f" }}
                           />
                         </>
                       )}
                     </Space>
-                    <div style={{ marginTop: 8 }}>
-                      <Text type="secondary">SKU: {selectedVariant.sku}</Text>
-                    </div>
                   </div>
                 )}
 
-                {/* Stock Status */}
                 {selectedVariant && (
                   <div>
                     {isOutOfStock && (
                       <Alert
-                        message="Sản phẩm tạm hết hàng"
-                        description="Sản phẩm này hiện đã hết hàng. Vui lòng chọn màu/dung lượng khác hoặc liên hệ để được tư vấn."
+                        message={t("product_detail_page.product_out_of_stock")}
+                        description={t(
+                          "product_detail_page.out_of_stock_message"
+                        )}
                         type="error"
                         showIcon
                         icon={<WarningOutlined />}
@@ -735,24 +544,29 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     {!isOutOfStock && (
                       <>
                         <div style={{ marginBottom: 16 }}>
-                          <Text>Số lượng còn lại: </Text>
+                          <Text>
+                            {t("product_detail_page.stock_quantity")}:{" "}
+                          </Text>
                           <Text
                             strong
                             style={{
                               color: isLowStock ? "#faad14" : "#52c41a",
                             }}
                           >
-                            {selectedVariant.stockQuantity} sản phẩm
+                            {selectedVariant.stock_quantity}{" "}
+                            {t("product_detail_page.product")}
                           </Text>
                           {isLowStock && (
                             <Tag color="orange" style={{ marginLeft: 8 }}>
-                              Sắp hết hàng
+                              {t("product_detail_page.low_stock")}
                             </Tag>
                           )}
                         </div>
 
                         <div>
-                          <Text style={{ marginRight: 16 }}>Số lượng:</Text>
+                          <Text style={{ marginRight: 16 }}>
+                            {t("product_detail_page.quantity")}:
+                          </Text>
                           <Space>
                             <Button
                               icon={<MinusOutlined />}
@@ -762,7 +576,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                             />
                             <InputNumber
                               min={1}
-                              max={selectedVariant.stockQuantity}
+                              max={selectedVariant.stock_quantity}
                               value={quantity}
                               onChange={handleQuantityChange}
                               style={{ width: 80 }}
@@ -772,7 +586,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                               size="small"
                               onClick={() => handleQuantityChange(quantity + 1)}
                               disabled={
-                                quantity >= selectedVariant.stockQuantity
+                                quantity >= selectedVariant.stock_quantity
                               }
                             />
                           </Space>
@@ -782,7 +596,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   </div>
                 )}
 
-                {/* Action Buttons */}
                 <Space size="large" style={{ width: "100%" }}>
                   <Button
                     type="primary"
@@ -792,7 +605,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     style={{ flex: 1, height: 50 }}
                     disabled={isOutOfStock || !selectedVariant}
                   >
-                    Thêm vào giỏ hàng
+                    {t("product_detail_page.add_to_cart")}
                   </Button>
                   <Button
                     type="primary"
@@ -802,21 +615,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     style={{ flex: 1, height: 50 }}
                     disabled={isOutOfStock || !selectedVariant}
                   >
-                    Mua ngay
+                    {t("product_detail_page.buy_now")}
                   </Button>
-                  <Button
-                    size="large"
-                    icon={<HeartOutlined />}
-                    style={{ height: 50 }}
-                  />
-                  <Button
-                    size="large"
-                    icon={<ShareAltOutlined />}
-                    style={{ height: 50 }}
-                  />
                 </Space>
 
-                {/* Shipping and Warranty Info */}
                 <Card size="small" style={{ backgroundColor: "#f6ffed" }}>
                   <Space
                     direction="vertical"
@@ -825,15 +627,11 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   >
                     <Space>
                       <TruckOutlined style={{ color: "#52c41a" }} />
-                      <Text>Miễn phí vận chuyển cho đơn hàng từ 500.000đ</Text>
-                    </Space>
-                    <Space>
-                      <SafetyOutlined style={{ color: "#52c41a" }} />
-                      <Text>{product.warranty}</Text>
+                      <Text>{t("product_detail_page.free_shipping")}</Text>
                     </Space>
                     <Space>
                       <ReloadOutlined style={{ color: "#52c41a" }} />
-                      <Text>Đổi trả miễn phí trong 7 ngày</Text>
+                      <Text>{t("product_detail_page.free_return")}</Text>
                     </Space>
                   </Space>
                 </Card>
@@ -842,68 +640,32 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           </Col>
         </Row>
 
-        {/* Product Details Tabs */}
         <Row style={{ marginTop: 24 }}>
           <Col span={24}>
             <Card>
               <Tabs defaultActiveKey="1">
-                <TabPane tab="Mô tả sản phẩm" key="1">
+                <TabPane tab={t("product_detail_page.description")} key="1">
                   <div>
-                    <Title level={4}>Giới thiệu về {product.name}</Title>
+                    <Title level={4}>
+                      {t("product_detail_page.introduction")}
+                    </Title>
                     <Paragraph>{product.description}</Paragraph>
-
-                    <Title level={4}>Tính năng nổi bật</Title>
-                    <List
-                      dataSource={product.features}
-                      renderItem={(feature) => (
-                        <List.Item>
-                          <Space>
-                            <CheckCircleOutlined style={{ color: "#52c41a" }} />
-                            <Text>{feature}</Text>
-                          </Space>
-                        </List.Item>
-                      )}
-                    />
                   </div>
                 </TabPane>
 
-                <TabPane tab="Thông số kỹ thuật" key="2">
-                  <Row gutter={[16, 16]}>
-                    {Object.entries(product.specifications).map(
-                      ([key, value]) => (
-                        <Col span={12} key={key}>
-                          <Card size="small">
-                            <Row>
-                              <Col span={8}>
-                                <Text strong>{key}:</Text>
-                              </Col>
-                              <Col span={16}>
-                                <Text>{value}</Text>
-                              </Col>
-                            </Row>
-                          </Card>
-                        </Col>
-                      )
-                    )}
-                  </Row>
-                </TabPane>
-
-                <TabPane tab={`Đánh giá (${product.totalReviews})`} key="3">
+                <TabPane
+                  tab={t("product_detail_page.reviews", {
+                    count: 2,
+                  })}
+                  key="3"
+                >
                   <Row gutter={[24, 24]}>
                     <Col xs={24} md={8}>
                       <Card>
                         <div style={{ textAlign: "center" }}>
-                          <Title
-                            level={2}
-                            style={{ color: "#faad14", marginBottom: 8 }}
-                          >
-                            {product.rating}/5
-                          </Title>
-                          <Rate disabled value={product.rating} allowHalf />
+                          <Rate disabled value={2} allowHalf />
                           <div style={{ marginTop: 8 }}>
-                            <Text type="secondary">
-                              {product.totalReviews} đánh giá
-                            </Text>
+                            <Text type="secondary">2 đánh giá</Text>
                           </div>
                         </div>
 
@@ -998,42 +760,33 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           </Col>
         </Row>
 
-        {/* Related Products */}
         <Row style={{ marginTop: 24 }}>
           <Col span={24}>
             <Card>
-              <Title level={3}>Sản phẩm liên quan</Title>
+              <Title level={3}>
+                {t("product_detail_page.related_products")}
+              </Title>
               <Row gutter={[16, 16]}>
-                {Array.from({ length: 4 }, (_, i) => (
-                  <Col key={i} xs={12} sm={8} md={6}>
+                {randomProducts.map((product: Product, index: number) => (
+                  <Col key={index} xs={12} sm={8} md={6}>
                     <Card
                       hoverable
                       cover={
                         <img
-                          alt={`Related product ${i + 1}`}
-                          src={`https://picsum.photos/200/200?random=${
-                            resolvedProductId + i + 10
-                          }`}
+                          alt={product.name}
+                          src={product.image_url[0]}
                           style={{ height: 200, objectFit: "cover" }}
                         />
                       }
+                      onClick={() => navigate(`/products/${product.id}`)}
                     >
                       <Card.Meta
-                        title={`Sản phẩm liên quan ${i + 1}`}
+                        title={product.name}
                         description={
                           <div>
                             <Text strong style={{ color: "#ff4d4f" }}>
-                              {formatPrice(
-                                Math.floor(Math.random() * 5000000) + 1000000
-                              )}
+                              {formatPrice(product.price)}
                             </Text>
-                            <div style={{ marginTop: 4 }}>
-                              <Rate
-                                disabled
-                                value={4 + Math.random()}
-                                style={{ fontSize: 12 }}
-                              />
-                            </div>
                           </div>
                         }
                       />

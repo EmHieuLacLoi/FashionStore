@@ -1,4 +1,10 @@
-import { getList, create, update, deleteData } from "@services/ProductService";
+import {
+  getList,
+  create,
+  update,
+  deleteData,
+  getDetail,
+} from "@services/ProductService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const ProductServerStateKeysEnum = {
@@ -9,6 +15,14 @@ export const useGetProductList = (params: any, config: object): any => {
   return useQuery({
     queryKey: [ProductServerStateKeysEnum.Items, params],
     queryFn: () => getList(params),
+    ...config,
+  });
+};
+
+export const useGetProductDetail = (id: number, config: object): any => {
+  return useQuery({
+    queryKey: [ProductServerStateKeysEnum.Items, id],
+    queryFn: () => getDetail(id),
     ...config,
   });
 };

@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071311
+      author: vohieu
+      comment: Create table reviews
+      sql: >
+        CREATE TABLE IF NOT EXISTS `reviews` (
+            `id` bigint NOT NULL AUTO_INCREMENT,
+            `product_id` bigint NOT NULL,
+            `customer_id` bigint NOT NULL,
+            `comment` text NOT NULL,
+            `created_by` int DEFAULT NULL,
+            `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_by` int DEFAULT NULL,
+            `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`)
+        );

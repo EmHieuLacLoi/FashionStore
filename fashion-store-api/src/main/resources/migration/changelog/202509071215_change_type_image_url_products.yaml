@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071215
+      author: vohieu
+      comment: Change type image_url products
+      sql: >
+        ALTER TABLE `products` 
+        CHANGE COLUMN `image_url` `image_url` TEXT NULL DEFAULT NULL;

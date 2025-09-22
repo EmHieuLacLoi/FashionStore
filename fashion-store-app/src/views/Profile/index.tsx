@@ -40,6 +40,7 @@ const UserProfileForm = () => {
   const updateMutation = useUpdate();
 
   const [userData, setUserData] = useState<any | null>(null);
+  const [orders, setOrders] = useState<any[]>([]);
 
   const { data, error } = useGetUserInfo({
     refetchOnWindowFocus: false,
@@ -60,6 +61,73 @@ const UserProfileForm = () => {
       form.setFieldsValue(userData);
     }
   }, [form, userData]);
+
+  // Load lịch sử đơn hàng (mock) từ localStorage
+  useEffect(() => {
+    try {
+      const listRaw = localStorage.getItem("orders");
+      const list = listRaw ? JSON.parse(listRaw) : [];
+
+      // Tương thích dữ liệu cũ nếu chỉ có lastOrder
+      if (!list?.length) {
+        const lastRaw = localStorage.getItem("lastOrder");
+        if (lastRaw) {
+          const last = JSON.parse(lastRaw);
+          setOrders([last]);
+          localStorage.setItem("orders", JSON.stringify([last]));
+          return;
+        }
+      }
+
+      setOrders(Array.isArray(list) ? list : []);
+    } catch (e) {
+      setOrders([]);
+    }
+  }, []);
+
+  // Mô phỏng cập nhật trạng thái theo thời gian
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOrders((prev) => {
+        if (!prev || !prev.length) return prev;
+        const now = Date.now();
+        let changed = false;
+
+        const updated = prev.map((o) => {
+          const createdAt = new Date(o.createdAt).getTime();
+          const diffSec = Math.max(0, Math.floor((now - createdAt) / 1000));
+
+          let nextStatus = o.status;
+          if (diffSec < 10) nextStatus = "Đang chờ xác nhận thanh toán";
+          else if (diffSec < 20) nextStatus = "Đang xử lý";
+          else if (diffSec < 30) nextStatus = "Đã xác nhận";
+          else nextStatus = "Đã giao";
+
+          if (nextStatus !== o.status) {
+            changed = true;
+            return { ...o, status: nextStatus };
+          }
+          return o;
+        });
+
+        if (changed) {
+          try {
+            localStorage.setItem("orders", JSON.stringify(updated));
+            // Cập nhật lastOrder = đơn mới nhất theo createdAt để tương thích
+            const latest = [...updated].sort(
+              (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )[0];
+            if (latest) localStorage.setItem("lastOrder", JSON.stringify(latest));
+          } catch (e) {
+            // ignore
+          }
+        }
+        return changed ? updated : prev;
+      });
+    }, 3000); // cập nhật mỗi 3 giây để dễ quan sát trong demo
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -433,6 +501,78 @@ const UserProfileForm = () => {
             </div>
           )}
         </Form>
+      </Card>
+
+      {/* Lịch sử đơn hàng */}
+      <Card className="order-status-card" style={{ marginTop: 24 }}>
+        <Title level={4} style={{ marginBottom: 16 }}>
+          Lịch sử đơn hàng
+        </Title>
+        {orders && orders.length > 0 ? (
+          <div className="order-history-list">
+            {[...orders]
+              .sort(
+                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              )
+              .map((order) => (
+                <Card
+                  key={order.id}
+                  size="small"
+                  style={{ marginBottom: 12 }}
+                  title={
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span>
+                        <Text strong>Mã đơn:</Text> <Text code>{order.id}</Text>
+                      </span>
+                      <span>
+                        <Text strong>Trạng thái:</Text> <Text>{order.status}</Text>
+                      </span>
+                    </div>
+                  }
+                >
+                  <Row gutter={[16, 8]}>
+                    <Col xs={24} md={12}>
+                      <Text strong>Hình thức thanh toán:</Text> <Text>{order.paymentMethod}</Text>
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Text strong>Thời gian:</Text>{" "}
+                      <Text>{new Date(order.createdAt).toLocaleString("vi-VN")}</Text>
+                    </Col>
+                    <Col xs={24}>
+                      <Divider style={{ margin: "8px 0" }} />
+                    </Col>
+                    <Col xs={24}>
+                      <Text strong>Sản phẩm:</Text>
+                      <div style={{ marginTop: 8 }}>
+                        {(order.items || []).map((it: any) => (
+                          <div
+                            key={`${it.key}-${it.name}`}
+                            style={{ display: "flex", justifyContent: "space-between", gap: 8 }}
+                          >
+                            <Text>
+                              {it.name} <Text type="secondary">x{it.quantity}</Text>
+                            </Text>
+                            <Text strong>
+                              {(it.price * it.quantity).toLocaleString("vi-VN")}đ
+                            </Text>
+                          </div>
+                        ))}
+                      </div>
+                    </Col>
+                    <Col xs={24}>
+                      <Divider style={{ margin: "8px 0" }} />
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <Text strong>Tổng cộng</Text>
+                        <Text strong>{(order.total || 0).toLocaleString("vi-VN")}đ</Text>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card>
+              ))}
+          </div>
+        ) : (
+          <Text type="secondary">Chưa có đơn hàng.</Text>
+        )}
       </Card>
     </div>
   );

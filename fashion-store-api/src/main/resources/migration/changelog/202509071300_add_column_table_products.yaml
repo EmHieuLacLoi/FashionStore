@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071300
+      author: vohieu
+      comment: Add column to table products
+      sql: >
+        ALTER TABLE `products`
+        ADD COLUMN `original_price` DECIMAL(10, 2) DEFAULT NULL,
+        ADD COLUMN `is_available` TINYINT(1) NOT NULL DEFAULT 1;

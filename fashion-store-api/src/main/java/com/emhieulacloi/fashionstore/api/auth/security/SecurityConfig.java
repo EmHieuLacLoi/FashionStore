@@ -44,7 +44,14 @@ public class SecurityConfig {
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
-    private static final List<String> URL = List.of("/api/v1/auth/**", "/api/v1/users/**", "/api/v1/emails");
+    private static final List<String> URL =
+            List.of("/api/v1/auth/**",
+                    "/api/v1/users/**",
+                    "/api/v1/emails/**",
+                    "/api/v1/products/**",
+                    "/api/v1/categories/**",
+                    "/api/v1/product_variants/**"
+            );
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -64,9 +71,11 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/v1/emails/**").permitAll()
                         .requestMatchers(URL.getFirst()).permitAll()
                         .requestMatchers(URL.get(2)).permitAll()
+                        .requestMatchers(URL.get(3)).permitAll()
+                        .requestMatchers(URL.get(4)).permitAll()
+                        .requestMatchers(URL.get(5)).permitAll()
                         .requestMatchers(HttpMethod.POST, URL.get(1)).permitAll()
                         .requestMatchers(HttpMethod.PUT, URL.get(1)).permitAll()
 

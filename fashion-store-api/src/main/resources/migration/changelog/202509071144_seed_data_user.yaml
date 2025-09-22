@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071144
+      author: vohieu
+      comment: Seed data user
+      sql: >
+        INSERT INTO `user` (`username`, `email`, `password`, `full_name`, `phone_number`, `status`, `address`, `created_by`, `updated_by`)
+        SELECT 'admin', 'vohieu972003@gmail.com', '$2a$10$MK8tQqC7KhtqJh75dYceFO3TY6fM81mPsRkr0.R.WN0mIt4xrA4Ju', 'Admin', '0945941389', '1', 'Viet Nam', '1', '1'
+        WHERE NOT EXISTS (
+        SELECT 1 FROM `user` WHERE `username` = 'admin'
+        );

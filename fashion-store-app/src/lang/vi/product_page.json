@@ -1,0 +1,24 @@
+{
+  "error": {
+    "category_list": "Lỗi khi tải danh sách danh mục",
+    "product_list": "Lỗi khi tải danh sách sản phẩm"
+  },
+  "added_to_cart": "Đã thêm vào giỏ hàng",
+  "add_to_cart": "Thêm vào giỏ hàng",
+  "out_of_stock": "Hết hàng",
+  "filter": "Bộ lọc",
+  "category": "Danh mục",
+  "price_range": "Khoảng giá",
+  "clear_filter": "Xóa bộ lọc",
+  "home": "Trang chủ",
+  "products": "Sản phẩm",
+  "sort_by": "Sắp xếp theo",
+  "default": "Mặc định",
+  "price_asc": "Giá tăng dần",
+  "price_desc": "Giá giảm dần",
+  "name_asc": "Tên tăng dần",
+  "name_desc": "Tên giảm dần",
+  "show": "Hiển thị",
+  "of": "của",
+  "not_found_product": "Không tìm thấy sản phẩm nào"
+}

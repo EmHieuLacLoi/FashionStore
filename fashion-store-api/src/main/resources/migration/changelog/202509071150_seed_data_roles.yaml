@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071150
+      author: vohieu
+      comment: Seed data roles
+      changes:
+          - sql:
+              sql: >
+                INSERT INTO `roles` (`name`, `description`, `created_by`, `updated_by`)
+                SELECT 'ROLE_ADMIN', 'ADMIN', '1', '1'
+                WHERE NOT EXISTS (
+                SELECT 1 FROM `roles` WHERE `name` = 'ROLE_ADMIN'
+                );
+          - sql:
+              sql: >
+                INSERT INTO `roles` (`name`, `description`, `created_by`, `updated_by`)
+                SELECT 'ROLE_USER', 'USER', '1', '1'
+                WHERE NOT EXISTS (
+                SELECT 1 FROM `roles` WHERE `name` = 'ROLE_USER'
+                );

@@ -32,6 +32,10 @@ public class ProductRequestDTO {
     @JsonProperty("price")
     private BigDecimal price;
 
+    @DecimalMin(value = "0.0", message = "Original price must be greater than 0")
+    @JsonProperty("original_price")
+    private BigDecimal originalPrice;
+
     @NotNull(message = "Stock quantity is required")
     @Min(value = 0, message = "Stock quantity cannot be negative")
     @JsonProperty("stock_quantity")
@@ -43,6 +47,9 @@ public class ProductRequestDTO {
     @JsonProperty("image_url")
     @Size(max = 500, message = "Image URL must not exceed 500 characters")
     private String imageUrl;
+
+    @JsonProperty("is_available")
+    private Boolean isAvailable;
 
     @JsonProperty("variants")
     private List<ProductVariantRequestDTO> variants;
