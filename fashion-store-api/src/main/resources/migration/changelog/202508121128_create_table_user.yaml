@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202508121128
+      author: vohieu
+      comment: Create table user
+      sql: >
+        CREATE TABLE IF NOT EXISTS `user` (
+            `id` bigint NOT NULL AUTO_INCREMENT,
+            `username` varchar(50) NOT NULL,
+            `email` varchar(255) DEFAULT NULL,
+            `password` varchar(255) DEFAULT NULL,
+            `full_name` varchar(255) DEFAULT NULL,
+            `phone_number` varchar(10) DEFAULT NULL,
+            `status` int DEFAULT '1',
+            `address` varchar(255) DEFAULT NULL,
+            `created_by` int DEFAULT NULL,
+            `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_by` int DEFAULT NULL,
+            `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`)
+        );
