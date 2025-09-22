@@ -116,12 +116,12 @@ const CartPage: React.FC = () => {
                           </Title>
                           <Space direction="vertical" size={4}>
                             <Text type="secondary" className="item-sku">
-                              SKU: {item.sku}
+                              SKU: {item.productId}
                             </Text>
                             <div className="item-variants">
                               <Tag color="blue">{item.color}</Tag>
-                              {item.storage && (
-                                <Tag color="green">{item.storage}</Tag>
+                              {item.size && (
+                                <Tag color="green">{item.size}</Tag>
                               )}
                             </div>
                           </Space>
