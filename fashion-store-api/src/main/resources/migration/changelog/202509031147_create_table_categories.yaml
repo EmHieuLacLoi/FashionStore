@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509031147
+      author: vohieu
+      comment: Create table categories
+      sql: >     
+        CREATE TABLE IF NOT EXISTS categories (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `name` VARCHAR(100) NOT NULL,
+            `description` TEXT,
+            `created_by` int DEFAULT NULL,
+        	`created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+        	`updated_by` int DEFAULT NULL,
+        	`updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        	 UNIQUE KEY `name_UNIQUE` (`name`)
+        );

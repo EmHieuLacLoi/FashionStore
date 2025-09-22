@@ -14,7 +14,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     
     @Override
-    public String sendEmail(EmailRequestDTO emailRequestDTO) {
+    public Integer sendEmail(EmailRequestDTO emailRequestDTO) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("vohieu972003@gmail.com");
@@ -23,10 +23,10 @@ public class EmailServiceImpl implements EmailService {
             message.setText("Thank you for registering with FashionStore!");
             
             javaMailSender.send(message);
-            return "Email sent successfully to " + emailRequestDTO.getEmail();
+            return 1;
         } catch (Exception e) {
             e.printStackTrace();
-            return "Failed to send email: " + e.getMessage();
+            return 0;
         }
     }
 }

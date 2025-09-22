@@ -61,7 +61,9 @@
     "update_success": "Update {{value}} successfully",
     "update_fail": "Update {{value}} failed",
     "delete_success": "Delete {{value}} successfully",
-    "delete_fail": "Delete {{value}} failed"
+    "delete_fail": "Delete {{value}} failed",
+    "subscribe_success": "Subscribe to newsletter successfully",
+    "subscribe_fail": "Subscribe to newsletter failed"
   },
   "banner": {
     "slide_1": {

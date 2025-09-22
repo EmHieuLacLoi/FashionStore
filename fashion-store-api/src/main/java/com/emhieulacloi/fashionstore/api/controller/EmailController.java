@@ -18,8 +18,8 @@ public class EmailController {
     private final EmailService emailService;
 
     @PostMapping
-    public ResponseEntity<String> sendEmail(@RequestBody EmailRequestDTO emailRequestDTO) {
-        ResponseEntity<String> response;
+    public ResponseEntity<Integer> sendEmail(@RequestBody EmailRequestDTO emailRequestDTO) {
+        ResponseEntity<Integer> response;
         try {
             response = ResponseDataConfiguration.success(emailService.sendEmail(emailRequestDTO));
         } catch (Exception e) {

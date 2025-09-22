@@ -10,6 +10,7 @@ import {
   Select,
   Dropdown,
   Badge,
+  message,
 } from "antd";
 import {
   ShoppingCartOutlined,
@@ -27,6 +28,7 @@ import logoGreen from "@assets/images/Logo_green.svg";
 import logoRed from "@assets/images/Logo_red.svg";
 import { useGlobalContext } from "../../GlobalContext";
 import { getToken, removeToken } from "@utils/auth";
+import { useSendEmail } from "@hooks/EmailHook";
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -40,6 +42,7 @@ const MainLayout = () => {
   const token = getToken();
   const { cartItems } = useGlobalContext();
   const totalCartQty = cartItems.reduce((sum, i) => sum + i.quantity, 0);
+  const sendEmailMutation = useSendEmail();
 
   useEffect(() => {
     const randomNum = Math.floor(Math.random() * 3) + 1;
@@ -123,6 +126,26 @@ const MainLayout = () => {
       ]}
     />
   );
+
+  const [loading, setLoading] = useState(false);
+  const handleSubscribe = async (value: string) => {
+    if (value && value.trim() !== "" && value.includes("@")) {
+      try {
+        setLoading(true);
+        const result = await sendEmailMutation.mutateAsync({ email: value });
+
+        if (result && result?.data == 1) {
+          message.success(t("common.message.subscribe_success"));
+        } else {
+          message.error(t("common.message.subscribe_error"));
+        }
+      } catch (error) {
+        message.error(t("common.message.subscribe_error"));
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <Layout className="main-layout">
@@ -276,10 +299,9 @@ const MainLayout = () => {
                 placeholder={t("common.footer.email_placeholder")}
                 enterButton={t("common.button.subscribe")}
                 className="newsletter-input"
+                loading={loading}
                 onSearch={(value) => {
-                  if (value) {
-                    console.log("Newsletter subscription:", value);
-                  }
+                  handleSubscribe(value);
                 }}
               />
               <p style={{ fontSize: "12px", color: "#999", marginTop: "8px" }}>

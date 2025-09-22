@@ -1,7 +1,13 @@
-create table `roles` (
-		  `id` bigint NOT NULL AUTO_INCREMENT,
+databaseChangeLog:
+  - changeSet:
+      id: 202508141106
+      author: vohieu
+      comment: Create table roles
+      sql: >
+        create table IF NOT EXISTS `roles` (
+          `id` bigint NOT NULL AUTO_INCREMENT,
           `name` VARCHAR(50) NOT NULL,
-		  `description` VARCHAR(255),
+          `description` VARCHAR(255),
           `created_by` int DEFAULT NULL,
           `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
           `updated_by` int DEFAULT NULL,
