@@ -17,6 +17,9 @@ public class Order extends BaseEntity<Long, Order> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "code")
+    private String code;
+
     @Column(name = "user_id")
     private Long userId;
 
@@ -25,4 +28,10 @@ public class Order extends BaseEntity<Long, Order> {
 
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
 }

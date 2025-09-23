@@ -19,6 +19,10 @@ import java.util.List;
 public class OrderRequestDTO {
     private Long id;
 
+    @NotNull(message = "Code is required")
+    @JsonProperty("code")
+    private String code;
+
     @NotNull(message = "User ID is required")
     @JsonProperty("user_id")
     private Long userId;
@@ -32,6 +36,14 @@ public class OrderRequestDTO {
     @DecimalMin(value = "0.0", message = "Total amount cannot be negative")
     @JsonProperty("total_amount")
     private BigDecimal totalAmount;
+
+    @NotNull(message = "Address is required")
+    @JsonProperty("address")
+    private String address;
+
+    @NotNull(message = "Phone number is required")
+    @JsonProperty("phone_number")
+    private String phoneNumber;
 
     @Valid
     @NotNull(message = "Order items are required")

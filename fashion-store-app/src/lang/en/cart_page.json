@@ -1,0 +1,29 @@
+{
+  "update_user_info_success": "Update info success",
+  "update_user_info_error": "Update info error",
+  "warning": {
+    "address": "Please enter address before checkout",
+    "address_required": "Please enter address",
+    "phone_number": "Please enter phone number before checkout",
+    "phone_number_required": "Please enter phone number",
+    "address_and_phone_number": "Please enter address and phone number before checkout"
+  },
+  "cart_title": "Your cart",
+  "product": "products",
+  "empty_cart": "Your cart is empty",
+  "empty_cart_description": "Add products to continue shopping",
+  "continue_shopping": "Continue shopping",
+  "clear_all": "Clear all",
+  "product_in_cart": "Product in cart",
+  "quantity": "Quantity",
+  "total": "Price",
+  "remove": "Remove",
+  "order_info": "Order info",
+  "shipping_info": "Shipping info",
+  "save_shipping_info": "Save shipping info",
+  "subtotal": "Subtotal",
+  "shipping_fee": "Shipping fee",
+  "free_shipping": "Free shipping",
+  "summary": "Summary",
+  "checkout": "Checkout"
+}

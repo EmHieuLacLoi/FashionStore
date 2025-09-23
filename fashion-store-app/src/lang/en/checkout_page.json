@@ -1,0 +1,31 @@
+{
+  "payment": {
+    "bankName": "Bank name",
+    "accountName": "Account name",
+    "accountNumber": "Account number",
+    "amount": "Amount"
+  },
+  "message": {
+    "bank_success": "Order placed successfully! Please transfer to complete the order.",
+    "cod_success": "Order placed successfully! Please pay when receiving.",
+    "failed": "Order failed. Please try again.",
+    "payment_failed": "Create payment transaction failed.",
+    "error": "An error occurred. Please try again."
+  },
+  "confirm_order": "Confirm order",
+  "qr_note": "Use App Bank or Digital Wallet to scan QR code",
+  "copy": "Copy",
+  "copied": "Copied",
+  "transfer_note": "Transfer note",
+  "transfer_note_guide": "Keep the content to be confirmed as soon as possible.",
+  "cod": "COD",
+  "cod_note": "You will pay directly to the delivery staff when receiving the product.",
+  "cod_note_guide": "Please check the product and amount carefully before paying.",
+  "order_summary": "Order summary",
+  "payment_method": "Payment method",
+  "bank": "Bank transfer",
+  "total": "Total",
+  "empty_cart": "Empty cart",
+  "back_to_cart": "Back to cart",
+  "shipping_fee": "Shipping fee"
+}

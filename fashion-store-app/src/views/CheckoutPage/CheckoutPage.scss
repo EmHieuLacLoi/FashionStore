@@ -156,8 +156,12 @@ $spacing-lg: 32px;
     }
 
     .order-item {
-      @include flex-between;
-      margin-bottom: $spacing-sm;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      flex-direction: column;
+      gap: 8px;
     }
 
     .summary-total {

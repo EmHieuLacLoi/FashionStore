@@ -1,0 +1,31 @@
+{
+  "payment": {
+    "bankName": "Ngân hàng",
+    "accountName": "Chủ tài khoản",
+    "accountNumber": "Số tài khoản",
+    "amount": "Số tiền"
+  },
+  "message": {
+    "bank_success": "Đặt hàng thành công! Vui lòng chuyển khoản để hoàn tất đơn hàng.",
+    "cod_success": "Đặt hàng thành công! Vui lòng thanh toán khi nhận hàng.",
+    "failed": "Đặt hàng thất bại. Vui lòng thử lại.",
+    "payment_failed": "Tạo giao dịch thanh toán thất bại.",
+    "error": "Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại."
+  },
+  "confirm_order": "Xác nhận đơn hàng",
+  "qr_note": "Sử dụng App Ngân hàng hoặc Ví điện tử để quét mã QR",
+  "copy": "Sao chép",
+  "copied": "Đã sao chép",
+  "transfer_note": "Nội dung CK",
+  "transfer_note_guide": "Giữ nguyên nội dung để được xác nhận nhanh nhất.",
+  "cod": "Thanh toán khi nhận hàng (COD)",
+  "cod_note": "Bạn sẽ thanh toán trực tiếp cho nhân viên giao hàng khi nhận được sản phẩm.",
+  "cod_note_guide": "Vui lòng kiểm tra kỹ sản phẩm và số tiền trước khi thanh toán.",
+  "order_summary": "Tóm tắt đơn hàng",
+  "payment_method": "Phương thức thanh toán",
+  "bank": "Chuyển khoản ngân hàng",
+  "total": "Tổng cộng",
+  "empty_cart": "Chưa có sản phẩm nào.",
+  "back_to_cart": "Quay lại giỏ hàng",
+  "shipping_fee": "Phí giao hàng"
+}

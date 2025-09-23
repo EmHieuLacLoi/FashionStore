@@ -72,7 +72,6 @@ public class OrderServiceImpl implements OrderService {
                         .setStatusCode(HttpStatus.BAD_REQUEST);
             }
 
-
             BigDecimal unitPrice = product.getPrice();
             BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(itemDto.getQuantity()));
 

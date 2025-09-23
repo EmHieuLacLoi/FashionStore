@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071410
+      author: vohieu
+      comment: Add column to table orders
+      sql: >
+        ALTER TABLE `orders`
+        ADD COLUMN `code` VARCHAR(20) NOT NULL UNIQUE;

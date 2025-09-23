@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071400
+      author: vohieu
+      comment: Add column to table orders
+      sql: >
+        ALTER TABLE `orders`
+        ADD COLUMN `address` VARCHAR(255) DEFAULT NULL,
+        ADD COLUMN `phone_number` VARCHAR(20) DEFAULT NULL;

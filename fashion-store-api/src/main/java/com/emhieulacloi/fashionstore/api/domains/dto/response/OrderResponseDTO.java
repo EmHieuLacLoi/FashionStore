@@ -15,6 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponseDTO {
     private Long id;
+
+    @JsonProperty("code")
+    private String code;
     
     @JsonProperty("user_id")
     private Long userId;
@@ -26,6 +29,12 @@ public class OrderResponseDTO {
     
     @JsonProperty("total_amount")
     private BigDecimal totalAmount;
+
+    @JsonProperty("address")
+    private String address;
+
+    @JsonProperty("phone_number")
+    private String phoneNumber;
     
     @JsonProperty("order_items")
     private List<OrderItemResponseDTO> orderItems;

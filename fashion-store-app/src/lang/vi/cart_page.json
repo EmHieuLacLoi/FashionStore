@@ -1,0 +1,29 @@
+{
+  "update_user_info_success": "Cập nhật thông tin thành công",
+  "update_user_info_error": "Cập nhật thông tin thất bại",
+  "warning": {
+    "address": "Vui lòng nhập địa chỉ giao hàng trước khi thanh toán",
+    "address_required": "Vui lòng nhập địa chỉ giao hàng",
+    "phone_number": "Vui lòng nhập số điện thoại trước khi thanh toán",
+    "phone_number_required": "Vui lòng nhập số điện thoại",
+    "address_and_phone_number": "Vui lòng nhập địa chỉ và số điện thoại trước khi thanh toán"
+  },
+  "cart_title": "Giỏ hàng của bạn",
+  "product": "sản phẩm",
+  "empty_cart": "Giỏ hàng của bạn đang trống",
+  "empty_cart_description": "Hãy thêm sản phẩm để tiếp tục mua sắm",
+  "continue_shopping": "Tiếp tục mua sắm",
+  "clear_all": "Xóa tất cả",
+  "product_in_cart": "Sản phẩm trong giỏ",
+  "quantity": "Số lượng",
+  "total": "Thành tiền",
+  "remove": "Xóa",
+  "order_info": "Thông tin đơn hàng",
+  "shipping_info": "Thông tin giao hàng",
+  "save_shipping_info": "Lưu thông tin giao hàng",
+  "subtotal": "Tạm tính",
+  "shipping_fee": "Phí vận chuyển",
+  "free_shipping": "Miễn phí",
+  "summary": "Tổng cộng",
+  "checkout": "Thanh toán"
+}

@@ -17,7 +17,6 @@ public class OrderItemRequestDTO {
     private Long id;
 
     @JsonProperty("order_id")
-    @NotNull(message = "Order ID is required")
     private Long orderId;
 
     @NotNull(message = "Product ID is required")

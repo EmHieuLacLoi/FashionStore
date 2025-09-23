@@ -203,8 +203,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   };
 
   const handleAddToCart = () => {
+    if (!localStorage.getItem("accessToken")) {
+      navigate("/login");
+      return;
+    }
+
     if (!selectedVariant) {
-      alert(t("product_detail_page.alert.select_color_size"));
+      message.error(t("product_detail_page.alert.select_color_size"));
       return;
     }
     const key = `${resolvedProductId}-${selectedVariant.id}`;
@@ -217,7 +222,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     const image = images[0];
     addToCart({
       key,
-      productId: resolvedProductId,
+      productVariantId: selectedVariant.id,
       name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ""}`.trim(),
       color: selectedVariant.color,
       size: selectedVariant.size,
@@ -230,7 +235,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   const handleBuyNow = () => {
     if (!selectedVariant) {
-      alert(t("product_detail_page.alert.select_color_size"));
+      message.error(t("product_detail_page.alert.select_color_size"));
       return;
     }
     const key = `${resolvedProductId}-${selectedVariant.id}`;
@@ -243,7 +248,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     const image = images[0];
     addToCart({
       key,
-      productId: resolvedProductId,
+      productVariantId: selectedVariant.id,
       name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ""}`.trim(),
       color: selectedVariant.color,
       size: selectedVariant.size,

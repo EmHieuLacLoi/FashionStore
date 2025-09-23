@@ -1,6 +1,5 @@
 package com.emhieulacloi.fashionstore.api.domains.dto.projection;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
@@ -9,7 +8,10 @@ import java.sql.Timestamp;
 public interface OrderDTO {
     @JsonProperty("id")
     Long getId();
-    
+
+    @JsonProperty("code")
+    String getCode();
+
     @JsonProperty("user_id")
     Long getUserId();
     
@@ -21,6 +23,12 @@ public interface OrderDTO {
     
     @JsonProperty("total_amount")
     BigDecimal getTotalAmount();
+
+    @JsonProperty("address")
+    String getAddress();
+
+    @JsonProperty("phone_number")
+    String getPhoneNumber();
     
     @JsonProperty("created_by_id")
     Long getCreatedById();

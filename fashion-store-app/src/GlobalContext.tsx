@@ -19,11 +19,15 @@ type GlobalContextProps = {
   cloudinary: string;
   cloudinaryUrl: string;
   allProducts: Product[];
+  currentUser: any;
+  setCurrentUser: (userInfo: any) => void;
+  shippingFee: number;
+  setShippingFee: (shippingFee: number) => void;
 };
 
 export type CartItem = {
-  key: string; // unique key for item in cart (e.g., `${productId}-${sku}-${color}-${storage}`)
-  productId: number;
+  key: string;
+  productVariantId: number;
   name: string;
   color: string;
   size: string;
@@ -38,7 +42,17 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [lang, setLang] = useState(localStorage.getItem("language") || "vi");
   const [token, setToken] = useState(localStorage.getItem("accessToken") || "");
   const [isLoading, setIsLoading] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [shippingFee, setShippingFee] = useState<number>(0);
+
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    if (typeof window !== "undefined") {
+      const savedCart = localStorage.getItem("cartItems");
+      return savedCart ? JSON.parse(savedCart) : [];
+    }
+    return [];
+  });
+
   const [cloudinary, setCloudinary] = useState("");
   const cloudinaryUrl = import.meta.env.VITE_CLOUDINARY_URL;
   const { t } = useTranslation();
@@ -86,26 +100,41 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
     setAllProducts(products);
   }, [productData]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+  }, [cartItems]);
+
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
       const idx = prev.findIndex((p) => p.key === item.key);
+      let newCart;
+
       if (idx !== -1) {
-        const next = [...prev];
-        next[idx] = {
-          ...next[idx],
-          quantity: next[idx].quantity + item.quantity,
+        newCart = [...prev];
+        newCart[idx] = {
+          ...newCart[idx],
+          quantity: newCart[idx].quantity + item.quantity,
         };
-        return next;
+      } else {
+        newCart = [...prev, item];
       }
-      return [...prev, item];
+
+      return newCart;
     });
   };
 
   const removeFromCart = (key: string) => {
-    setCartItems((prev) => prev.filter((i) => i.key !== key));
+    setCartItems((prev) => {
+      const newCart = prev.filter((i) => i.key !== key);
+      return newCart;
+    });
   };
 
-  const clearCart = () => setCartItems([]);
+  const clearCart = () => {
+    setCartItems([]);
+  };
 
   const updateQuantity = (key: string, qty: number) => {
     setCartItems((prev) =>
@@ -131,6 +160,10 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         cloudinary,
         cloudinaryUrl,
         allProducts,
+        currentUser,
+        setCurrentUser,
+        shippingFee,
+        setShippingFee,
       }}
     >
       {children}

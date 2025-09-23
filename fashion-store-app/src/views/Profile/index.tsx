@@ -62,13 +62,11 @@ const UserProfileForm = () => {
     }
   }, [form, userData]);
 
-  // Load lịch sử đơn hàng (mock) từ localStorage
   useEffect(() => {
     try {
       const listRaw = localStorage.getItem("orders");
       const list = listRaw ? JSON.parse(listRaw) : [];
 
-      // Tương thích dữ liệu cũ nếu chỉ có lastOrder
       if (!list?.length) {
         const lastRaw = localStorage.getItem("lastOrder");
         if (lastRaw) {
@@ -85,7 +83,6 @@ const UserProfileForm = () => {
     }
   }, []);
 
-  // Mô phỏng cập nhật trạng thái theo thời gian
   useEffect(() => {
     const interval = setInterval(() => {
       setOrders((prev) => {
@@ -113,18 +110,18 @@ const UserProfileForm = () => {
         if (changed) {
           try {
             localStorage.setItem("orders", JSON.stringify(updated));
-            // Cập nhật lastOrder = đơn mới nhất theo createdAt để tương thích
             const latest = [...updated].sort(
-              (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
             )[0];
-            if (latest) localStorage.setItem("lastOrder", JSON.stringify(latest));
-          } catch (e) {
-            // ignore
-          }
+            if (latest)
+              localStorage.setItem("lastOrder", JSON.stringify(latest));
+          } catch (e) {}
         }
         return changed ? updated : prev;
       });
-    }, 3000); // cập nhật mỗi 3 giây để dễ quan sát trong demo
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
@@ -512,7 +509,9 @@ const UserProfileForm = () => {
           <div className="order-history-list">
             {[...orders]
               .sort(
-                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
               )
               .map((order) => (
                 <Card
@@ -520,23 +519,33 @@ const UserProfileForm = () => {
                   size="small"
                   style={{ marginBottom: 12 }}
                   title={
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
                       <span>
                         <Text strong>Mã đơn:</Text> <Text code>{order.id}</Text>
                       </span>
                       <span>
-                        <Text strong>Trạng thái:</Text> <Text>{order.status}</Text>
+                        <Text strong>Trạng thái:</Text>{" "}
+                        <Text>{order.status}</Text>
                       </span>
                     </div>
                   }
                 >
                   <Row gutter={[16, 8]}>
                     <Col xs={24} md={12}>
-                      <Text strong>Hình thức thanh toán:</Text> <Text>{order.paymentMethod}</Text>
+                      <Text strong>Hình thức thanh toán:</Text>{" "}
+                      <Text>{order.paymentMethod}</Text>
                     </Col>
                     <Col xs={24} md={12}>
                       <Text strong>Thời gian:</Text>{" "}
-                      <Text>{new Date(order.createdAt).toLocaleString("vi-VN")}</Text>
+                      <Text>
+                        {new Date(order.createdAt).toLocaleString("vi-VN")}
+                      </Text>
                     </Col>
                     <Col xs={24}>
                       <Divider style={{ margin: "8px 0" }} />
@@ -547,13 +556,19 @@ const UserProfileForm = () => {
                         {(order.items || []).map((it: any) => (
                           <div
                             key={`${it.key}-${it.name}`}
-                            style={{ display: "flex", justifyContent: "space-between", gap: 8 }}
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              gap: 8,
+                            }}
                           >
                             <Text>
-                              {it.name} <Text type="secondary">x{it.quantity}</Text>
+                              {it.name}{" "}
+                              <Text type="secondary">x{it.quantity}</Text>
                             </Text>
                             <Text strong>
-                              {(it.price * it.quantity).toLocaleString("vi-VN")}đ
+                              {(it.price * it.quantity).toLocaleString("vi-VN")}
+                              đ
                             </Text>
                           </div>
                         ))}
@@ -561,9 +576,16 @@ const UserProfileForm = () => {
                     </Col>
                     <Col xs={24}>
                       <Divider style={{ margin: "8px 0" }} />
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
                         <Text strong>Tổng cộng</Text>
-                        <Text strong>{(order.total || 0).toLocaleString("vi-VN")}đ</Text>
+                        <Text strong>
+                          {(order.total || 0).toLocaleString("vi-VN")}đ
+                        </Text>
                       </div>
                     </Col>
                   </Row>

@@ -29,6 +29,7 @@ import {
   FilterOutlined,
   AppstoreOutlined,
   BarsOutlined,
+  SkinOutlined,
 } from "@ant-design/icons";
 import { useGlobalContext } from "../../GlobalContext";
 import { useTranslation } from "react-i18next";
@@ -125,6 +126,11 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
     navigate(`/products/${productId}`);
   };
 
+  const handleAddCart = (e: any, product: any) => {
+    e.stopPropagation();
+    navigate(`/products/${product.id}`);
+  };
+
   const showOption = [
     { value: 12, label: "12" },
     { value: 24, label: "24" },
@@ -160,23 +166,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
           <Button
             key="cart"
             type="primary"
-            icon={<ShoppingCartOutlined />}
+            icon={<SkinOutlined />}
             disabled={!product.stock_quantity}
             onClick={(e) => {
-              e.stopPropagation();
-              if (!product.stock_quantity) return;
-              const key = `${product.id}-SKU-${product.id}`;
-              addToCart({
-                key,
-                productId: product.id,
-                name: product.name,
-                color: "Default",
-                size: "Default",
-                price: product.price,
-                image: product.image_url[0],
-                quantity: 1,
-              });
-              message.success(t("product_page.add_to_cart"));
+              handleAddCart(e, product);
             }}
           >
             {product.stock_quantity
@@ -267,23 +260,10 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
               />
               <Button
                 type="primary"
-                icon={<ShoppingCartOutlined />}
+                icon={<SkinOutlined />}
                 disabled={!product.stock_quantity}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  if (!product.stock_quantity) return;
-                  const key = `${product.id}-SKU-${product.id}`;
-                  addToCart({
-                    key,
-                    productId: product.id,
-                    name: product.name,
-                    color: "Default",
-                    size: "Default",
-                    price: product.price,
-                    image: product.image_url[0],
-                    quantity: 1,
-                  });
-                  message.success(t("product_page.added_to_cart"));
+                  handleAddCart(e, product);
                 }}
               >
                 {product.stock_quantity
