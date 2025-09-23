@@ -27,11 +27,15 @@ public interface OrderRepository extends BaseRepository<Order, Long, OrderCriter
     FROM `orders` o 
     LEFT JOIN user uc ON o.created_by = uc.id
     LEFT JOIN user uu ON o.updated_by = uu.id
+    WHERE
+           (:#{#criteria.userId} IS NULL OR o.user_id = :#{#criteria.userId})
     """,
             countQuery = """
     SELECT
             COUNT(*)
     FROM `orders` o
+    WHERE
+       (:#{#criteria.userId} IS NULL OR o.user_id = :#{#criteria.userId})
     """,
             nativeQuery = true)
     Page<OrderDTO> findAllByCriteria(@Param("criteria") OrderCriteria criteria, Pageable pageable);

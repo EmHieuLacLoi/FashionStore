@@ -45,6 +45,11 @@ public class OrderRequestDTO {
     @JsonProperty("phone_number")
     private String phoneNumber;
 
+    @NotNull(message = "Shipping fee is required")
+    @DecimalMin(value = "0.0", message = "Shipping fee cannot be negative")
+    @JsonProperty("shipping_fee")
+    private BigDecimal shippingFee;
+
     @Valid
     @NotNull(message = "Order items are required")
     @JsonProperty("order_items")

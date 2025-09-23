@@ -56,4 +56,21 @@ public interface OrderItemRepository extends BaseRepository<OrderItem, Long, Ord
     void deleteAllByOrderId(Long orderId);
 
     List<OrderItem> findAllByOrderId(Long orderId);
+
+    @Query(value = """
+    SELECT 
+        t.*,
+        p.name AS productName,
+        uc.id AS createdById,
+        uc.username AS createdByName,
+        uu.id AS updatedById,
+        uu.username AS updatedByName
+    FROM `order_items` t 
+    LEFT JOIN user uc ON t.created_by = uc.id
+    LEFT JOIN user uu ON t.updated_by = uu.id
+    LEFT JOIN product_variants pv ON t.product_variant_id = pv.id
+    LEFT JOIN products p ON pv.product_id = p.id
+    WHERE t.order_id IN :orderIds
+    """, nativeQuery = true)
+    List<OrderItemDTO> findAllByOrderIdIn(List<Long> orderIds);
 }

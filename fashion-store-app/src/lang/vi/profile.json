@@ -23,5 +23,16 @@
   "message": {
     "success": "Cập nhật thông tin thành công!",
     "fail": "Cập nhật thông tin thất bại!"
+  },
+  "order_history": {
+    "title": "Lịch sử đơn hàng",
+    "payment_method": "Phương thức thanh toán",
+    "payment_date": "Ngày thanh toán",
+    "payment_status": "Trạng thái thanh toán",
+    "total_amount": "Tổng thanh toán",
+    "payment_id": "Mã đơn hàng",
+    "order_items": "Sản phẩm",
+    "shipping_fee": "Phí giao hàng",
+    "not_found": "Chưa có đơn hàng"
   }
 }

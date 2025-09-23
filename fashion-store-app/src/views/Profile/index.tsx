@@ -26,6 +26,9 @@ import { useGetUserInfo } from "@hooks/AuthHooks";
 import { useTranslation } from "react-i18next";
 import "./index.scss";
 import { getAxiosErrorMessage } from "@utils/axiosUtils";
+import { useGetOrderList } from "@hooks/OrderHooks";
+import { OrderStatusColor } from "@constants/OrderStatus";
+import { PaymentMethod, PaymentMethodLabel } from "@constants/PaymentMethod";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -47,6 +50,25 @@ const UserProfileForm = () => {
     retry: false,
   });
 
+  const { data: orderList } = useGetOrderList(
+    {
+      size: 99999999999,
+      userId: data?.data?.id,
+    },
+    {
+      enabled: !!data?.data?.id,
+      refetchOnWindowFocus: false,
+      retry: false,
+    }
+  );
+
+  useEffect(() => {
+    if (orderList) {
+      console.log(orderList?.data?.content);
+      setOrders(orderList?.data?.content);
+    }
+  }, [orderList]);
+
   useEffect(() => {
     if (error) {
       message.error(t("auth.profile_not_found"));
@@ -61,70 +83,6 @@ const UserProfileForm = () => {
       form.setFieldsValue(userData);
     }
   }, [form, userData]);
-
-  useEffect(() => {
-    try {
-      const listRaw = localStorage.getItem("orders");
-      const list = listRaw ? JSON.parse(listRaw) : [];
-
-      if (!list?.length) {
-        const lastRaw = localStorage.getItem("lastOrder");
-        if (lastRaw) {
-          const last = JSON.parse(lastRaw);
-          setOrders([last]);
-          localStorage.setItem("orders", JSON.stringify([last]));
-          return;
-        }
-      }
-
-      setOrders(Array.isArray(list) ? list : []);
-    } catch (e) {
-      setOrders([]);
-    }
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setOrders((prev) => {
-        if (!prev || !prev.length) return prev;
-        const now = Date.now();
-        let changed = false;
-
-        const updated = prev.map((o) => {
-          const createdAt = new Date(o.createdAt).getTime();
-          const diffSec = Math.max(0, Math.floor((now - createdAt) / 1000));
-
-          let nextStatus = o.status;
-          if (diffSec < 10) nextStatus = "Đang chờ xác nhận thanh toán";
-          else if (diffSec < 20) nextStatus = "Đang xử lý";
-          else if (diffSec < 30) nextStatus = "Đã xác nhận";
-          else nextStatus = "Đã giao";
-
-          if (nextStatus !== o.status) {
-            changed = true;
-            return { ...o, status: nextStatus };
-          }
-          return o;
-        });
-
-        if (changed) {
-          try {
-            localStorage.setItem("orders", JSON.stringify(updated));
-            const latest = [...updated].sort(
-              (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
-            )[0];
-            if (latest)
-              localStorage.setItem("lastOrder", JSON.stringify(latest));
-          } catch (e) {}
-        }
-        return changed ? updated : prev;
-      });
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -503,19 +461,15 @@ const UserProfileForm = () => {
       {/* Lịch sử đơn hàng */}
       <Card className="order-status-card" style={{ marginTop: 24 }}>
         <Title level={4} style={{ marginBottom: 16 }}>
-          Lịch sử đơn hàng
+          {t("profile.order_history.title")}
         </Title>
         {orders && orders.length > 0 ? (
           <div className="order-history-list">
             {[...orders]
-              .sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-              )
+              .sort((a, b) => b.id - a.id)
               .map((order) => (
                 <Card
-                  key={order.id}
+                  key={order.code}
                   size="small"
                   style={{ marginBottom: 12 }}
                   title={
@@ -527,35 +481,58 @@ const UserProfileForm = () => {
                       }}
                     >
                       <span>
-                        <Text strong>Mã đơn:</Text> <Text code>{order.id}</Text>
+                        <Text strong style={{ color: "#0047ff" }}>
+                          {t("profile.order_history.payment_id")}:
+                        </Text>{" "}
+                        <Text code style={{ color: "#0047ff" }}>
+                          {order.code}
+                        </Text>
                       </span>
                       <span>
-                        <Text strong>Trạng thái:</Text>{" "}
-                        <Text>{order.status}</Text>
+                        <Text strong>
+                          {t("profile.order_history.payment_status")}:
+                        </Text>{" "}
+                        <Text>{OrderStatusColor(t)[order.status].label}</Text>
                       </span>
                     </div>
                   }
                 >
                   <Row gutter={[16, 8]}>
                     <Col xs={24} md={12}>
-                      <Text strong>Hình thức thanh toán:</Text>{" "}
-                      <Text>{order.paymentMethod}</Text>
-                    </Col>
-                    <Col xs={24} md={12}>
-                      <Text strong>Thời gian:</Text>{" "}
+                      <Text strong>
+                        {t("profile.order_history.payment_method")}:
+                      </Text>{" "}
                       <Text>
-                        {new Date(order.createdAt).toLocaleString("vi-VN")}
+                        {
+                          PaymentMethodLabel(t)[
+                            order?.payment?.payment_method || PaymentMethod.COD
+                          ].label
+                        }
+                      </Text>
+                    </Col>
+                    <Col
+                      xs={24}
+                      md={12}
+                      style={{ display: "flex", justifyContent: "flex-end" }}
+                    >
+                      <Text strong>
+                        {t("profile.order_history.payment_date")}:
+                      </Text>{" "}
+                      <Text>
+                        {new Date(order.created_at).toLocaleString("vi-VN")}
                       </Text>
                     </Col>
                     <Col xs={24}>
                       <Divider style={{ margin: "8px 0" }} />
                     </Col>
                     <Col xs={24}>
-                      <Text strong>Sản phẩm:</Text>
+                      <Text strong>
+                        {t("profile.order_history.total_amount")}:
+                      </Text>
                       <div style={{ marginTop: 8 }}>
-                        {(order.items || []).map((it: any) => (
+                        {(order.order_items || []).map((it: any) => (
                           <div
-                            key={`${it.key}-${it.name}`}
+                            key={`${it.key}-${it.product_name}`}
                             style={{
                               display: "flex",
                               justifyContent: "space-between",
@@ -563,15 +540,28 @@ const UserProfileForm = () => {
                             }}
                           >
                             <Text>
-                              {it.name}{" "}
+                              {it.product_name}{" "}
                               <Text type="secondary">x{it.quantity}</Text>
                             </Text>
                             <Text strong>
-                              {(it.price * it.quantity).toLocaleString("vi-VN")}
-                              đ
+                              {it.total_price.toLocaleString("vi-VN")}đ
                             </Text>
                           </div>
                         ))}
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: 8,
+                          }}
+                        >
+                          <Text>
+                            {t("profile.order_history.shipping_fee")}:
+                          </Text>
+                          <Text strong>
+                            {(order.shipping_fee || 0).toLocaleString("vi-VN")}đ
+                          </Text>
+                        </div>
                       </div>
                     </Col>
                     <Col xs={24}>
@@ -582,9 +572,11 @@ const UserProfileForm = () => {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Text strong>Tổng cộng</Text>
                         <Text strong>
-                          {(order.total || 0).toLocaleString("vi-VN")}đ
+                          {t("profile.order_history.total_amount")}:
+                        </Text>
+                        <Text strong>
+                          {(order.total_amount || 0).toLocaleString("vi-VN")}đ
                         </Text>
                       </div>
                     </Col>
@@ -593,7 +585,7 @@ const UserProfileForm = () => {
               ))}
           </div>
         ) : (
-          <Text type="secondary">Chưa có đơn hàng.</Text>
+          <Text type="secondary">{t("profile.order_history.not_found")}</Text>
         )}
       </Card>
     </div>

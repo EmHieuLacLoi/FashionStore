@@ -276,17 +276,17 @@ const CheckoutPage: React.FC = () => {
                         {(item.price * item.quantity).toLocaleString("vi-VN")}đ
                       </Text>
                     </div>
-                    <div>
-                      <Text style={{ marginRight: 8 }}>
-                        {t("checkout_page.shipping_fee")}:
-                      </Text>
-                      <Text strong>{shippingFee.toLocaleString("vi-VN")}đ</Text>
-                    </div>
                   </div>
                 ))
               ) : (
                 <Text type="secondary">{t("checkout_page.empty_cart")}</Text>
               )}
+              <div>
+                <Text style={{ marginRight: 8 }}>
+                  {t("checkout_page.shipping_fee")}:
+                </Text>
+                <Text strong>{shippingFee.toLocaleString("vi-VN")}đ</Text>
+              </div>
             </div>
 
             <div className="summary-total">

@@ -20,5 +20,7 @@
   "name_desc": "Name descending",
   "show": "Show",
   "of": "of",
-  "not_found_product": "Not found product"
+  "not_found_product": "Not found product",
+  "search_product": "Search product",
+  "search_placeholder": "Enter product name..."
 }

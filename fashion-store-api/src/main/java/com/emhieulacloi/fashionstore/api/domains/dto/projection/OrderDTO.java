@@ -29,6 +29,9 @@ public interface OrderDTO {
 
     @JsonProperty("phone_number")
     String getPhoneNumber();
+
+    @JsonProperty("shipping_fee")
+    BigDecimal getShippingFee();
     
     @JsonProperty("created_by_id")
     Long getCreatedById();

@@ -35,6 +35,9 @@ public class OrderResponseDTO {
 
     @JsonProperty("phone_number")
     private String phoneNumber;
+
+    @JsonProperty("shipping_fee")
+    private BigDecimal shippingFee;
     
     @JsonProperty("order_items")
     private List<OrderItemResponseDTO> orderItems;

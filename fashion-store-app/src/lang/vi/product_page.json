@@ -20,5 +20,7 @@
   "name_desc": "Tên giảm dần",
   "show": "Hiển thị",
   "of": "của",
-  "not_found_product": "Không tìm thấy sản phẩm nào"
+  "not_found_product": "Không tìm thấy sản phẩm nào",
+  "search_product": "Tìm kiếm sản phẩm",
+  "search_placeholder": "Nhập tên sản phẩm..."
 }

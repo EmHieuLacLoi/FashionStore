@@ -2,23 +2,25 @@ package com.emhieulacloi.fashionstore.api.service.impl;
 
 import com.emhieulacloi.fashionstore.api.common.component.MessageResource;
 import com.emhieulacloi.fashionstore.api.common.exception.CommonException;
+import com.emhieulacloi.fashionstore.api.domains.criteria.OrderCriteria;
+import com.emhieulacloi.fashionstore.api.domains.dto.projection.OrderDTO;
 import com.emhieulacloi.fashionstore.api.domains.dto.request.OrderItemRequestDTO;
 import com.emhieulacloi.fashionstore.api.domains.dto.request.OrderRequestDTO;
+import com.emhieulacloi.fashionstore.api.domains.dto.response.OrderItemResponseDTO;
 import com.emhieulacloi.fashionstore.api.domains.dto.response.OrderResponseDTO;
-import com.emhieulacloi.fashionstore.api.domains.entity.Order;
-import com.emhieulacloi.fashionstore.api.domains.entity.OrderItem;
-import com.emhieulacloi.fashionstore.api.domains.entity.Product;
-import com.emhieulacloi.fashionstore.api.domains.entity.ProductVariant;
+import com.emhieulacloi.fashionstore.api.domains.dto.response.PaymentResponseDTO;
+import com.emhieulacloi.fashionstore.api.domains.entity.*;
 import com.emhieulacloi.fashionstore.api.enums.OrderStatusEnum;
 import com.emhieulacloi.fashionstore.api.enums.SystemCodeEnum;
-import com.emhieulacloi.fashionstore.api.repository.OrderItemRepository;
-import com.emhieulacloi.fashionstore.api.repository.OrderRepository;
-import com.emhieulacloi.fashionstore.api.repository.ProductRepository;
-import com.emhieulacloi.fashionstore.api.repository.ProductVariantRepository;
+import com.emhieulacloi.fashionstore.api.repository.*;
 import com.emhieulacloi.fashionstore.api.service.OrderService;
 import com.emhieulacloi.fashionstore.api.service.mapper.OrderItemMapper;
 import com.emhieulacloi.fashionstore.api.service.mapper.OrderMapper;
+import com.emhieulacloi.fashionstore.api.service.mapper.PaymentMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,8 @@ public class OrderServiceImpl implements OrderService {
     private final ProductVariantRepository productVariantRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
+    private final PaymentRepository paymentRepository;
+    private final PaymentMapper paymentMapper;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
@@ -135,6 +139,36 @@ public class OrderServiceImpl implements OrderService {
         orderItemRepository.deleteAllByOrderId(id);
         orderRepository.deleteById(id);
         return 1;
+    }
+
+    @Override
+    public Page<OrderResponseDTO> findAllByCriteria(OrderCriteria criteria, Pageable pageable) {
+        Page<OrderDTO> orderDTOS = orderRepository.findAllByCriteria(criteria, pageable);
+
+        List<OrderItemResponseDTO> allOrderItems = orderItemRepository
+                .findAllByOrderIdIn(orderDTOS.getContent().stream().map(OrderDTO::getId).toList())
+                .stream().map(orderItemMapper::dtoToResponse).toList();
+
+        List<Payment> allPayments = paymentRepository
+                .findAllByOrderIdIn(orderDTOS.getContent().stream().map(OrderDTO::getId).toList());
+
+        List<OrderResponseDTO> orderResponseDTOS = orderDTOS.getContent().stream()
+                .map(orderMapper::dtoToResponse)
+                .toList();
+
+        orderResponseDTOS.forEach(orderResponseDTO -> {
+            List<OrderItemResponseDTO> orderItemsForOrder = allOrderItems.stream()
+                    .filter(orderItem -> orderItem.getOrderId().equals(orderResponseDTO.getId()))
+                    .toList();
+            orderResponseDTO.setOrderItems(orderItemsForOrder);
+
+            allPayments.stream()
+                    .filter(payment -> payment.getOrderId().equals(orderResponseDTO.getId()))
+                    .findFirst()
+                    .ifPresent(payment -> orderResponseDTO.setPayment(paymentMapper.entityToResponse(payment)));
+        });
+
+        return new PageImpl<>(orderResponseDTOS, pageable, orderDTOS.getTotalElements());
     }
 }
 

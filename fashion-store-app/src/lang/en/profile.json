@@ -23,5 +23,16 @@
   "message": {
     "success": "Update information successfully!",
     "fail": "Update information failed!"
+  },
+  "order_history": {
+    "title": "Order History",
+    "payment_method": "Payment Method",
+    "payment_date": "Payment Date",
+    "payment_status": "Payment Status",
+    "total_amount": "Total Amount",
+    "payment_id": "Payment ID",
+    "order_items": "Order Items",
+    "shipping_fee": "Shipping Fee",
+    "not_found": "No orders found"
   }
 }

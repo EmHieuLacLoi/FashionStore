@@ -34,4 +34,7 @@ public class Order extends BaseEntity<Long, Order> {
 
     @Column(name = "phone_number")
     private String phoneNumber;
+
+    @Column(name = "shipping_fee", precision = 10, scale = 2)
+    private BigDecimal shippingFee;
 }

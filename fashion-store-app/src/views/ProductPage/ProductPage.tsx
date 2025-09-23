@@ -292,6 +292,17 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
             </div>
 
             <div>
+              <Text strong>{t("product_page.search_product")}</Text>
+              <Input.Search
+                placeholder={t("product_page.search_placeholder")}
+                allowClear
+                enterButton
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ marginTop: 8 }}
+              />
+            </div>
+
+            <div>
               <Text strong>{t("product_page.category")}</Text>
               <Checkbox.Group
                 options={(categories || []).map((category) => ({
