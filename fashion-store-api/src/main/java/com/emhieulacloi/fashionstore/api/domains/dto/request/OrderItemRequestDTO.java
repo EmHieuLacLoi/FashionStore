@@ -36,4 +36,7 @@ public class OrderItemRequestDTO {
     @DecimalMin(value = "0.0", message = "Total price cannot be negative")
     @JsonProperty("total_price")
     private BigDecimal totalPrice;
+
+    @JsonProperty("design_id")
+    private Long designId;
 }

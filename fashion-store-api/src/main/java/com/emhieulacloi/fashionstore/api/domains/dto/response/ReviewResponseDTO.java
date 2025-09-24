@@ -6,34 +6,28 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemResponseDTO {
+public class ReviewResponseDTO {
     private Long id;
-    
-    @JsonProperty("order_id")
-    private Long orderId;
 
-    @JsonProperty("product_variant_id")
-    private Long productVariantId;
-    
+    @JsonProperty("product_id")
+    private Long productId;
+
     @JsonProperty("product_name")
     private String productName;
-    
-    private Integer quantity;
-    
-    @JsonProperty("unit_price")
-    private BigDecimal unitPrice;
-    
-    @JsonProperty("total_price")
-    private BigDecimal totalPrice;
 
-    @JsonProperty("design")
-    private DesignResponseDTO design;
+    @JsonProperty("customer_id")
+    private Long customerId;
+
+    @JsonProperty("customer_name")
+    private String customerName;
+
+    @JsonProperty("comment")
+    private String comment;
 
     @JsonProperty("created_by_id")
     private Long createdById;

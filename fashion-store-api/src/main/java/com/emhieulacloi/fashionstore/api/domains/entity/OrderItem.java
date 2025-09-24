@@ -31,4 +31,7 @@ public class OrderItem extends BaseEntity<Long, OrderItem> {
 
     @Column(name = "total_price")
     private BigDecimal totalPrice;
+
+    @Column(name = "design_id")
+    private Long designId;
 }

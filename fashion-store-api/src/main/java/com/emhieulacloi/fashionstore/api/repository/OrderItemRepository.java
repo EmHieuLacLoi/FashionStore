@@ -73,4 +73,6 @@ public interface OrderItemRepository extends BaseRepository<OrderItem, Long, Ord
     WHERE t.order_id IN :orderIds
     """, nativeQuery = true)
     List<OrderItemDTO> findAllByOrderIdIn(List<Long> orderIds);
+
+    List<OrderItem> findAllByDesignId(Long designId);
 }
