@@ -3,6 +3,7 @@ import type { Product } from "@models/product.interface";
 import { message } from "antd";
 import { useTranslation } from "react-i18next";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import LoadingOverlay from "@components/LoadingSpinner";
 
 type GlobalContextProps = {
   lang: string;
@@ -66,7 +67,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const { data: productData } = useGetProductList(
+  const { data: productData, isLoading: isLoadingProduct } = useGetProductList(
     {
       size: 999999999,
     },
@@ -148,6 +149,11 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
       )
     );
   };
+
+  if (isLoadingProduct) {
+    return <LoadingOverlay />;
+  }
+
   return (
     <GlobalContext.Provider
       value={{
