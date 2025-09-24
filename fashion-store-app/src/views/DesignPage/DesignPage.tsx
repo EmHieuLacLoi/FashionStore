@@ -1,570 +1,825 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import {
-  Layout,
-  Card,
-  Button,
-  Space,
-  Typography,
-  Segmented,
-  Upload,
-  Input,
-  ColorPicker,
-  Tooltip,
-  message,
-} from "antd";
+import React, { useRef, useState } from "react";
 import {
   Stage,
   Layer,
-  Rect,
-  Text as KText,
-  Image as KImage,
+  Image as KonvaImage,
   Line,
+  Text,
   Group,
   Transformer,
 } from "react-konva";
-import {
-  UploadOutlined,
-  FontSizeOutlined,
-  EditOutlined,
-  SelectOutlined,
-  DeleteOutlined,
-  DownloadOutlined,
-} from "@ant-design/icons";
+import useImage from "use-image";
+// Đảm bảo các đường dẫn này là chính xác trong project của bạn
+import frontImg from "@assets/images/front.svg";
+import backImg from "@assets/images/back.svg";
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
-
-type Side = "front" | "back";
-type Tool = "select" | "image" | "text" | "draw";
-
-type BaseNode = {
+// --- 1. Định nghĩa Types ---
+interface DesignText {
   id: string;
   x: number;
   y: number;
-  rotation?: number;
-  visible?: boolean;
-  locked?: boolean;
-};
-type ImageNode = BaseNode & {
-  type: "image";
-  src: string;
-  width: number;
-  height: number;
-  scaleX?: number;
-  scaleY?: number;
-};
-type TextNode = BaseNode & {
-  type: "text";
   text: string;
   fontSize: number;
-  fill: string;
-};
-type DrawNode = BaseNode & {
-  type: "draw";
-  points: number[];
-  stroke: string;
-  strokeWidth: number;
-};
-type Node = ImageNode | TextNode | DrawNode;
-
-type DesignState = { front: Node[]; back: Node[] };
-
-// Simple hook to load images
-function useHtmlImage(src?: string) {
-  const [image, setImage] = useState<HTMLImageElement | null>(null);
-  React.useEffect(() => {
-    if (!src) return;
-    const img = new window.Image();
-    img.crossOrigin = "anonymous";
-    img.src = src;
-    img.onload = () => setImage(img);
-  }, [src]);
-  return image as HTMLImageElement | null;
+  color: string;
+  rotation: number;
 }
 
-const SHIRT_BOUNDS = { x: 60, y: 20, width: 480, height: 580 };
-// Vùng tương tác (hình chữ nhật ở giữa, từ vai trở xuống)
-const INTERACT_AREA = {
-  x: SHIRT_BOUNDS.x + 120,
-  y: SHIRT_BOUNDS.y + 80,
-  width: SHIRT_BOUNDS.width - 240,
-  height: SHIRT_BOUNDS.height - 140,
-};
+interface DesignImage {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  image: HTMLImageElement | null;
+  rotation: number;
+}
 
-const DesignPage: React.FC = () => {
-  const [side, setSide] = useState<Side>("front");
-  const [tool, setTool] = useState<Tool>("select");
-  const [design, setDesign] = useState<DesignState>({ front: [], back: [] });
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [textInput, setTextInput] = useState("Your text");
-  const [brushColor, setBrushColor] = useState("#000000");
-  const [brushSize, setBrushSize] = useState<number>(4);
-  const stageRef = useRef<any>(null);
+interface DesignLine {
+  points: number[];
+  color: string;
+  width: number;
+  isEraser: boolean;
+}
+
+interface DesignSide {
+  lines: DesignLine[];
+  texts: DesignText[];
+  images: DesignImage[];
+}
+
+interface DesignState {
+  front: DesignSide;
+  back: DesignSide;
+}
+
+// --- 2. Component Transformer (Khung điều khiển Resize/Rotate) ---
+
+const TransformerComponent: React.FC<{
+  selectedShapeName: string;
+  shapesRef: React.MutableRefObject<any[]>;
+}> = ({ selectedShapeName, shapesRef }) => {
   const trRef = useRef<any>(null);
 
-  const nodes = design[side];
+  React.useEffect(() => {
+    if (trRef.current) {
+      const selectedNode = shapesRef.current.find(
+        (node) => node.name() === selectedShapeName
+      );
 
-  const setNodes = (updater: (prev: Node[]) => Node[]) => {
-    setDesign((prev) => ({ ...prev, [side]: updater(prev[side]) }));
-  };
-
-  const handleUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const src = String(reader.result);
-      const id = `img-${Date.now()}`;
-      setNodes((prev) => [
-        ...prev,
-        {
-          id,
-          type: "image",
-          src,
-          x: INTERACT_AREA.x + 40,
-          y: INTERACT_AREA.y + 40,
-          width: 200,
-          height: 200,
-          scaleX: 1,
-          scaleY: 1,
-        },
-      ]);
-      setSelectedId(id);
-    };
-    reader.readAsDataURL(file);
-    return false; // prevent auto upload
-  };
-
-  const addText = () => {
-    const id = `txt-${Date.now()}`;
-    setNodes((prev) => [
-      ...prev,
-      {
-        id,
-        type: "text",
-        text: textInput,
-        x: INTERACT_AREA.x + 60,
-        y: INTERACT_AREA.y + 60,
-        fontSize: 24,
-        fill: "#111",
-      },
-    ]);
-    setSelectedId(id);
-  };
-
-  const startDrawRef = useRef<boolean>(false);
-  const lastDrawTs = useRef<number>(0);
-  const onMouseDown = (e: any) => {
-    if (tool !== "draw") return;
-    const pos = e.target.getStage().getPointerPosition();
-    if (!pos) return;
-    startDrawRef.current = true;
-    const id = `draw-${Date.now()}`;
-    const within = isWithinInteract(pos.x, pos.y);
-    const clamped = clampToInteract(pos.x, pos.y);
-    const p = within ? pos : clamped;
-    setNodes((prev) => [
-      ...prev,
-      {
-        id,
-        type: "draw",
-        x: 0,
-        y: 0,
-        points: [p.x, p.y],
-        stroke: brushColor as string,
-        strokeWidth: brushSize,
-      },
-    ]);
-    setSelectedId(id);
-  };
-  const onMouseMove = (e: any) => {
-    if (tool !== "draw" || !startDrawRef.current) return;
-    const stage = e.target.getStage();
-    const pos = stage.getPointerPosition();
-    if (!pos) return;
-    const now = performance.now();
-    if (now - lastDrawTs.current < 16) return; // throttle ~60fps
-    lastDrawTs.current = now;
-    const p = clampToInteract(pos.x, pos.y);
-    setNodes((prev) => {
-      const next = [...prev];
-      const idx = next.findIndex((n) => n.id === selectedId);
-      if (idx >= 0 && next[idx].type === "draw") {
-        const dn = next[idx] as DrawNode;
-        next[idx] = { ...dn, points: [...dn.points, p.x, p.y] };
+      if (selectedNode) {
+        trRef.current.nodes([selectedNode]);
+      } else {
+        trRef.current.nodes([]);
       }
-      return next;
-    });
-  };
-  const onMouseUp = () => {
-    startDrawRef.current = false;
-  };
 
-  const isWithinInteract = (x: number, y: number) =>
-    x >= INTERACT_AREA.x &&
-    x <= INTERACT_AREA.x + INTERACT_AREA.width &&
-    y >= INTERACT_AREA.y &&
-    y <= INTERACT_AREA.y + INTERACT_AREA.height;
-  const clampToInteract = (x: number, y: number) => ({
-    x: Math.min(
-      Math.max(x, INTERACT_AREA.x),
-      INTERACT_AREA.x + INTERACT_AREA.width
-    ),
-    y: Math.min(
-      Math.max(y, INTERACT_AREA.y),
-      INTERACT_AREA.y + INTERACT_AREA.height
-    ),
+      // Yêu cầu vẽ lại layer một cách an toàn
+      trRef.current.getLayer()?.batchDraw();
+    }
+  }, [selectedShapeName, shapesRef.current.length]);
+
+  return (
+    <Transformer
+      ref={trRef}
+      boundBoxFunc={(oldBox, newBox) => {
+        // giới hạn kích thước tối thiểu
+        if (newBox.width < 5 || newBox.height < 5) {
+          return oldBox;
+        }
+        return newBox;
+      }}
+    />
+  );
+};
+
+// --- 3. Component DesignPage Chính ---
+const DesignPage = () => {
+  // --- States và Assets ---
+  const [tshirtFrontImage] = useImage(frontImg);
+  const [tshirtBackImage] = useImage(backImg);
+
+  const [currentSide, setCurrentSide] = useState<"front" | "back">("front");
+
+  const [designState, setDesignState] = useState<DesignState>({
+    front: { lines: [], texts: [], images: [] },
+    back: { lines: [], texts: [], images: [] },
   });
 
-  const onSelect = (id?: string) => {
-    setSelectedId(id ?? null);
+  const [currentColor, setCurrentColor] = useState("#ff0000");
+  const [currentWidth, setCurrentWidth] = useState(5);
+  const [isErasing, setIsErasing] = useState(false);
+
+  const [newText, setNewText] = useState("Nhập text");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Lấy dữ liệu thiết kế hiện tại
+  const currentDesign = designState[currentSide];
+  const { lines, texts, images } = currentDesign;
+
+  // --- Refs ---
+  const isDrawing = useRef(false);
+  const stageRef = useRef<any>(null);
+  // Ref để lưu trữ các node Konva của Text và Image đang hiển thị
+  const shapeNodesRef = useRef<any[]>([]);
+
+  // Lấy ảnh nền áo hiện tại
+  const currentTshirtImage =
+    currentSide === "front" ? tshirtFrontImage : tshirtBackImage;
+
+  // Hàm cập nhật State chung
+  const updateDesignState = (newSideDesign: DesignSide) => {
+    setDesignState({
+      ...designState,
+      [currentSide]: newSideDesign,
+    });
   };
 
-  const onDragEnd = (id: string, x: number, y: number) => {
-    const clamped = clampToInteract(x, y);
-    setNodes((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, x: clamped.x, y: clamped.y } : n))
-    );
+  // --- Konva Handlers (Vẽ và Tẩy) ---
+
+  const handleMouseDown = (e: any) => {
+    if (selectedId) return;
+
+    isDrawing.current = true;
+    const stage = e.target.getStage();
+    const pos = stage.getPointerPosition();
+
+    const newLines = [
+      ...lines,
+      {
+        points: [pos.x, pos.y],
+        color: isErasing ? "#ffffff" : currentColor,
+        width: currentWidth,
+        isEraser: isErasing,
+      },
+    ];
+
+    updateDesignState({ ...currentDesign, lines: newLines });
   };
 
-  const onTransformEnd = (node: any, n: Node) => {
-    const konvaNode = node as any;
-    const newAttrs: Partial<Node> = {
-      x: konvaNode.x(),
-      y: konvaNode.y(),
-      rotation: konvaNode.rotation(),
-    } as any;
-    if (n.type === "image") {
-      (newAttrs as any).scaleX = konvaNode.scaleX();
-      (newAttrs as any).scaleY = konvaNode.scaleY();
+  const handleMouseMove = (e: any) => {
+    if (!isDrawing.current) return;
+    const stage = e.target.getStage();
+    const point = stage.getPointerPosition();
+    let lastLine = lines[lines.length - 1];
+    if (!lastLine) return;
+
+    lastLine.points = lastLine.points.concat([point.x, point.y]);
+
+    const newLines = lines.slice(0, lines.length - 1).concat(lastLine);
+    updateDesignState({ ...currentDesign, lines: newLines });
+  };
+
+  const handleMouseUp = () => {
+    isDrawing.current = false;
+  };
+
+  const handleStageClick = (e: any) => {
+    if (
+      e.target === e.target.getStage() ||
+      e.target.name() === "tshirt-background"
+    ) {
+      setSelectedId(null);
+      return;
     }
-    if (n.type === "text") {
-      // font size via transformer is not trivial; keep rotation/position only
+    const id = e.target.name();
+    if (id) {
+      setSelectedId(id);
     }
-    setNodes((prev) =>
-      prev.map((it) => (it.id === n.id ? ({ ...it, ...newAttrs } as Node) : it))
-    );
   };
 
-  const removeSelected = () => {
+  const CLIP_AREAS = {
+    front: {
+      x: 120,
+      y: 90,
+      width: 260,
+      height: 490,
+    },
+    back: {
+      x: 120,
+      y: 50,
+      width: 260,
+      height: 520,
+    },
+  };
+
+  // ✅ HÀM GIỚI HẠN VÙNG KÉO THẢ (DRAG BOUND)
+  const dragBoundHandler = (pos: { x: number; y: number }, node: any) => {
+    // ✅ Lấy VÙNG GIỚI HẠN hiện tại
+    const currentClipArea = CLIP_AREAS[currentSide];
+
+    const LIMIT_X = currentClipArea.x;
+    const LIMIT_Y = currentClipArea.y;
+    const LIMIT_W = currentClipArea.width;
+    const LIMIT_H = currentClipArea.height;
+
+    // Kích thước của đối tượng đang kéo (không đổi)
+    const objectWidth = node.width() * node.scaleX();
+    const objectHeight = node.height() * node.scaleY();
+
+    // Giới hạn Trái & Phải
+    const newX = Math.max(pos.x, LIMIT_X);
+    const finalX = Math.min(newX, LIMIT_X + LIMIT_W - objectWidth);
+
+    // Giới hạn Trên & Dưới
+    const newY = Math.max(pos.y, LIMIT_Y);
+    const finalY = Math.min(newY, LIMIT_Y + LIMIT_H - objectHeight);
+
+    return {
+      x: finalX,
+      y: finalY,
+    };
+  };
+
+  // --- Chức năng Thêm/Xóa/Cập nhật Đối tượng ---
+
+  const addText = () => {
+    if (!newText.trim()) return;
+    const newId = `text-${Date.now()}`;
+    const newTexts = [
+      ...texts,
+      {
+        id: newId,
+        x: 150,
+        y: 150,
+        text: newText,
+        fontSize: 30,
+        color: "#000000",
+        rotation: 0,
+      },
+    ];
+    updateDesignState({ ...currentDesign, texts: newTexts });
+    setSelectedId(newId);
+  };
+
+  const deleteSelected = () => {
     if (!selectedId) return;
-    setNodes((prev) => prev.filter((n) => n.id !== selectedId));
+
+    const isText = texts.some((t) => t.id === selectedId);
+
+    if (isText) {
+      const newTexts = texts.filter((t) => t.id !== selectedId);
+      updateDesignState({ ...currentDesign, texts: newTexts });
+    } else {
+      const newImages = images.filter((img) => img.id !== selectedId);
+      updateDesignState({ ...currentDesign, images: newImages });
+    }
+
     setSelectedId(null);
   };
 
-  const exportPNG = () => {
-    const uri = stageRef.current?.toDataURL({ pixelRatio: 2 });
-    if (!uri) return;
-    const a = document.createElement("a");
-    a.href = uri;
-    a.download = `tshirt-${side}.png`;
-    a.click();
-    message.success("Đã xuất ảnh PNG");
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewText(value);
+
+    // Cập nhật text của đối tượng đang chọn
+    if (selectedId && texts.some((t) => t.id === selectedId)) {
+      const newTexts = texts.map((t) =>
+        t.id === selectedId ? { ...t, text: value } : t
+      );
+      updateDesignState({ ...currentDesign, texts: newTexts });
+    }
   };
 
-  const ShirtBackground = React.memo(() => {
-    const src = side === "front" ? "/front.svg" : "/back.svg";
-    const bgImg = useHtmlImage(src);
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const newId = `image-${Date.now()}`;
+        const newImages = [
+          ...images,
+          {
+            id: newId,
+            x: 150,
+            y: 150,
+            width: 100,
+            height: 100,
+            image: img,
+            rotation: 0,
+          },
+        ];
+        updateDesignState({ ...currentDesign, images: newImages });
+        setSelectedId(newId);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  // Cập nhật vị trí sau khi kéo thả (cho Text và Image)
+  const handleDragEnd = (e: any, type: "text" | "image") => {
+    const id = e.target.name();
+    const newX = e.target.x();
+    const newY = e.target.y();
+
+    if (type === "text") {
+      const newTexts = texts.map((t) =>
+        t.id === id ? { ...t, x: newX, y: newY } : t
+      );
+      updateDesignState({ ...currentDesign, texts: newTexts });
+    } else {
+      const newImages = images.map((img) =>
+        img.id === id ? { ...img, x: newX, y: newY } : img
+      );
+      updateDesignState({ ...currentDesign, images: newImages });
+    }
+  };
+
+  // Cập nhật kích thước sau khi transform (cho Text và Image)
+  // Cập nhật kích thước sau khi transform (cho Text và Image)
+  const handleTransformEnd = (e: any, type: "text" | "image") => {
+    const node = e.target;
+    const scaleX = node.scaleX();
+    const scaleY = node.scaleY();
+    const newRotation = node.rotation();
+
+    const id = node.name();
+
+    // Tìm đối tượng gốc từ state hiện tại
+    const isText = type === "text";
+
+    // Gán kiểu cụ thể để TypeScript không bị nhầm lẫn
+    const originalText = isText
+      ? (texts.find((t) => t.id === id) as DesignText | undefined)
+      : undefined;
+
+    const originalImage = !isText
+      ? (images.find((img) => img.id === id) as DesignImage | undefined)
+      : undefined;
+
+    if (!originalText && !originalImage) return;
+
+    // Reset scale Konva về 1
+    node.scaleX(1);
+    node.scaleY(1);
+
+    const newX = node.x();
+    const newY = node.y();
+
+    if (isText && originalText) {
+      // --- XỬ LÝ TEXT ---
+      let newFontSize = originalText.fontSize;
+
+      // Tính toán FontSize mới (sử dụng scaleX vì Text thường resize đồng đều)
+      // Giới hạn font tối thiểu là 5
+      newFontSize = Math.max(5, Math.round(newFontSize * scaleX));
+
+      // Cập nhật lại Konva Node để Konva tính lại kích thước bounding box
+      node.fontSize(newFontSize);
+
+      // Cập nhật State Text
+      const newTexts = texts.map((t) =>
+        t.id === id
+          ? {
+              ...t,
+              x: newX,
+              y: newY,
+              rotation: newRotation,
+              fontSize: newFontSize,
+            }
+          : t
+      );
+      updateDesignState({ ...currentDesign, texts: newTexts });
+    } else if (originalImage) {
+      // --- XỬ LÝ IMAGE ---
+
+      // Tính toán Width/Height mới
+      const newWidth = originalImage.width * scaleX;
+      const newHeight = originalImage.height * scaleY;
+
+      // Cập nhật State Image
+      const newImages = images.map((img) =>
+        img.id === id
+          ? {
+              ...img,
+              x: newX,
+              y: newY,
+              width: newWidth,
+              height: newHeight,
+              rotation: newRotation,
+            }
+          : img
+      );
+      updateDesignState({ ...currentDesign, images: newImages });
+    }
+  };
+
+  // --- Chức năng Xuất Ảnh Tổng Hợp (2 ảnh) ---
+
+  const handleExportAll = () => {
+    // 1. Lấy ảnh mặt trước
+    setSelectedId(null);
+    const frontUri = stageRef.current.toDataURL({ pixelRatio: 2 });
+
+    // 2. Tạm thời chuyển sang mặt sau để render
+    const originalSide = currentSide;
+    setCurrentSide("back");
+
+    // Dùng setTimeout để đảm bảo Konva đã render mặt sau
+    setTimeout(() => {
+      if (!stageRef.current) return;
+
+      // 3. Lấy ảnh mặt sau
+      const backUri = stageRef.current.toDataURL({ pixelRatio: 2 });
+
+      // 4. Gộp 2 ảnh vào 1 Canvas mới
+      const finalCanvas = document.createElement("canvas");
+      const ctx = finalCanvas.getContext("2d");
+
+      const FINAL_W = 1000; // 500 * 2 (pixelRatio)
+      const FINAL_H = 1200; // 600 * 2
+      const SPACING = 50;
+
+      finalCanvas.width = FINAL_W * 2 + SPACING;
+      finalCanvas.height = FINAL_H;
+
+      const frontImgObj = new Image();
+      frontImgObj.onload = () => {
+        ctx?.drawImage(frontImgObj, 0, 0, FINAL_W, FINAL_H);
+
+        const backImgObj = new Image();
+        backImgObj.onload = () => {
+          ctx?.drawImage(backImgObj, FINAL_W + SPACING, 0, FINAL_W, FINAL_H);
+
+          // Xuất ảnh cuối cùng
+          const finalUri = finalCanvas.toDataURL("image/png", 1.0);
+          const link = document.createElement("a");
+          link.download = "tshirt-design-front-back.png";
+          link.href = finalUri;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          // 5. Quay lại mặt thiết kế ban đầu
+          setCurrentSide(originalSide);
+        };
+        backImgObj.src = backUri;
+      };
+      frontImgObj.src = frontUri;
+    }, 100);
+  };
+
+  // Chức năng xuất trạng thái để lưu (JSON)
+  const handleExportJSON = () => {
+    const jsonState = {
+      front: {
+        lines: designState.front.lines,
+        texts: designState.front.texts,
+        images: designState.front.images.map((img) => ({
+          ...img,
+          // Chỉ lưu placeholder, không lưu dữ liệu ảnh base64
+          image: `image-data-${img.id}`,
+        })),
+      },
+      back: {
+        lines: designState.back.lines,
+        texts: designState.back.texts,
+        images: designState.back.images.map((img) => ({
+          ...img,
+          image: `image-data-${img.id}`,
+        })),
+      },
+    };
+
+    const json = JSON.stringify(jsonState, null, 2);
+
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = "tshirt-design.json";
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // --- Render Functions ---
+
+  // Hàm render các đối tượng Text và Image
+  const renderDesignElements = (
+    textsToRender: DesignText[],
+    imagesToRender: DesignImage[]
+  ) => {
+    // ✅ Xóa sạch refs trước khi render để chỉ chứa các Node của mặt hiện tại
+    shapeNodesRef.current = [];
+
     return (
-      <Group>
-        {/* Background image (front/back) */}
-        {bgImg ? (
-          <KImage
-            image={bgImg}
-            x={SHIRT_BOUNDS.x}
-            y={SHIRT_BOUNDS.y}
-            width={SHIRT_BOUNDS.width}
-            height={SHIRT_BOUNDS.height}
-            listening={false}
+      <>
+        {textsToRender.map((t) => (
+          <Text
+            key={t.id}
+            name={t.id}
+            text={t.text}
+            x={t.x}
+            y={t.y}
+            fontSize={t.fontSize}
+            fill={t.color}
+            draggable
+            dragBoundFunc={function (this: any, pos: { x: number; y: number }) {
+              return dragBoundHandler(pos, this);
+            }}
+            rotation={t.rotation}
+            onClick={handleStageClick}
+            onTap={handleStageClick}
+            onDragEnd={(e) => handleDragEnd(e, "text")}
+            onTransformEnd={(e) => handleTransformEnd(e, "text")}
+            ref={(node) => {
+              // Thêm node vào danh sách refs của mặt đang hiển thị
+              if (
+                node &&
+                !shapeNodesRef.current.some((n) => n.name() === t.id)
+              ) {
+                shapeNodesRef.current.push(node);
+              }
+            }}
           />
-        ) : (
-          <Rect
-            x={SHIRT_BOUNDS.x}
-            y={SHIRT_BOUNDS.y}
-            width={SHIRT_BOUNDS.width}
-            height={SHIRT_BOUNDS.height}
-            cornerRadius={30}
-            fill="#f7f7f7"
-            stroke="#bfbfbf"
-            strokeWidth={3}
-            listening={false}
-          />
+        ))}
+
+        {imagesToRender.map(
+          (img) =>
+            img.image && (
+              <KonvaImage
+                key={img.id}
+                name={img.id}
+                image={img.image}
+                x={img.x}
+                y={img.y}
+                width={img.width}
+                height={img.height}
+                draggable
+                dragBoundFunc={function (
+                  this: any,
+                  pos: { x: number; y: number }
+                ) {
+                  return dragBoundHandler(pos, this);
+                }}
+                rotation={img.rotation}
+                onClick={handleStageClick}
+                onTap={handleStageClick}
+                onDragEnd={(e) => handleDragEnd(e, "image")}
+                onTransformEnd={(e) => handleTransformEnd(e, "image")}
+                ref={(node) => {
+                  // Thêm node vào danh sách refs của mặt đang hiển thị
+                  if (
+                    node &&
+                    !shapeNodesRef.current.some((n) => n.name() === img.id)
+                  ) {
+                    shapeNodesRef.current.push(node);
+                  }
+                }}
+              />
+            )
         )}
-        {/* (Guide removed as requested) */}
-      </Group>
+      </>
+    );
+  };
+
+  // Xử lý các Line cho Eraser
+  const linesToRender = lines.map((line) => {
+    const strokeColor = line.isEraser ? "#ffffff" : line.color;
+    const strokeWidth = line.isEraser ? line.width + 10 : line.width;
+
+    return (
+      <Line
+        key={line.points.join("")}
+        points={line.points}
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
+        tension={0.5}
+        lineCap="round"
+        lineJoin="round"
+        globalCompositeOperation={
+          line.isEraser ? "destination-out" : "source-over"
+        }
+      />
     );
   });
 
-  const NodeRenderer: React.FC<{ node: Node; isSelected: boolean }> = ({
-    node,
-    isSelected,
-  }) => {
-    const shapeRef = useRef<any>(null);
-    const image = useHtmlImage(node.type === "image" ? node.src : undefined);
-
-    React.useEffect(() => {
-      if (isSelected && shapeRef.current && trRef.current) {
-        trRef.current.nodes([shapeRef.current]);
-        trRef.current.getLayer()?.batchDraw();
-      }
-    }, [isSelected]);
-
-    if (node.type === "image") {
-      return (
-        <>
-          <KImage
-            ref={shapeRef}
-            image={image as any}
-            x={node.x}
-            y={node.y}
-            rotation={node.rotation || 0}
-            scaleX={node.scaleX ?? 1}
-            scaleY={node.scaleY ?? 1}
-            width={node.width}
-            height={node.height}
-            draggable
-            dragBoundFunc={(pos) => ({
-              x: Math.min(
-                Math.max(pos.x, INTERACT_AREA.x),
-                INTERACT_AREA.x + INTERACT_AREA.width
-              ),
-              y: Math.min(
-                Math.max(pos.y, INTERACT_AREA.y),
-                INTERACT_AREA.y + INTERACT_AREA.height
-              ),
-            })}
-            onClick={() => onSelect(node.id)}
-            onTap={() => onSelect(node.id)}
-            onDragEnd={(e: any) => onDragEnd(node.id, e.target.x(), e.target.y())}
-            onTransformEnd={(e: any) => onTransformEnd(e.target, node)}
-          />
-          {isSelected && (
-            <Transformer
-              ref={trRef}
-              rotateEnabled
-              keepRatio
-              boundBoxFunc={(oldBox, newBox) => {
-                const withinX =
-                  newBox.x >= INTERACT_AREA.x &&
-                  newBox.x + newBox.width <= INTERACT_AREA.x + INTERACT_AREA.width;
-                const withinY =
-                  newBox.y >= INTERACT_AREA.y &&
-                  newBox.y + newBox.height <= INTERACT_AREA.y + INTERACT_AREA.height;
-                return withinX && withinY ? newBox : oldBox;
-              }}
-              enabledAnchors={[
-                "middle-left",
-                "middle-right",
-                "top-left",
-                "top-right",
-                "bottom-left",
-                "bottom-right",
-              ]}
-            />
-          )}
-        </>
-      );
-    }
-
-    if (node.type === "text") {
-      return (
-        <>
-          <KText
-            ref={shapeRef}
-            text={node.text}
-            x={node.x}
-            y={node.y}
-            fontSize={node.fontSize}
-            fill={node.fill}
-            rotation={node.rotation || 0}
-            draggable
-            dragBoundFunc={(pos) => ({
-              x: Math.min(
-                Math.max(pos.x, INTERACT_AREA.x),
-                INTERACT_AREA.x + INTERACT_AREA.width
-              ),
-              y: Math.min(
-                Math.max(pos.y, INTERACT_AREA.y),
-                INTERACT_AREA.y + INTERACT_AREA.height
-              ),
-            })}
-            onClick={() => onSelect(node.id)}
-            onTap={() => onSelect(node.id)}
-            onDragEnd={(e: any) => onDragEnd(node.id, e.target.x(), e.target.y())}
-            onTransformEnd={(e: any) => onTransformEnd(e.target, node)}
-          />
-          {isSelected && (
-            <Transformer
-              ref={trRef}
-              boundBoxFunc={(oldBox, newBox) => {
-                const withinX =
-                  newBox.x >= SHIRT_BOUNDS.x &&
-                  newBox.x + newBox.width <= SHIRT_BOUNDS.x + SHIRT_BOUNDS.width;
-                const withinY =
-                  newBox.y >= SHIRT_BOUNDS.y &&
-                  newBox.y + newBox.height <= SHIRT_BOUNDS.y + SHIRT_BOUNDS.height;
-                return withinX && withinY ? newBox : oldBox;
-              }}
-              enabledAnchors={[
-                "middle-left",
-                "middle-right",
-                "top-left",
-                "top-right",
-                "bottom-left",
-                "bottom-right",
-              ]}
-            />
-          )}
-        </>
-      );
-    }
-
-    // draw
-    return (
-      <Line
-        points={(node as DrawNode).points}
-        stroke={(node as DrawNode).stroke}
-        strokeWidth={(node as DrawNode).strokeWidth}
-        lineCap="round"
-        lineJoin="round"
-        listening={false}
-      />
-    );
-  };
+  const textSelected = texts.some((t) => t.id === selectedId);
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Content style={{ padding: 24 }}>
-        <Card>
-          <Space direction="vertical" style={{ width: "100%" }} size="large">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 16,
+    <div className="p-4 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Thiết Kế Áo Phông Của Bạn -{" "}
+        {currentSide === "front" ? "Mặt Trước" : "Mặt Sau"}
+      </h1>
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* --- Thanh Công Cụ (Toolbox) --- */}
+        <div className="lg:w-1/3 bg-white p-4 rounded-lg shadow-md h-fit">
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Chọn Mặt Thiết Kế
+          </h2>
+          <div className="flex space-x-2 mb-4">
+            <button
+              onClick={() => {
+                setSelectedId(null);
+                setCurrentSide("front");
               }}
+              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition duration-200 ${
+                currentSide === "front"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
             >
-              <Space>
-                <Title level={4} style={{ margin: 0 }}>
-                  Tùy chỉnh áo thun (2D)
-                </Title>
-                <Segmented
-                  options={[
-                    { label: "Mặt trước", value: "front" },
-                    { label: "Mặt sau", value: "back" },
-                  ]}
-                  value={side}
-                  onChange={(val) => setSide(val as Side)}
-                />
-              </Space>
+              Mặt Trước
+            </button>
+            <button
+              onClick={() => {
+                setSelectedId(null);
+                setCurrentSide("back");
+              }}
+              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition duration-200 ${
+                currentSide === "back"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Mặt Sau
+            </button>
+          </div>
 
-              <Space wrap>
-                <Tooltip title="Chọn (di chuyển/biến đổi)">
-                  <Button
-                    type={tool === "select" ? "primary" : "default"}
-                    icon={<SelectOutlined />}
-                    onClick={() => setTool("select")}
-                  />
-                </Tooltip>
-                <Upload
-                  beforeUpload={handleUpload}
-                  showUploadList={false}
-                  accept="image/*"
-                >
-                  <Tooltip title="Thêm ảnh">
-                    <Button
-                      type={tool === "image" ? "primary" : "default"}
-                      icon={<UploadOutlined />}
-                      onClick={() => setTool("image")}
-                    />
-                  </Tooltip>
-                </Upload>
-                <Tooltip title="Thêm chữ">
-                  <Button
-                    type={tool === "text" ? "primary" : "default"}
-                    icon={<FontSizeOutlined />}
-                    onClick={() => {
-                      setTool("text");
-                      addText();
-                    }}
-                  />
-                </Tooltip>
-                <Tooltip title="Vẽ tự do">
-                  <Button
-                    type={tool === "draw" ? "primary" : "default"}
-                    icon={<EditOutlined />}
-                    onClick={() => setTool("draw")}
-                  />
-                </Tooltip>
-                <Tooltip title="Xóa đối tượng được chọn">
-                  <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={removeSelected}
-                    disabled={!selectedId}
-                  />
-                </Tooltip>
-                <Tooltip title="Xuất PNG">
-                  <Button icon={<DownloadOutlined />} onClick={exportPNG} />
-                </Tooltip>
-              </Space>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">Công Cụ</h2>
+
+          {/* 1. Cài đặt Bút */}
+          <div className="mb-4 p-3 border rounded-md">
+            <h3 className="font-medium mb-2 flex items-center">
+              <span role="img" aria-label="pen">
+                🎨
+              </span>{" "}
+              Bút Vẽ & Tẩy
+            </h3>
+            <div className="flex items-center space-x-4 mb-2">
+              <label className="text-sm">Màu:</label>
+              <input
+                type="color"
+                value={currentColor}
+                onChange={(e) => setCurrentColor(e.target.value)}
+                className="w-12 h-8"
+              />
             </div>
+            <div className="mb-3">
+              <label className="text-sm block">
+                Độ Dày: <span className="font-bold">{currentWidth}px</span>
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={currentWidth}
+                onChange={(e) => setCurrentWidth(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+            </div>
+            <button
+              onClick={() => setIsErasing(!isErasing)}
+              className={`w-full py-2 px-4 rounded-lg text-white font-semibold transition duration-200 ${
+                isErasing
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-yellow-500 hover:bg-yellow-600"
+              }`}
+            >
+              {isErasing ? "✅ Tắt Tẩy" : "🧼 Chế Độ Tẩy"}
+            </button>
+          </div>
 
-            <Space style={{ display: "flex", justifyContent: "space-between" }}>
-              <Space>
-                <Text>Text:</Text>
-                <Input
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  style={{ width: 240 }}
-                />
-              </Space>
-              <Space>
-                <Text>Màu bút:</Text>
-                <ColorPicker
-                  value={brushColor}
-                  onChange={(c) => setBrushColor(c.toHexString())}
-                />
-                <Text>Cỡ bút:</Text>
-                <Input
-                  type="number"
-                  value={brushSize}
-                  onChange={(e) => setBrushSize(Number(e.target.value) || 1)}
-                  style={{ width: 80 }}
-                />
-              </Space>
-            </Space>
+          {/* 2. Thêm Văn Bản (Text) */}
+          <div className="mb-4 p-3 border rounded-md">
+            <h3 className="font-medium mb-2 flex items-center">
+              <span role="img" aria-label="text">
+                🖋️
+              </span>{" "}
+              Thêm Văn Bản
+            </h3>
+            <input
+              type="text"
+              value={newText}
+              onChange={handleTextChange}
+              placeholder="Nhập nội dung văn bản..."
+              className="w-full p-2 border border-gray-300 rounded-md mb-2"
+            />
+            <button
+              onClick={addText}
+              className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 font-semibold transition duration-200"
+              disabled={!newText.trim()}
+            >
+              ➕ Thêm Text
+            </button>
+          </div>
 
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <Stage
-                ref={stageRef}
-                width={600}
-                height={640}
-                onMouseDown={(e: any) => onMouseDown(e)}
-                onMouseMove={(e: any) => onMouseMove(e)}
-                onMouseUp={() => onMouseUp()}
-                style={{ background: "transparent" }}
+          {/* 3. Thêm Logo/Ảnh */}
+          <div className="mb-4 p-3 border rounded-md">
+            <h3 className="font-medium mb-2 flex items-center">
+              <span role="img" aria-label="image">
+                🖼️
+              </span>{" "}
+              Tải Ảnh Lên
+            </h3>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+            />
+          </div>
+
+          {/* 4. Thao tác Chung */}
+          <div className="p-3 border rounded-md">
+            <h3 className="font-medium mb-2 flex items-center">
+              <span role="img" aria-label="actions">
+                ⚙️
+              </span>{" "}
+              Thao Tác
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() =>
+                  updateDesignState({ ...currentDesign, lines: [] })
+                }
+                className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-400 font-semibold transition duration-200"
               >
-                {/* Background layer: non-interactive, not part of hit graph */}
-                <Layer listening={false} hitGraphEnabled={false}>
-                  <ShirtBackground />
-                </Layer>
-
-                {/* Content layer: draw directly over the shirt */}
-                <Layer onClick={() => onSelect(undefined)} perfectDrawEnabled={false}>
-                  {nodes.map((n) => (
-                    <NodeRenderer
-                      key={n.id}
-                      node={n}
-                      isSelected={selectedId === n.id}
-                    />
-                  ))}
-                </Layer>
-              </Stage>
+                🗑️ Xóa Vẽ
+              </button>
+              <button
+                onClick={deleteSelected}
+                disabled={!selectedId}
+                className={`py-2 px-4 rounded-lg font-semibold transition duration-200 ${
+                  selectedId
+                    ? "bg-red-500 text-white hover:bg-red-600"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                ❌ Xóa {selectedId ? (textSelected ? "Text" : "Ảnh") : ""}
+              </button>
+              <button
+                onClick={handleExportAll}
+                className="col-span-2 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 font-semibold transition duration-200"
+              >
+                🖼️ Xuất Cả 2 Mặt (PNG)
+              </button>
+              <button
+                onClick={handleExportJSON}
+                className="col-span-2 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 font-semibold transition duration-200"
+              >
+                📤 Xuất Trạng Thái (JSON)
+              </button>
             </div>
-          </Space>
-        </Card>
-      </Content>
-    </Layout>
+          </div>
+        </div>
+
+        {/* --- Khu vực Canvas --- */}
+        <div className="lg:w-2/3 flex justify-center items-start p-4 bg-white rounded-lg shadow-xl overflow-hidden">
+          <Stage
+            ref={stageRef}
+            width={500}
+            height={600}
+            className="border border-gray-300 shadow-lg"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseup={handleMouseUp}
+            onClick={handleStageClick}
+            onContextMenu={(e) => {
+              e.evt.preventDefault();
+              setSelectedId(null);
+            }}
+          >
+            <Layer>
+              {/* 1. Áo (Nền) */}
+              <KonvaImage
+                image={currentTshirtImage} // Dùng ảnh tùy thuộc vào currentSide
+                width={500}
+                height={600}
+                name="tshirt-background"
+              />
+
+              {/* 2. Các Nét Vẽ & Tẩy (Giữ nguyên vùng clip) */}
+              <Group
+                clipX={CLIP_AREAS[currentSide].x} // Sử dụng giá trị mới
+                clipY={CLIP_AREAS[currentSide].y} // Sử dụng giá trị mới
+                clipWidth={CLIP_AREAS[currentSide].width} // Sử dụng giá trị mới
+                clipHeight={CLIP_AREAS[currentSide].height} // Sử dụng giá trị mới
+                name="design-area"
+              >
+                {linesToRender}
+              </Group>
+
+              {/* 3 & 4. Văn Bản (Text) và Ảnh/Logo */}
+              {renderDesignElements(texts, images)}
+
+              {/* 5. Transformer (Điều khiển) */}
+              <TransformerComponent
+                selectedShapeName={selectedId || ""}
+                shapesRef={shapeNodesRef}
+              />
+            </Layer>
+          </Stage>
+        </div>
+      </div>
+    </div>
   );
 };
 
