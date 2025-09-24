@@ -109,7 +109,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .setStatusCode(HttpStatus.BAD_REQUEST);
         }
 
-        if (dto.getAmount() == null || order.getTotalAmount().compareTo(dto.getAmount()) >= 0) {
+        if (dto.getAmount() == null || order.getTotalAmount().compareTo(dto.getAmount()) > 0) {
             throw new CommonException()
                     .setErrorCode(SystemCodeEnum.ERROR_018.getCode(), messageResource)
                     .setStatusCode(HttpStatus.BAD_REQUEST);

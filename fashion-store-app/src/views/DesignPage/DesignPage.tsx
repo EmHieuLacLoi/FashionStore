@@ -29,12 +29,17 @@ import {
   DownloadOutlined,
   UploadOutlined,
   SwapOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 
 import frontImg from "@assets/images/front.svg";
 import backImg from "@assets/images/back.svg";
 import type { RcFile } from "antd/es/upload";
 import { useTranslation } from "react-i18next";
+import { uploadImage } from "@services/UploadService";
+import { useCreateDesign } from "@hooks/DesignHook";
+import { useGlobalContext } from "../../GlobalContext";
+import { useGetProductDetail } from "@hooks/ProductHooks";
 
 const { Sider, Content } = Layout;
 interface DesignText {
@@ -113,8 +118,11 @@ const TransformerComponent: React.FC<{
 const DesignPage = () => {
   const [tshirtFrontImage] = useImage(frontImg);
   const [tshirtBackImage] = useImage(backImg);
+  const useCreateDesignMutation = useCreateDesign();
 
   const { t } = useTranslation();
+
+  const { addToCart } = useGlobalContext();
 
   const [currentSide, setCurrentSide] = useState<"front" | "back">("front");
 
@@ -141,6 +149,13 @@ const DesignPage = () => {
 
   const currentTshirtImage =
     currentSide === "front" ? tshirtFrontImage : tshirtBackImage;
+
+  const { data: productData } = useGetProductDetail(15, {
+    enabled: true,
+    onError: () => {
+      message.error(t("product_detail_page.error.product_detail"));
+    },
+  });
 
   const updateDesignState = (newSideDesign: DesignSide) => {
     setDesignState({
@@ -462,38 +477,101 @@ const DesignPage = () => {
     }, 100);
   };
 
-  const handleExportJSON = () => {
-    const jsonState = {
-      front: {
-        lines: designState.front.lines,
-        texts: designState.front.texts,
-        images: designState.front.images.map((img) => ({
-          ...img,
-          image: `image-data-${img.id}`,
-        })),
-      },
-      back: {
-        lines: designState.back.lines,
-        texts: designState.back.texts,
-        images: designState.back.images.map((img) => ({
-          ...img,
-          image: `image-data-${img.id}`,
-        })),
-      },
-    };
+  const exportCurrentStageAsFile = (side: "front" | "back"): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const stage = stageRef.current;
+      if (!stage) {
+        reject(new Error("Stage reference is null"));
+        return;
+      }
 
-    const json = JSON.stringify(jsonState, null, 2);
+      const dataURL = stage.toDataURL({
+        mimeType: "image/png",
+        quality: 1.0,
+        pixelRatio: 2,
+      });
 
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "tshirt-design.json";
-    link.href = url;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    message.success("Xuất trạng thái JSON thành công!");
+      fetch(dataURL)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const file = new File([blob], `${side}-design-${Date.now()}.png`, {
+            type: "image/png",
+          });
+          resolve(file);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  };
+
+  const handleAddToCart = async () => {
+    setSelectedId(null);
+
+    message.loading({
+      content: t("design_page.exporting_and_uploading"),
+      key: "uploading",
+      duration: 0,
+    });
+
+    try {
+      const originalSide = currentSide;
+
+      if (originalSide !== "front") setCurrentSide("front");
+      await new Promise((r) => setTimeout(r, 100));
+
+      const frontFile = await exportCurrentStageAsFile("front");
+      const frontFormData = new FormData();
+      frontFormData.append("file", frontFile);
+      const frontResponse = await uploadImage(frontFormData);
+      const frontImageUrl = frontResponse.url;
+
+      if (originalSide !== "back") setCurrentSide("back");
+      await new Promise((r) => setTimeout(r, 100));
+
+      const backFile = await exportCurrentStageAsFile("back");
+      const backFormData = new FormData();
+      backFormData.append("file", backFile);
+      const backResponse = await uploadImage(backFormData);
+      const backImageUrl = backResponse.url;
+
+      if (currentSide !== originalSide) setCurrentSide(originalSide);
+
+      const designData = {
+        front_image_url: frontImageUrl,
+        back_image_url: backImageUrl,
+      };
+
+      const res = await useCreateDesignMutation.mutateAsync(designData);
+
+      const product = productData?.data;
+      const variants = product?.variants?.[0];
+
+      addToCart({
+        key: res?.data?.id.toString(),
+        productVariantId: variants?.id || 15,
+        name: product?.description || "Custom Design",
+        price: product?.price || 299000,
+        image: frontImageUrl,
+        quantity: 1,
+        designId: res?.data?.id,
+        color: variants?.color || "Trắng",
+        size: variants?.size || "Oversize",
+      });
+
+      message.success({
+        content: t("design_page.add_to_cart_success"),
+        key: "uploading",
+        duration: 3,
+      });
+    } catch (error) {
+      message.error({
+        content: t("design_page.upload_failed_generic"),
+        key: "uploading",
+        duration: 3,
+      });
+      console.error("Add to Cart/Save Design Error:", error);
+    }
   };
 
   const renderDesignElements = (
@@ -607,11 +685,26 @@ const DesignPage = () => {
             fontSize: "24px",
             fontWeight: "bold",
             textAlign: "center",
-            marginBottom: "16px",
+            marginBottom: "8px",
           }}
         >
           {t("design_page.title")}
         </h1>
+
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "8px",
+            borderRadius: "4px",
+            backgroundColor: "#f5f5f5",
+            border: "1px solid #e0e0e0",
+            color: "#8c8c8c",
+            fontSize: "12px",
+            textAlign: "center",
+          }}
+        >
+          {t("design_page.note")}
+        </div>
 
         <Menu
           mode="horizontal"
@@ -752,20 +845,20 @@ const DesignPage = () => {
           </Button>
           <Button
             type="primary"
-            icon={<DownloadOutlined />}
-            onClick={handleExportAll}
-            block
+            icon={<ShoppingCartOutlined />}
+            onClick={handleAddToCart}
             style={{ marginBottom: "8px" }}
+            block
           >
-            {t("design_page.export_all")}
+            {t("design_page.add_to_cart")}
           </Button>
           <Button
             type="default"
-            icon={<UploadOutlined />}
-            onClick={handleExportJSON}
+            icon={<DownloadOutlined />}
+            onClick={handleExportAll}
             block
           >
-            {t("design_page.export_json")}
+            {t("design_page.export_all")}
           </Button>
         </div>
       </Sider>

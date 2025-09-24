@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202509071430
+      author: vohieu
+      comment: Insert data to table product item special
+      sql: >
+        INSERT INTO `products` (`name`, `description`, `price`, `stock_quantity`, `category_id`, `created_by`, `updated_by`, `is_available`) 
+        VALUES ('Áo custom', 'Áo custom', '299000', '99', '1', '1', '1', '1');
+        
+        INSERT INTO `product_variants` (`product_id`, `color`, `size`, `stock_quantity`, `created_by`) 
+        VALUES ('15', 'Trắng', 'Oversize', '99', '1');

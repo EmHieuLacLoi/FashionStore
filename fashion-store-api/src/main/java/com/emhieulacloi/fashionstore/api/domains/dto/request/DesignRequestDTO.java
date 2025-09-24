@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class DesignRequestDTO {
     private Long id;
 
-    @NotNull(message = "User ID cannot be null")
     @JsonProperty("user_id")
     private Long userId;
 

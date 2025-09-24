@@ -1,5 +1,6 @@
 package com.emhieulacloi.fashionstore.api.service.impl;
 
+import com.emhieulacloi.fashionstore.api.auth.AuthUtils;
 import com.emhieulacloi.fashionstore.api.common.component.MessageResource;
 import com.emhieulacloi.fashionstore.api.common.exception.CommonException;
 import com.emhieulacloi.fashionstore.api.domains.dto.request.DesignRequestDTO;
@@ -28,6 +29,9 @@ public class DesignServiceImpl implements DesignService {
 
     @Override
     public DesignResponseDTO save(DesignRequestDTO dto) {
+        Long currentUserId = AuthUtils.getCurrentUserId();
+        dto.setUserId(currentUserId);
+
         Design design = designMapper.toEntity(dto);
 
         Design savedDesign = designRepository.save(design);
@@ -37,6 +41,9 @@ public class DesignServiceImpl implements DesignService {
 
     @Override
     public DesignResponseDTO update(Long id, DesignRequestDTO dto) {
+        Long currentUserId = AuthUtils.getCurrentUserId();
+        dto.setUserId(currentUserId);
+
         Design existingDesign = designRepository.findById(id)
                 .orElseThrow(() -> new CommonException()
                         .setErrorCode(SystemCodeEnum.ERROR_005.getCode(), messageResource)

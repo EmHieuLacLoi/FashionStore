@@ -18,5 +18,11 @@
   "export_all": "Export Image",
   "selected_object": "Selected Object",
   "text": "Text",
-  "image": "Image"
+  "image": "Image",
+  "add_to_cart": "Add to Cart",
+  "note": "Note: Please login/register before drawing to add to cart!",
+  "export_error_blob": "Error when exporting image",
+  "add_to_cart_success": "Add to cart success!",
+  "exporting_and_uploading": "Saving design",
+  "upload_failed_generic": "Upload failed"
 }

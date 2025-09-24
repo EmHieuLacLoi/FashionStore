@@ -154,7 +154,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
           <div style={{ position: "relative" }}>
             <img
               alt={product.name}
-              src={product.image_url[0]}
+              src={product.image_url?.[0]}
               style={{ width: "100%", height: 200, objectFit: "cover" }}
             />
             {discount > 0 && (
@@ -229,7 +229,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ onProductClick }) => {
             <div style={{ position: "relative" }}>
               <img
                 alt={product.name}
-                src={product.image_url[0]}
+                src={product.image_url?.[0]}
                 style={{ width: "100%", height: 150, objectFit: "cover" }}
               />
               {discount && <Badge.Ribbon text={`-${discount}%`} color="red" />}

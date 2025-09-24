@@ -34,6 +34,7 @@ export type CartItem = {
   price: number;
   image?: string;
   quantity: number;
+  designId?: number;
 };
 
 const GlobalContext = createContext({} as GlobalContextProps);
@@ -87,7 +88,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
     const products = productData.data.content.map((product: Product) => {
       const imageUrlsArray = JSON.parse(product.image_url as string);
 
-      const fullImageUrls = imageUrlsArray.map(
+      const fullImageUrls = imageUrlsArray?.map(
         (publicId: string) => `${cloudinaryUrl}${publicId}`
       );
 
@@ -97,7 +98,11 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
       };
     });
 
-    setAllProducts(products);
+    const filteredProducts = products.filter(
+      (product: Product) => product.id !== 15
+    );
+
+    setAllProducts(filteredProducts);
   }, [productData]);
 
   useEffect(() => {

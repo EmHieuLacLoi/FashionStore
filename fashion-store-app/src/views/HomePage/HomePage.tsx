@@ -108,7 +108,7 @@ const HomePage: React.FC = () => {
                     <div className="product-image-container">
                       <img
                         alt="product"
-                        src={product.image_url[0]}
+                        src={product.image_url?.[0]}
                         className="product-image"
                       />
                     </div>
@@ -139,17 +139,17 @@ const HomePage: React.FC = () => {
             const collections = [
               {
                 title: t("common.premium"),
-                img: allProducts[allProducts.length - 1]?.image_url[0],
+                img: allProducts[allProducts.length - 1]?.image_url?.[0] ?? "",
                 productId: allProducts[allProducts.length - 1]?.id,
               },
               {
                 title: t("common.trending"),
-                img: allProducts[allProducts.length - 2]?.image_url[0],
+                img: allProducts[allProducts.length - 2]?.image_url?.[0] ?? "",
                 productId: allProducts[allProducts.length - 2]?.id,
               },
               {
                 title: t("common.limited"),
-                img: allProducts[allProducts.length - 3]?.image_url[0],
+                img: allProducts[allProducts.length - 3]?.image_url?.[0] ?? "",
                 productId: allProducts[allProducts.length - 3]?.id,
               },
             ];

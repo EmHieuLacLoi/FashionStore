@@ -110,6 +110,7 @@ const CheckoutPage: React.FC = () => {
       address: currentUser?.address,
       phone_number: currentUser?.phone_number,
       order_items: orderItemsData,
+      shipping_fee: shippingFee,
     };
 
     try {
