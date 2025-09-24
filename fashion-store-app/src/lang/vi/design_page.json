@@ -1,0 +1,22 @@
+{
+  "new_text": "Văn bản",
+  "upload_size_limit": "quá lớn (tối đa 5MB)",
+  "upload_failed": "Không thể tải ảnh",
+  "title": "Thiết kế áo phông",
+  "export_success": "Xuất ảnh thành công!",
+  "erase_mode": "Chế độ tẩy",
+  "front": "Mặt trước",
+  "back": "Mặt sau",
+  "setting_pencil": "Cài đặt bút vẽ và tẩy",
+  "width_pencil": "Độ dày bút",
+  "color": "Màu sắc",
+  "clear_all_lines": "Xóa toàn bộ nét vẽ",
+  "add_text": "Thêm văn bản",
+  "upload_image": "Tải ảnh lên",
+  "action_export_delete": "Thao tác xuất/xóa",
+  "delete_selected": "Xóa đã chọn",
+  "export_all": "Xuất ảnh",
+  "selected_object": "Đối tượng đã chọn",
+  "text": "Văn bản",
+  "image": "Ảnh"
+}

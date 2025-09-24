@@ -1,0 +1,22 @@
+{
+  "new_text": "Text",
+  "upload_size_limit": "too large (max 5MB)",
+  "upload_failed": "Upload failed",
+  "title": "Design T-Shirt",
+  "export_success": "Export success",
+  "width_pencil": "Width pencil",
+  "erase_mode": "Erase mode",
+  "front": "Front",
+  "back": "Back",
+  "setting_pencil": "Setting pencil and eraser",
+  "color": "Color",
+  "clear_all_lines": "Clear all lines",
+  "add_text": "Add Text",
+  "upload_image": "Upload Image",
+  "action_export_delete": "Action Export/Delete",
+  "delete_selected": "Delete Selected",
+  "export_all": "Export Image",
+  "selected_object": "Selected Object",
+  "text": "Text",
+  "image": "Image"
+}

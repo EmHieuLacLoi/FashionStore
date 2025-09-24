@@ -9,11 +9,34 @@ import {
   Transformer,
 } from "react-konva";
 import useImage from "use-image";
-// Đảm bảo các đường dẫn này là chính xác trong project của bạn
+import {
+  Layout,
+  Menu,
+  Button,
+  Input,
+  ColorPicker,
+  Slider,
+  Upload,
+  Divider,
+  Switch,
+  message,
+} from "antd";
+import {
+  FormatPainterFilled,
+  FormatPainterOutlined,
+  FontSizeOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  UploadOutlined,
+  SwapOutlined,
+} from "@ant-design/icons";
+
 import frontImg from "@assets/images/front.svg";
 import backImg from "@assets/images/back.svg";
+import type { RcFile } from "antd/es/upload";
+import { useTranslation } from "react-i18next";
 
-// --- 1. Định nghĩa Types ---
+const { Sider, Content } = Layout;
 interface DesignText {
   id: string;
   x: number;
@@ -52,8 +75,6 @@ interface DesignState {
   back: DesignSide;
 }
 
-// --- 2. Component Transformer (Khung điều khiển Resize/Rotate) ---
-
 const TransformerComponent: React.FC<{
   selectedShapeName: string;
   shapesRef: React.MutableRefObject<any[]>;
@@ -72,7 +93,6 @@ const TransformerComponent: React.FC<{
         trRef.current.nodes([]);
       }
 
-      // Yêu cầu vẽ lại layer một cách an toàn
       trRef.current.getLayer()?.batchDraw();
     }
   }, [selectedShapeName, shapesRef.current.length]);
@@ -81,7 +101,6 @@ const TransformerComponent: React.FC<{
     <Transformer
       ref={trRef}
       boundBoxFunc={(oldBox, newBox) => {
-        // giới hạn kích thước tối thiểu
         if (newBox.width < 5 || newBox.height < 5) {
           return oldBox;
         }
@@ -91,11 +110,11 @@ const TransformerComponent: React.FC<{
   );
 };
 
-// --- 3. Component DesignPage Chính ---
 const DesignPage = () => {
-  // --- States và Assets ---
   const [tshirtFrontImage] = useImage(frontImg);
   const [tshirtBackImage] = useImage(backImg);
+
+  const { t } = useTranslation();
 
   const [currentSide, setCurrentSide] = useState<"front" | "back">("front");
 
@@ -108,32 +127,27 @@ const DesignPage = () => {
   const [currentWidth, setCurrentWidth] = useState(5);
   const [isErasing, setIsErasing] = useState(false);
 
-  const [newText, setNewText] = useState("Nhập text");
+  const [newText, setNewText] = useState(
+    localStorage.getItem("language") === "vi" ? "Văn bản" : "Text"
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Lấy dữ liệu thiết kế hiện tại
   const currentDesign = designState[currentSide];
   const { lines, texts, images } = currentDesign;
 
-  // --- Refs ---
   const isDrawing = useRef(false);
   const stageRef = useRef<any>(null);
-  // Ref để lưu trữ các node Konva của Text và Image đang hiển thị
   const shapeNodesRef = useRef<any[]>([]);
 
-  // Lấy ảnh nền áo hiện tại
   const currentTshirtImage =
     currentSide === "front" ? tshirtFrontImage : tshirtBackImage;
 
-  // Hàm cập nhật State chung
   const updateDesignState = (newSideDesign: DesignSide) => {
     setDesignState({
       ...designState,
       [currentSide]: newSideDesign,
     });
   };
-
-  // --- Konva Handlers (Vẽ và Tẩy) ---
 
   const handleMouseDown = (e: any) => {
     if (selectedId) return;
@@ -201,9 +215,7 @@ const DesignPage = () => {
     },
   };
 
-  // ✅ HÀM GIỚI HẠN VÙNG KÉO THẢ (DRAG BOUND)
   const dragBoundHandler = (pos: { x: number; y: number }, node: any) => {
-    // ✅ Lấy VÙNG GIỚI HẠN hiện tại
     const currentClipArea = CLIP_AREAS[currentSide];
 
     const LIMIT_X = currentClipArea.x;
@@ -211,15 +223,12 @@ const DesignPage = () => {
     const LIMIT_W = currentClipArea.width;
     const LIMIT_H = currentClipArea.height;
 
-    // Kích thước của đối tượng đang kéo (không đổi)
     const objectWidth = node.width() * node.scaleX();
     const objectHeight = node.height() * node.scaleY();
 
-    // Giới hạn Trái & Phải
     const newX = Math.max(pos.x, LIMIT_X);
     const finalX = Math.min(newX, LIMIT_X + LIMIT_W - objectWidth);
 
-    // Giới hạn Trên & Dưới
     const newY = Math.max(pos.y, LIMIT_Y);
     const finalY = Math.min(newY, LIMIT_Y + LIMIT_H - objectHeight);
 
@@ -228,8 +237,6 @@ const DesignPage = () => {
       y: finalY,
     };
   };
-
-  // --- Chức năng Thêm/Xóa/Cập nhật Đối tượng ---
 
   const addText = () => {
     if (!newText.trim()) return;
@@ -270,7 +277,6 @@ const DesignPage = () => {
     const value = e.target.value;
     setNewText(value);
 
-    // Cập nhật text của đối tượng đang chọn
     if (selectedId && texts.some((t) => t.id === selectedId)) {
       const newTexts = texts.map((t) =>
         t.id === selectedId ? { ...t, text: value } : t
@@ -279,37 +285,47 @@ const DesignPage = () => {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleImageUpload = (file: RcFile): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (file.size > 5 * 1024 * 1024) {
+        message.error(`${file.name} ${t("design_page.upload_size_limit")}`);
+        resolve(false);
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new window.Image();
-      img.onload = () => {
-        const newId = `image-${Date.now()}`;
-        const newImages = [
-          ...images,
-          {
-            id: newId,
-            x: 150,
-            y: 150,
-            width: 100,
-            height: 100,
-            image: img,
-            rotation: 0,
-          },
-        ];
-        updateDesignState({ ...currentDesign, images: newImages });
-        setSelectedId(newId);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const newId = `image-${Date.now()}`;
+          const newImages = [
+            ...images,
+            {
+              id: newId,
+              x: 150,
+              y: 150,
+              width: 100,
+              height: 100,
+              image: img,
+              rotation: 0,
+            },
+          ];
+          updateDesignState({ ...currentDesign, images: newImages });
+          setSelectedId(newId);
+
+          resolve(false);
+        };
+        img.onerror = () => {
+          message.error(t("design_page.upload_failed"));
+          reject();
+          resolve(false);
+        };
+        img.src = event.target?.result as string;
       };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
+      reader.readAsDataURL(file);
+    });
   };
 
-  // Cập nhật vị trí sau khi kéo thả (cho Text và Image)
   const handleDragEnd = (e: any, type: "text" | "image") => {
     const id = e.target.name();
     const newX = e.target.x();
@@ -328,8 +344,6 @@ const DesignPage = () => {
     }
   };
 
-  // Cập nhật kích thước sau khi transform (cho Text và Image)
-  // Cập nhật kích thước sau khi transform (cho Text và Image)
   const handleTransformEnd = (e: any, type: "text" | "image") => {
     const node = e.target;
     const scaleX = node.scaleX();
@@ -338,10 +352,8 @@ const DesignPage = () => {
 
     const id = node.name();
 
-    // Tìm đối tượng gốc từ state hiện tại
     const isText = type === "text";
 
-    // Gán kiểu cụ thể để TypeScript không bị nhầm lẫn
     const originalText = isText
       ? (texts.find((t) => t.id === id) as DesignText | undefined)
       : undefined;
@@ -352,7 +364,6 @@ const DesignPage = () => {
 
     if (!originalText && !originalImage) return;
 
-    // Reset scale Konva về 1
     node.scaleX(1);
     node.scaleY(1);
 
@@ -360,17 +371,12 @@ const DesignPage = () => {
     const newY = node.y();
 
     if (isText && originalText) {
-      // --- XỬ LÝ TEXT ---
       let newFontSize = originalText.fontSize;
 
-      // Tính toán FontSize mới (sử dụng scaleX vì Text thường resize đồng đều)
-      // Giới hạn font tối thiểu là 5
       newFontSize = Math.max(5, Math.round(newFontSize * scaleX));
 
-      // Cập nhật lại Konva Node để Konva tính lại kích thước bounding box
       node.fontSize(newFontSize);
 
-      // Cập nhật State Text
       const newTexts = texts.map((t) =>
         t.id === id
           ? {
@@ -384,13 +390,9 @@ const DesignPage = () => {
       );
       updateDesignState({ ...currentDesign, texts: newTexts });
     } else if (originalImage) {
-      // --- XỬ LÝ IMAGE ---
-
-      // Tính toán Width/Height mới
       const newWidth = originalImage.width * scaleX;
       const newHeight = originalImage.height * scaleY;
 
-      // Cập nhật State Image
       const newImages = images.map((img) =>
         img.id === id
           ? {
@@ -407,62 +409,59 @@ const DesignPage = () => {
     }
   };
 
-  // --- Chức năng Xuất Ảnh Tổng Hợp (2 ảnh) ---
-
   const handleExportAll = () => {
-    // 1. Lấy ảnh mặt trước
     setSelectedId(null);
-    const frontUri = stageRef.current.toDataURL({ pixelRatio: 2 });
-
-    // 2. Tạm thời chuyển sang mặt sau để render
     const originalSide = currentSide;
-    setCurrentSide("back");
 
-    // Dùng setTimeout để đảm bảo Konva đã render mặt sau
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    setCurrentSide("front");
+
     setTimeout(() => {
-      if (!stageRef.current) return;
+      const frontUri = stage.toDataURL({ pixelRatio: 2 });
+      setCurrentSide("back");
 
-      // 3. Lấy ảnh mặt sau
-      const backUri = stageRef.current.toDataURL({ pixelRatio: 2 });
+      setTimeout(() => {
+        if (!stageRef.current) return;
+        const backUri = stageRef.current.toDataURL({ pixelRatio: 2 });
 
-      // 4. Gộp 2 ảnh vào 1 Canvas mới
-      const finalCanvas = document.createElement("canvas");
-      const ctx = finalCanvas.getContext("2d");
+        const finalCanvas = document.createElement("canvas");
+        const ctx = finalCanvas.getContext("2d");
 
-      const FINAL_W = 1000; // 500 * 2 (pixelRatio)
-      const FINAL_H = 1200; // 600 * 2
-      const SPACING = 50;
+        const FINAL_W = 1000;
+        const FINAL_H = 1200;
+        const SPACING = 50;
 
-      finalCanvas.width = FINAL_W * 2 + SPACING;
-      finalCanvas.height = FINAL_H;
+        finalCanvas.width = FINAL_W * 2 + SPACING;
+        finalCanvas.height = FINAL_H;
 
-      const frontImgObj = new Image();
-      frontImgObj.onload = () => {
-        ctx?.drawImage(frontImgObj, 0, 0, FINAL_W, FINAL_H);
+        const frontImgObj = new Image();
+        frontImgObj.onload = () => {
+          ctx?.drawImage(frontImgObj, 0, 0, FINAL_W, FINAL_H);
 
-        const backImgObj = new Image();
-        backImgObj.onload = () => {
-          ctx?.drawImage(backImgObj, FINAL_W + SPACING, 0, FINAL_W, FINAL_H);
+          const backImgObj = new Image();
+          backImgObj.onload = () => {
+            ctx?.drawImage(backImgObj, FINAL_W + SPACING, 0, FINAL_W, FINAL_H);
 
-          // Xuất ảnh cuối cùng
-          const finalUri = finalCanvas.toDataURL("image/png", 1.0);
-          const link = document.createElement("a");
-          link.download = "tshirt-design-front-back.png";
-          link.href = finalUri;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+            const finalUri = finalCanvas.toDataURL("image/png", 1.0);
+            const link = document.createElement("a");
+            link.download = "tshirt-design.png";
+            link.href = finalUri;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            message.success(t("design_page.export_success"));
 
-          // 5. Quay lại mặt thiết kế ban đầu
-          setCurrentSide(originalSide);
+            setCurrentSide(originalSide);
+          };
+          backImgObj.src = backUri;
         };
-        backImgObj.src = backUri;
-      };
-      frontImgObj.src = frontUri;
+        frontImgObj.src = frontUri;
+      }, 100);
     }, 100);
   };
 
-  // Chức năng xuất trạng thái để lưu (JSON)
   const handleExportJSON = () => {
     const jsonState = {
       front: {
@@ -470,7 +469,6 @@ const DesignPage = () => {
         texts: designState.front.texts,
         images: designState.front.images.map((img) => ({
           ...img,
-          // Chỉ lưu placeholder, không lưu dữ liệu ảnh base64
           image: `image-data-${img.id}`,
         })),
       },
@@ -495,16 +493,13 @@ const DesignPage = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    message.success("Xuất trạng thái JSON thành công!");
   };
 
-  // --- Render Functions ---
-
-  // Hàm render các đối tượng Text và Image
   const renderDesignElements = (
     textsToRender: DesignText[],
     imagesToRender: DesignImage[]
   ) => {
-    // ✅ Xóa sạch refs trước khi render để chỉ chứa các Node của mặt hiện tại
     shapeNodesRef.current = [];
 
     return (
@@ -528,7 +523,6 @@ const DesignPage = () => {
             onDragEnd={(e) => handleDragEnd(e, "text")}
             onTransformEnd={(e) => handleTransformEnd(e, "text")}
             ref={(node) => {
-              // Thêm node vào danh sách refs của mặt đang hiển thị
               if (
                 node &&
                 !shapeNodesRef.current.some((n) => n.name() === t.id)
@@ -563,7 +557,6 @@ const DesignPage = () => {
                 onDragEnd={(e) => handleDragEnd(e, "image")}
                 onTransformEnd={(e) => handleTransformEnd(e, "image")}
                 ref={(node) => {
-                  // Thêm node vào danh sách refs của mặt đang hiển thị
                   if (
                     node &&
                     !shapeNodesRef.current.some((n) => n.name() === img.id)
@@ -578,7 +571,6 @@ const DesignPage = () => {
     );
   };
 
-  // Xử lý các Line cho Eraser
   const linesToRender = lines.map((line) => {
     const strokeColor = line.isEraser ? "#ffffff" : line.color;
     const strokeWidth = line.isEraser ? line.width + 10 : line.width;
@@ -592,9 +584,7 @@ const DesignPage = () => {
         tension={0.5}
         lineCap="round"
         lineJoin="round"
-        globalCompositeOperation={
-          line.isEraser ? "destination-out" : "source-over"
-        }
+        globalCompositeOperation={"source-over"}
       />
     );
   });
@@ -602,182 +592,204 @@ const DesignPage = () => {
   const textSelected = texts.some((t) => t.id === selectedId);
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        Thiết Kế Áo Phông Của Bạn -{" "}
-        {currentSide === "front" ? "Mặt Trước" : "Mặt Sau"}
-      </h1>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider
+        width={350}
+        theme="light"
+        style={{
+          padding: "16px",
+          borderRight: "1px solid #f0f0f0",
+          overflowY: "auto",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "24px",
+            fontWeight: "bold",
+            textAlign: "center",
+            marginBottom: "16px",
+          }}
+        >
+          {t("design_page.title")}
+        </h1>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* --- Thanh Công Cụ (Toolbox) --- */}
-        <div className="lg:w-1/3 bg-white p-4 rounded-lg shadow-md h-fit">
-          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
-            Chọn Mặt Thiết Kế
-          </h2>
-          <div className="flex space-x-2 mb-4">
-            <button
-              onClick={() => {
-                setSelectedId(null);
-                setCurrentSide("front");
-              }}
-              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition duration-200 ${
-                currentSide === "front"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              Mặt Trước
-            </button>
-            <button
-              onClick={() => {
-                setSelectedId(null);
-                setCurrentSide("back");
-              }}
-              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition duration-200 ${
-                currentSide === "back"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              Mặt Sau
-            </button>
-          </div>
+        <Menu
+          mode="horizontal"
+          selectedKeys={[currentSide]}
+          onSelect={({ key }) => {
+            setSelectedId(null);
+            setCurrentSide(key as "front" | "back");
+          }}
+          style={{ marginBottom: "20px", borderBottom: "1px solid #f0ff0" }}
+        >
+          <Menu.Item key="front" icon={<SwapOutlined />}>
+            {t("design_page.front")}
+          </Menu.Item>
+          <Menu.Item key="back" icon={<SwapOutlined />}>
+            {t("design_page.back")}
+          </Menu.Item>
+        </Menu>
 
-          <h2 className="text-xl font-semibold mb-3 border-b pb-2">Công Cụ</h2>
-
-          {/* 1. Cài đặt Bút */}
-          <div className="mb-4 p-3 border rounded-md">
-            <h3 className="font-medium mb-2 flex items-center">
-              <span role="img" aria-label="pen">
-                🎨
-              </span>{" "}
-              Bút Vẽ & Tẩy
-            </h3>
-            <div className="flex items-center space-x-4 mb-2">
-              <label className="text-sm">Màu:</label>
-              <input
-                type="color"
-                value={currentColor}
-                onChange={(e) => setCurrentColor(e.target.value)}
-                className="w-12 h-8"
-              />
-            </div>
-            <div className="mb-3">
-              <label className="text-sm block">
-                Độ Dày: <span className="font-bold">{currentWidth}px</span>
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="20"
-                value={currentWidth}
-                onChange={(e) => setCurrentWidth(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-            <button
-              onClick={() => setIsErasing(!isErasing)}
-              className={`w-full py-2 px-4 rounded-lg text-white font-semibold transition duration-200 ${
-                isErasing
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-yellow-500 hover:bg-yellow-600"
-              }`}
-            >
-              {isErasing ? "✅ Tắt Tẩy" : "🧼 Chế Độ Tẩy"}
-            </button>
-          </div>
-
-          {/* 2. Thêm Văn Bản (Text) */}
-          <div className="mb-4 p-3 border rounded-md">
-            <h3 className="font-medium mb-2 flex items-center">
-              <span role="img" aria-label="text">
-                🖋️
-              </span>{" "}
-              Thêm Văn Bản
-            </h3>
-            <input
-              type="text"
-              value={newText}
-              onChange={handleTextChange}
-              placeholder="Nhập nội dung văn bản..."
-              className="w-full p-2 border border-gray-300 rounded-md mb-2"
-            />
-            <button
-              onClick={addText}
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 font-semibold transition duration-200"
-              disabled={!newText.trim()}
-            >
-              ➕ Thêm Text
-            </button>
-          </div>
-
-          {/* 3. Thêm Logo/Ảnh */}
-          <div className="mb-4 p-3 border rounded-md">
-            <h3 className="font-medium mb-2 flex items-center">
-              <span role="img" aria-label="image">
-                🖼️
-              </span>{" "}
-              Tải Ảnh Lên
-            </h3>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+        <div style={{ padding: "0 8px 16px 8px" }}>
+          <p style={{ fontWeight: "600", marginBottom: "8px" }}>
+            {t("design_page.setting_pencil")}
+          </p>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: "8px",
+            }}
+          >
+            <span style={{ fontWeight: "500" }}>{t("design_page.color")}:</span>
+            <ColorPicker
+              value={currentColor}
+              onChange={(_, hex) => setCurrentColor(hex)}
+              size="large"
             />
           </div>
-
-          {/* 4. Thao tác Chung */}
-          <div className="p-3 border rounded-md">
-            <h3 className="font-medium mb-2 flex items-center">
-              <span role="img" aria-label="actions">
-                ⚙️
-              </span>{" "}
-              Thao Tác
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() =>
-                  updateDesignState({ ...currentDesign, lines: [] })
-                }
-                className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-400 font-semibold transition duration-200"
-              >
-                🗑️ Xóa Vẽ
-              </button>
-              <button
-                onClick={deleteSelected}
-                disabled={!selectedId}
-                className={`py-2 px-4 rounded-lg font-semibold transition duration-200 ${
-                  selectedId
-                    ? "bg-red-500 text-white hover:bg-red-600"
-                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
-              >
-                ❌ Xóa {selectedId ? (textSelected ? "Text" : "Ảnh") : ""}
-              </button>
-              <button
-                onClick={handleExportAll}
-                className="col-span-2 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 font-semibold transition duration-200"
-              >
-                🖼️ Xuất Cả 2 Mặt (PNG)
-              </button>
-              <button
-                onClick={handleExportJSON}
-                className="col-span-2 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 font-semibold transition duration-200"
-              >
-                📤 Xuất Trạng Thái (JSON)
-              </button>
-            </div>
+          <div style={{ marginBottom: "12px" }}>
+            <span style={{ fontWeight: "500" }}>
+              {t("design_page.width_pencil")}:
+            </span>
+            <Slider
+              min={1}
+              max={20}
+              value={currentWidth}
+              onChange={setCurrentWidth}
+            />
           </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "10px",
+            }}
+          >
+            <span style={{ fontWeight: "500" }}>
+              {t("design_page.erase_mode")}:
+            </span>
+            <Switch
+              checkedChildren={<FormatPainterFilled />}
+              unCheckedChildren={<FormatPainterOutlined />}
+              checked={isErasing}
+              onChange={setIsErasing}
+            />
+          </div>
+          <Button
+            type="default"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => updateDesignState({ ...currentDesign, lines: [] })}
+            block
+          >
+            {t("design_page.clear_all_lines")}
+          </Button>
         </div>
 
-        {/* --- Khu vực Canvas --- */}
-        <div className="lg:w-2/3 flex justify-center items-start p-4 bg-white rounded-lg shadow-xl overflow-hidden">
+        <Divider style={{ margin: "16px 0" }} />
+
+        <div style={{ padding: "0 8px 16px 8px" }}>
+          <p style={{ fontWeight: "600", marginBottom: "8px" }}>
+            {t("design_page.new_text")}
+          </p>
+          <Input
+            prefix={<FontSizeOutlined />}
+            placeholder={t("design_page.new_text")}
+            value={newText}
+            onChange={handleTextChange}
+            style={{ marginBottom: "8px" }}
+          />
+          <Button
+            type="primary"
+            onClick={addText}
+            disabled={!newText.trim()}
+            block
+          >
+            {t("design_page.add_text")}
+          </Button>
+        </div>
+
+        <Divider style={{ margin: "16px 0" }} />
+
+        <div style={{ padding: "0 8px 16px 8px" }}>
+          <p style={{ fontWeight: "600", marginBottom: "8px" }}>
+            {t("design_page.upload_image")}
+          </p>
+          <Upload
+            accept="image/*"
+            showUploadList={false}
+            beforeUpload={handleImageUpload}
+          >
+            <Button icon={<UploadOutlined />} block>
+              {t("design_page.upload_image")}
+            </Button>
+          </Upload>
+        </div>
+
+        <Divider style={{ margin: "16px 0" }} />
+
+        <div style={{ padding: "0 8px 16px 8px" }}>
+          <p style={{ fontWeight: "600", marginBottom: "8px" }}>
+            {t("design_page.action_export_delete")}
+          </p>
+          <Button
+            type="dashed"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={deleteSelected}
+            disabled={!selectedId}
+            block
+            style={{ marginBottom: "8px" }}
+          >
+            {t("design_page.delete_selected")}{" "}
+            {selectedId
+              ? textSelected
+                ? t("design_page.text")
+                : t("design_page.image")
+              : t("design_page.selected_object")}
+          </Button>
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            onClick={handleExportAll}
+            block
+            style={{ marginBottom: "8px" }}
+          >
+            {t("design_page.export_all")}
+          </Button>
+          <Button
+            type="default"
+            icon={<UploadOutlined />}
+            onClick={handleExportJSON}
+            block
+          >
+            {t("design_page.export_json")}
+          </Button>
+        </div>
+      </Sider>
+
+      <Content
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "24px",
+          backgroundColor: "#f0f2f5",
+        }}
+      >
+        <div
+          style={{
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            borderRadius: "8px",
+            overflow: "hidden",
+          }}
+        >
           <Stage
             ref={stageRef}
             width={500}
             height={600}
-            className="border border-gray-300 shadow-lg"
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseup={handleMouseUp}
@@ -788,29 +800,25 @@ const DesignPage = () => {
             }}
           >
             <Layer>
-              {/* 1. Áo (Nền) */}
               <KonvaImage
-                image={currentTshirtImage} // Dùng ảnh tùy thuộc vào currentSide
+                image={currentTshirtImage}
                 width={500}
                 height={600}
                 name="tshirt-background"
               />
 
-              {/* 2. Các Nét Vẽ & Tẩy (Giữ nguyên vùng clip) */}
               <Group
-                clipX={CLIP_AREAS[currentSide].x} // Sử dụng giá trị mới
-                clipY={CLIP_AREAS[currentSide].y} // Sử dụng giá trị mới
-                clipWidth={CLIP_AREAS[currentSide].width} // Sử dụng giá trị mới
-                clipHeight={CLIP_AREAS[currentSide].height} // Sử dụng giá trị mới
+                clipX={CLIP_AREAS[currentSide].x}
+                clipY={CLIP_AREAS[currentSide].y}
+                clipWidth={CLIP_AREAS[currentSide].width}
+                clipHeight={CLIP_AREAS[currentSide].height}
                 name="design-area"
               >
                 {linesToRender}
               </Group>
 
-              {/* 3 & 4. Văn Bản (Text) và Ảnh/Logo */}
               {renderDesignElements(texts, images)}
 
-              {/* 5. Transformer (Điều khiển) */}
               <TransformerComponent
                 selectedShapeName={selectedId || ""}
                 shapesRef={shapeNodesRef}
@@ -818,8 +826,8 @@ const DesignPage = () => {
             </Layer>
           </Stage>
         </div>
-      </div>
-    </div>
+      </Content>
+    </Layout>
   );
 };
 

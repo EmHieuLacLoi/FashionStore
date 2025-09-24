@@ -9,6 +9,7 @@ import product_page from "./product_page.json";
 import cart_page from "./cart_page.json";
 import product_detail_page from "./product_detail_page.json";
 import checkout_page from "./checkout_page.json";
+import design_page from "./design_page.json";
 
 export default {
   common,
@@ -22,4 +23,5 @@ export default {
   product_detail_page,
   cart_page,
   checkout_page,
+  design_page,
 };
