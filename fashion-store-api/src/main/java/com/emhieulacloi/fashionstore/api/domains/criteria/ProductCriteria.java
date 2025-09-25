@@ -9,12 +9,14 @@ import java.math.BigDecimal;
 @Setter
 public class ProductCriteria {
     private String name;
-    private String description;
-    private Long categoryId;
-    private String categoryName;
-    private BigDecimal priceFrom;
-    private BigDecimal priceTo;
-    private Integer stockQuantityFrom;
-    private Integer stockQuantityTo;
+
+    private BigDecimal minPrice;
+
+    private BigDecimal maxPrice;
+
     private Boolean inStock;
+
+    public String getName() {
+        return name == null || name.isEmpty() ? null : "%" + name.trim() + "%";
+    }
 }

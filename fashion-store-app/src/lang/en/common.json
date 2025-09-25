@@ -104,11 +104,14 @@
   "limited": "Limited Edition",
   "change_language": "Change language",
   "logout": "Logout",
+  "user": "User",
   "admin": "Admin Panel",
   "constant": {
     "ACTIVE": "Active",
     "INACTIVE": "Inactive",
     "ADMIN": "Admin",
-    "USER": "User"
+    "USER": "User",
+    "IN_STOCK": "In Stock",
+    "OUT_OF_STOCK": "Out of Stock"
   }
 }

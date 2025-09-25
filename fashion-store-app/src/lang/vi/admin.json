@@ -2,7 +2,7 @@
   "title": "Trang quản trị",
   "subtitle": "Hệ thống quản lý",
   "menu": {
-    "dashboard": "Bảng điều khiển",
+    "dashboard": "Bảng thống kê",
     "products": "Sản phẩm",
     "categories": "Danh mục",
     "orders": "Đơn hàng",
@@ -10,7 +10,7 @@
     "users": "Người dùng"
   },
   "description": {
-    "dashboard": "Bảng điều khiển",
+    "dashboard": "Số liệu tổng quan",
     "products": "Quản lý sản phẩm",
     "categories": "Quản lý danh mục",
     "orders": "Quản lý đơn hàng",

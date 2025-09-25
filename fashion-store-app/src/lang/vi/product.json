@@ -3,7 +3,11 @@
   "title": {
     "create": "Tạo sản phẩm",
     "update": "Cập nhật sản phẩm",
-    "delete": "Xóa sản phẩm"
+    "delete": "Xóa sản phẩm",
+    "only_upload": "Bạn chỉ có thể upload file JPG/PNG!",
+    "max_size": "File phải nhỏ hơn 5MB!",
+    "upload_success": "Ảnh {{value}} tải thành công",
+    "upload_fail": "Ảnh {{value}} tải thất bại"
   },
   "attribute": {
     "name": "Tên",
@@ -36,6 +40,22 @@
     "minPrice": "Giá tối thiểu",
     "minPricePlaceholder": "Nhập giá tối thiểu",
     "maxPrice": "Giá tối đa",
-    "maxPricePlaceholder": "Nhập giá tối đa"
+    "maxPricePlaceholder": "Nhập giá tối đa",
+    "imageUrl": "URL Hình ảnh",
+    "imageUrlPlaceholder": "Nhập URL Hình ảnh",
+    "variant": "Loại sản phẩm (Phân loại)",
+    "color": "Màu sắc",
+    "colorPlaceholder": "Nhập màu sắc",
+    "size": "Kích thước",
+    "sizePlaceholder": "Nhập kích thước",
+    "stockQuantityVariant": "Số lượng tồn kho",
+    "stockQuantityVariantPlaceholder": "Nhập số lượng tồn kho",
+    "addVariant": "Thêm loại sản phẩm",
+    "images": "Hình ảnh",
+    "imagesPlaceholder": "Tải hình ảnh",
+    "upload": "Tải hình ảnh",
+    "priceTooHigh": "Giá bán phải nhỏ hơn hoặc bằng giá gốc",
+    "stockMismatchNoVariant": "Số lượng tồn kho phải bằng tổng số lượng tồn kho của các loại sản phẩm",
+    "stockMismatch": "Số lượng tồn kho phải bằng tổng số lượng tồn kho của các loại sản phẩm"
   }
 }

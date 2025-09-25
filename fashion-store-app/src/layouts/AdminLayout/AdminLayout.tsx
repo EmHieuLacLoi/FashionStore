@@ -27,7 +27,7 @@ const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
-  const { lang, setLang } = useGlobalContext();
+  const { lang, setLang, currentUser } = useGlobalContext();
 
   const menuItems = [
     {
@@ -37,17 +37,18 @@ const AdminLayout: React.FC = () => {
       description: t("admin.description.dashboard"),
     },
     {
-      key: "/admin/products",
-      icon: <ShoppingOutlined />,
-      label: t("admin.menu.products"),
-      description: t("admin.description.products"),
-    },
-    {
       key: "/admin/categories",
       icon: <AppstoreOutlined />,
       label: t("admin.menu.categories"),
       description: t("admin.description.categories"),
     },
+    {
+      key: "/admin/products",
+      icon: <ShoppingOutlined />,
+      label: t("admin.menu.products"),
+      description: t("admin.description.products"),
+    },
+
     {
       key: "/admin/orders",
       icon: <ShoppingCartOutlined />,
@@ -177,9 +178,13 @@ const AdminLayout: React.FC = () => {
                 />
                 <div className="user-details">
                   <Text strong className="user-name">
-                    Admin User
+                    {currentUser?.full_name || t("common.user")}
                   </Text>
-                  <Text className="user-role">System Administrator</Text>
+                  <Text className="user-role">
+                    {currentUser?.role == "ROLE_ADMIN"
+                      ? t("common.constant.ADMIN")
+                      : t("common.constant.USER")}
+                  </Text>
                 </div>
               </div>
             </div>

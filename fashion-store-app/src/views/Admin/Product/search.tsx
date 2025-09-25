@@ -21,8 +21,8 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   useEffect(() => {
     if (initialValues) {
       const formValues = { ...initialValues };
-      if (typeof formValues.is_available === "string") {
-        formValues.is_available = formValues.is_available === "true";
+      if (typeof formValues.inStock === "string") {
+        formValues.inStock = formValues.inStock === "true";
       }
       form.setFieldsValue(formValues);
     }
@@ -44,9 +44,8 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   const prepareSearchPayload = (values: any) => {
     const payload = { ...values };
 
-    // Convert boolean to string for API
-    if (typeof payload.is_available === "boolean") {
-      payload.is_available = payload.is_available.toString();
+    if (typeof payload.inStock === "boolean") {
+      payload.inStock = payload.inStock.toString();
     }
 
     return payload;
@@ -74,7 +73,7 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
     <Form
       layout="vertical"
       form={form}
-      initialValues={{ is_available: undefined }}
+      initialValues={{ inStock: undefined }}
       onValuesChange={onValuesChange}
     >
       <Row gutter={16} align="bottom" wrap={false}>
@@ -93,18 +92,7 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("product.form.category")} name="category_id">
-            <InputNumber
-              className="w-full"
-              placeholder={t("product.form.categoryPlaceholder")}
-              min={1}
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-        </Col>
-
-        <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("product.form.minPrice")} name="min_price">
+          <Form.Item label={t("product.form.minPrice")} name="minPrice">
             <InputNumber
               className="w-full"
               placeholder={t("product.form.minPricePlaceholder")}
@@ -119,7 +107,7 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("product.form.maxPrice")} name="max_price">
+          <Form.Item label={t("product.form.maxPrice")} name="maxPrice">
             <InputNumber
               className="w-full"
               placeholder={t("product.form.maxPricePlaceholder")}
@@ -134,14 +122,18 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("product.form.isAvailable")} name="is_available">
+          <Form.Item label={t("product.form.isAvailable")} name="inStock">
             <Select
               className="w-full"
               allowClear
               placeholder={t("product.form.isAvailablePlaceholder")}
             >
-              <Select.Option value="true">Available</Select.Option>
-              <Select.Option value="false">Unavailable</Select.Option>
+              <Select.Option value="true">
+                {t("common.constant.IN_STOCK")}
+              </Select.Option>
+              <Select.Option value="false">
+                {t("common.constant.OUT_OF_STOCK")}
+              </Select.Option>
             </Select>
           </Form.Item>
         </Col>

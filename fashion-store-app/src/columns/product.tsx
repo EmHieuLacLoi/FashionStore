@@ -35,7 +35,9 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
     width: 100,
     isPrimary: false,
     render: (text, record) =>
-      record?.is_available ? "Available" : "Unavailable",
+      record?.is_available
+        ? t("common.constant.IN_STOCK")
+        : t("common.constant.OUT_OF_STOCK"),
   },
   {
     dataIndex: "created_by",

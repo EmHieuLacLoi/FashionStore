@@ -3,7 +3,11 @@
   "title": {
     "create": "Create Product",
     "update": "Update Product",
-    "delete": "Delete Product"
+    "delete": "Delete Product",
+    "only_upload": "You can only upload JPG/PNG files!",
+    "max_size": "File must be less than 5MB!",
+    "upload_success": "Image {{value}} uploaded successfully",
+    "upload_fail": "Image {{value}} uploaded failed"
   },
   "attribute": {
     "name": "Name",
@@ -36,6 +40,22 @@
     "minPrice": "Min Price",
     "minPricePlaceholder": "Enter minimum price",
     "maxPrice": "Max Price",
-    "maxPricePlaceholder": "Enter maximum price"
+    "maxPricePlaceholder": "Enter maximum price",
+    "imageUrl": "Image URL",
+    "imageUrlPlaceholder": "Enter image URL",
+    "variant": "Variants",
+    "color": "Color",
+    "colorPlaceholder": "Enter color",
+    "size": "Size",
+    "sizePlaceholder": "Enter size",
+    "stockQuantityVariant": "Stock Quantity",
+    "stockQuantityVariantPlaceholder": "Enter stock quantity",
+    "addVariant": "Add variant",
+    "images": "Images",
+    "imagesPlaceholder": "Upload images",
+    "upload": "Upload images",
+    "priceTooHigh": "Price must be less than or equal to original price",
+    "stockMismatchNoVariant": "Stock quantity must be equal to the sum of stock quantities of all variants",
+    "stockMismatch": "Stock quantity must be equal to the sum of stock quantities of all variants"
   }
 }

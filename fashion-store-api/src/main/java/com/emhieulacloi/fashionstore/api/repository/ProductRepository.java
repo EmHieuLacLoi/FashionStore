@@ -30,11 +30,27 @@ public interface ProductRepository extends BaseRepository<Product, Long, Product
     LEFT JOIN categories c ON p.category_id = c.id
     LEFT JOIN user uc ON p.created_by = uc.id
     LEFT JOIN user uu ON p.updated_by = uu.id
+    WHERE 
+        (:#{#criteria.name} IS NULL OR p.name LIKE :#{#criteria.name}) AND
+        (:#{#criteria.inStock} IS NULL OR 
+            (:#{#criteria.inStock} = TRUE AND p.stock_quantity > 0) OR 
+            (:#{#criteria.inStock} = FALSE AND p.stock_quantity <= 0)
+        ) AND 
+        (:#{#criteria.minPrice} IS NULL OR p.price >= :#{#criteria.minPrice}) AND
+        (:#{#criteria.maxPrice} IS NULL OR p.price <= :#{#criteria.maxPrice})
     """,
             countQuery = """
     SELECT
             COUNT(*)
     FROM `products` p
+    WHERE 
+        (:#{#criteria.name} IS NULL OR p.name LIKE :#{#criteria.name}) AND
+        (:#{#criteria.inStock} IS NULL OR 
+            (:#{#criteria.inStock} = TRUE AND p.stock_quantity > 0) OR 
+            (:#{#criteria.inStock} = FALSE AND p.stock_quantity <= 0)
+        ) AND 
+        (:#{#criteria.minPrice} IS NULL OR p.price >= :#{#criteria.minPrice}) AND
+        (:#{#criteria.maxPrice} IS NULL OR p.price <= :#{#criteria.maxPrice})
     """,
             nativeQuery = true)
     Page<ProductDTO> findAllByCriteria(@Param("criteria") ProductCriteria criteria, Pageable pageable);

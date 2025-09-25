@@ -105,10 +105,13 @@
   "change_language": "Đổi ngôn ngữ",
   "logout": "Đăng xuất",
   "admin": "Trang quản trị",
+  "user": "Người dùng",
   "constant": {
     "ACTIVE": "Kích hoạt",
     "INACTIVE": "Không kích hoạt",
     "ADMIN": "Quản trị viên",
-    "USER": "Người dùng"
+    "USER": "Người dùng",
+    "IN_STOCK": "Còn hàng",
+    "OUT_OF_STOCK": "Hết hàng"
   }
 }

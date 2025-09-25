@@ -4,10 +4,12 @@ import { Navigate, Outlet } from "react-router";
 import { getToken } from "@utils/auth";
 import LoadingSpinner from "@components/LoadingSpinner";
 import { getUserInfo } from "@services/AuthService";
+import { useGlobalContext } from "../../GlobalContext";
 
 const AdminGuard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const { setCurrentUser } = useGlobalContext();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -23,6 +25,7 @@ const AdminGuard: React.FC = () => {
 
         if (response.data && response.data.role === "ROLE_ADMIN") {
           setIsAuthorized(true);
+          setCurrentUser(response.data);
         } else {
           setIsAuthorized(false);
         }

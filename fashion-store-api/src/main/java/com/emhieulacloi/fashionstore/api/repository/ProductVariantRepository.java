@@ -10,6 +10,8 @@ import java.util.List;
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
     void deleteByProductId(Long productId);
 
+    List<ProductVariant> findAllByProductIdIn(List<Long> productIds);
+
     List<ProductVariant> findAllByProductId(Long productId);
 
     boolean existsProductVariantsByProductIdAndColorAndSize(Long productId, String color, String size);

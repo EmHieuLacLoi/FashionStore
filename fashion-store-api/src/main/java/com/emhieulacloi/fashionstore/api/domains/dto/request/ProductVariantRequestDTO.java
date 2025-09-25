@@ -16,7 +16,6 @@ public class ProductVariantRequestDTO {
 
     @JsonProperty("product_id")
     @Min(value = 0, message = "Product ID must be greater than or equal to 0")
-    @NotNull(message = "Product ID must not be null")
     private Long productId;
 
     @JsonProperty("color")

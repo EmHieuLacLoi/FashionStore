@@ -19,6 +19,7 @@ import com.emhieulacloi.fashionstore.api.service.mapper.ProductMapper;
 import com.emhieulacloi.fashionstore.api.service.mapper.ProductVariantMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductResponseDTO> findAllByCriteria(ProductCriteria criteria, Pageable pageable) {
         Page<ProductDTO> productDTOS = productRepository.findAllByCriteria(criteria, pageable);
-        return productDTOS.map(productMapper::dtoToResponse);
+        List<Long> productIds = productDTOS.getContent().stream().map(ProductDTO::getId).toList();
+        List<ProductVariant> productVariants = productVariantRepository.findAllByProductIdIn(productIds);
+
+        List<ProductResponseDTO> productResponseDTOS = productDTOS
+                .getContent().stream().map(productMapper::dtoToResponse).toList();
+
+        productResponseDTOS.forEach(productResponseDTO -> {
+            List<ProductVariant> variantsForProduct = productVariants.stream()
+                    .filter(productVariant ->
+                            productVariant.getProductId().equals(productResponseDTO.getId()))
+                    .toList();
+            productResponseDTO.setVariants(variantsForProduct.stream()
+                    .map(productVariantMapper::entityToResponse).toList());
+        });
+
+        return new PageImpl<>(productResponseDTOS, pageable, productDTOS.getTotalElements());
     }
 
     @Override

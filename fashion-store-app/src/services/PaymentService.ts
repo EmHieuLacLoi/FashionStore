@@ -12,7 +12,7 @@ export const create = async (data: any) => {
 };
 
 export const update = async (data: any) => {
-  const response = await axiosInstance.put("api/v1/payments", data);
+  const response = await axiosInstance.put(`api/v1/payments/${data.id}`, data);
   return response.data;
 };
 

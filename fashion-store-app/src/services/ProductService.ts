@@ -18,7 +18,7 @@ export const create = async (data: any) => {
 };
 
 export const update = async (data: any) => {
-  const response = await axiosInstance.put("api/v1/products", data);
+  const response = await axiosInstance.put(`api/v1/products/${data.id}`, data);
   return response.data;
 };
 
