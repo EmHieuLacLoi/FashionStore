@@ -20,7 +20,6 @@ import {
   EditOutlined,
   PlusOutlined,
   SearchOutlined,
-  StopOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "@utils/formatNumber";
 import "./BaseTable.scss";
@@ -380,25 +379,6 @@ const BaseTable: React.FC<BaseTableProps> = ({
     });
   };
 
-  const handleCancelRecord = (record: any) => {
-    const key = keyName ? record[keyName] : record.code;
-    if (onCancel) {
-      showCancelConfirm(key, async (inputValue) => {
-        try {
-          const rest = await onCancel(record, inputValue);
-          if (rest && rest.error_status === 1) {
-            message.success(t("common.cancellation.cancel_success", { key }));
-          } else {
-            message.error(t("common.cancellation.cancel_failed"));
-          }
-        } catch (error) {
-          message.destroy();
-          message.error(t("common.cancellation.cancel_failed"));
-        }
-      });
-    }
-  };
-
   const handleDeleteRecord = (record: any) => {
     const key = keyName ? record[keyName] : record.code;
     if (onDelete) {
@@ -463,35 +443,11 @@ const BaseTable: React.FC<BaseTableProps> = ({
     },
   };
 
-  const [tableHeight, setTableHeight] = useState(700);
-
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver(() => {
-      if (tableRef.current) {
-        const height = tableRef.current.offsetHeight;
-        setTableHeight(height);
-      }
-    });
-
-    if (tableRef.current) {
-      resizeObserver.observe(tableRef.current);
-    }
-
-    return () => resizeObserver.disconnect();
-  }, []);
-
   return (
-    <>
-      <div className="page-container" ref={tableRef}>
-        <Row gutter={[12, 12]} style={{ margin: 0 }}>
-          <Col
-            span={24}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: 0,
-            }}
-          >
+    <div className="base-table-container">
+      <div className="page-header">
+        <Row justify="space-between" align="middle" gutter={[16, 16]}>
+          <Col xs={24} md={16} lg={18}>
             {Filter && (
               <Filter
                 ref={filterRef}
@@ -499,72 +455,66 @@ const BaseTable: React.FC<BaseTableProps> = ({
                 initialValues={currentFilterValues}
               />
             )}
-
-            <div style={{ display: "flex", gap: "8px" }}>
-              <Space size="small" className="space-search-btn">
+          </Col>
+          <Col xs={24} md={8} lg={6}>
+            <Space className="header-actions">
+              {!hideSearchButton && (
                 <Button
                   onClick={() => handleSearch()}
                   icon={<SearchOutlined />}
-                  className="btn-create search-btn"
                 >
                   {t("common.button.search")}
                 </Button>
-              </Space>
-
-              <Space size="small" className="space-search-btn">
+              )}
+              {create && (
                 <Button
-                  onClick={() => create && create("create")}
-                  size="middle"
+                  onClick={() => create("create")}
                   type="primary"
                   icon={<PlusOutlined />}
-                  className="btn-create"
                 >
                   {t("common.button.create")}
                 </Button>
-              </Space>
-            </div>
-          </Col>
-
-          <Col span={24} className="content-page" style={{ padding: 0 }}>
-            <div className="table-content-wrapper" ref={tableRef}>
-              <Table
-                rowKey="id"
-                rowSelection={
-                  !hidePagination && !hideAction && !hideMultipleDeleteButton
-                    ? {
-                        selectedRowKeys,
-                        onChange: onSelectChange,
-                        getCheckboxProps: getCheckboxProps
-                          ? getCheckboxProps
-                          : (record: any) => ({
-                              disabled: record.disabled,
-                            }),
-                      }
-                    : undefined
-                }
-                columns={columns}
-                bordered
-                size={size}
-                dataSource={data}
-                scroll={{ y: "70vh" }}
-                className="table-content"
-                locale={{
-                  emptyText: (
-                    <Empty
-                      image={Empty.PRESENTED_IMAGE_SIMPLE}
-                      description={t("common.empty")}
-                    />
-                  ),
-                }}
-                pagination={!hidePagination ? paginationConfig : false}
-                loading={loading}
-                {...props}
-              />
-            </div>
+              )}
+            </Space>
           </Col>
         </Row>
       </div>
-    </>
+
+      <div className="table-wrapper">
+        <Table
+          rowKey="id"
+          rowSelection={
+            !hidePagination && !hideAction && !hideMultipleDeleteButton
+              ? {
+                  selectedRowKeys,
+                  onChange: onSelectChange,
+                  getCheckboxProps: getCheckboxProps
+                    ? getCheckboxProps
+                    : (record: any) => ({
+                        disabled: record.disabled,
+                      }),
+                }
+              : undefined
+          }
+          columns={columns}
+          bordered
+          size={size}
+          dataSource={data}
+          scroll={{ y: 400, x: "max-content" }}
+          locale={{
+            emptyText: (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={t("common.empty")}
+              />
+            ),
+          }}
+          pagination={!hidePagination ? paginationConfig : false}
+          loading={loading}
+          {...props}
+        />
+      </div>
+    </div>
   );
 };
 

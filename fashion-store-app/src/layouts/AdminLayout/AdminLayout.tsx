@@ -1,19 +1,5 @@
 import React, { Suspense, useState } from "react";
-import {
-  Layout,
-  Menu,
-  Button,
-  Avatar,
-  Dropdown,
-  Typography,
-  Badge,
-  Space,
-  Card,
-  Row,
-  Col,
-  Statistic,
-  Progress,
-} from "antd";
+import { Layout, Menu, Button, Avatar, Dropdown, Typography } from "antd";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -23,18 +9,15 @@ import {
   CreditCardOutlined,
   UserOutlined,
   LogoutOutlined,
-  BellOutlined,
-  TrophyOutlined,
-  RiseOutlined,
   DesktopOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation, Outlet } from "react-router";
 import "./AdminLayout.scss";
 import { useTranslation } from "react-i18next";
-import { getToken, removeToken } from "@utils/auth";
+import { removeToken } from "@utils/auth";
 import LoadingSpinner from "@components/LoadingSpinner";
 
-const { Header, Sider, Content } = Layout;
+const { Sider, Content } = Layout;
 const { Text, Title } = Typography;
 
 const AdminLayout: React.FC = () => {

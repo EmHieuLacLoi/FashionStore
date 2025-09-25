@@ -1,9 +1,7 @@
 package com.emhieulacloi.fashionstore.api.repository;
 
 import com.emhieulacloi.fashionstore.api.base.repository.BaseRepository;
-import com.emhieulacloi.fashionstore.api.domains.criteria.ProductCriteria;
 import com.emhieulacloi.fashionstore.api.domains.criteria.UserCriteria;
-import com.emhieulacloi.fashionstore.api.domains.dto.projection.ProductDTO;
 import com.emhieulacloi.fashionstore.api.domains.dto.projection.UserDTO;
 import com.emhieulacloi.fashionstore.api.domains.entity.User;
 import org.springframework.data.domain.Page;
@@ -44,31 +42,23 @@ public interface UserRepository extends BaseRepository<User, Long, UserCriteria,
     boolean existsByUsername(String username);
 
     @Query(value = """
-            SELECT DISTINCT user.* 
-            FROM user 
-            LEFT JOIN user_role ON user.id = user_role.user_id
-            WHERE (:username IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :username, '%')))
-              AND (:email IS NULL OR LOWER(email) LIKE LOWER(CONCAT('%', :email, '%')))
-              AND (:full_name IS NULL OR LOWER(full_name) LIKE LOWER(CONCAT('%', :full_name, '%')))
-              AND (:phone_number IS NULL OR phone_number LIKE CONCAT('%', :phone_number, '%'))
-              AND (:gender IS NULL OR gender = :gender)
-              AND (:is_active IS NULL OR is_active = :is_active)
-              AND (:rolesStr IS NULL OR FIND_IN_SET(user.role_id, :rolesStr))
-              AND (:groupStr IS NULL OR FIND_IN_SET(user.group_id, :groupStr))
+            SELECT DISTINCT u.* 
+            FROM user u
+            LEFT JOIN user_roles ur ON u.id = ur.user_id
+            WHERE (:username IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%')))
+              AND (:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')))
+              AND (:full_name IS NULL OR LOWER(u.full_name) LIKE LOWER(CONCAT('%', :full_name, '%')))
+              AND (:phone_number IS NULL OR u.phone_number LIKE CONCAT('%', :phone_number, '%'))
             """,
             countQuery = """
-                    SELECT COUNT(DISTINCT user.id)
-                    FROM user 
-                    LEFT JOIN user_role ON user.id = user_role.user_id
-                    WHERE (:username IS NULL OR LOWER(username) LIKE LOWER(CONCAT('%', :username, '%')))
-                      AND (:email IS NULL OR LOWER(email) LIKE LOWER(CONCAT('%', :email, '%')))
-                      AND (:full_name IS NULL OR LOWER(full_name) LIKE LOWER(CONCAT('%', :full_name, '%')))
-                      AND (:phone_number IS NULL OR phone_number LIKE CONCAT('%', :phone_number, '%'))
-                      AND (:gender IS NULL OR gender = :gender)
-                      AND (:is_active IS NULL OR is_active = :is_active)
-                      AND (:rolesStr IS NULL OR FIND_IN_SET(user.role_id, :rolesStr))
-                      AND (:groupStr IS NULL OR FIND_IN_SET(user.group_id, :groupStr))
-                    """,
+            SELECT COUNT(DISTINCT u.id)
+            FROM user u
+            LEFT JOIN user_roles ur ON u.id = ur.user_id
+            WHERE (:username IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%')))
+              AND (:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')))
+              AND (:full_name IS NULL OR LOWER(u.full_name) LIKE LOWER(CONCAT('%', :full_name, '%')))
+              AND (:phone_number IS NULL OR u.phone_number LIKE CONCAT('%', :phone_number, '%'))
+            """,
             nativeQuery = true)
     Page<User> findUsersByFilters(
             @Param("username") String username,

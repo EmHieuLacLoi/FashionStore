@@ -1,4 +1,4 @@
-import { Form, Input, Row, Col } from "antd";
+import { Form, Input, Row, Col, Select } from "antd";
 import { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDebounce } from "@utils/debounce";
@@ -22,7 +22,7 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
     if (initialValues) {
       const formValues = { ...initialValues };
       if (typeof formValues.status === "string" && formValues.status) {
-        formValues.status = formValues.status.split(",").map(Number);
+        formValues.status = formValues.status.split(",").map(String);
       }
       form.setFieldsValue(formValues);
     }
@@ -31,7 +31,7 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   useEffect(() => {
     if (debouncedNameValue !== undefined) {
       const currentValues = form.getFieldsValue();
-      if (currentValues.name === debouncedNameValue && handleSearch) {
+      if (currentValues.username === debouncedNameValue && handleSearch) {
         const payload = prepareSearchPayload(currentValues);
         handleSearch(payload);
       }
@@ -57,8 +57,8 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   };
 
   const onValuesChange = (changedValues: any, allValues: any) => {
-    if ("name" in changedValues) {
-      setNameValue(changedValues.name || "");
+    if ("username" in changedValues) {
+      setNameValue(changedValues.username || "");
       return;
     }
 
@@ -82,17 +82,59 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
       onValuesChange={onValuesChange}
     >
       <Row gutter={16} align="bottom" wrap={false}>
-        <Col flex={1}>
-          <Form.Item label={t("category.form.name")} name="name">
+        <Col flex={1} style={{ width: maxWidthInput }}>
+          <Form.Item label={t("user.form.username")} name="username">
             <Input
+              className="w-full"
               allowClear
-              style={{ width: maxWidthInput }}
-              placeholder={t("category.form.namePlaceholder")}
+              placeholder={t("user.form.usernamePlaceholder")}
               onChange={handleNameChange}
               value={nameValue}
-              maxLength={20}
+              maxLength={50}
               autoComplete="off"
             />
+          </Form.Item>
+        </Col>
+
+        <Col flex={1} style={{ width: maxWidthInput }}>
+          <Form.Item label={t("user.form.email")} name="email">
+            <Input
+              className="w-full"
+              allowClear
+              placeholder={t("user.form.emailPlaceholder")}
+              maxLength={100}
+              autoComplete="off"
+            />
+          </Form.Item>
+        </Col>
+
+        <Col flex={1} style={{ width: maxWidthInput }}>
+          <Form.Item label={t("user.form.role")} name="role">
+            <Select
+              className="w-full"
+              allowClear
+              placeholder={t("user.form.rolePlaceholder")}
+              mode="multiple"
+            >
+              <Select.Option value="ADMIN">Admin</Select.Option>
+              <Select.Option value="USER">User</Select.Option>
+              <Select.Option value="MANAGER">Manager</Select.Option>
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col flex={1} style={{ width: maxWidthInput }}>
+          <Form.Item label={t("user.form.status")} name="status">
+            <Select
+              className="w-full"
+              allowClear
+              placeholder={t("user.form.statusPlaceholder")}
+              mode="multiple"
+            >
+              <Select.Option value="ACTIVE">Active</Select.Option>
+              <Select.Option value="INACTIVE">Inactive</Select.Option>
+              <Select.Option value="PENDING">Pending</Select.Option>
+            </Select>
           </Form.Item>
         </Col>
       </Row>
