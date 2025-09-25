@@ -7,6 +7,7 @@
   },
   "attribute": {
     "code": "Mã đơn hàng",
+    "user_name": "Tên người dùng",
     "user_id": "ID người dùng",
     "total_amount": "Tổng tiền",
     "status": "Trạng thái",
@@ -20,6 +21,8 @@
   "form": {
     "code": "Mã đơn hàng",
     "codePlaceholder": "Nhập mã đơn hàng",
+    "userName": "Tên người dùng",
+    "userNamePlaceholder": "Nhập tên người dùng",
     "userId": "ID người dùng",
     "userIdPlaceholder": "Nhập ID người dùng",
     "totalAmount": "Tổng tiền",

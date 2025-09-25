@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,27 +55,53 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = orderMapper.toEntity(dto);
         order.setStatus(OrderStatusEnum.PENDING.getValue());
-
-        BigDecimal totalAmount = BigDecimal.ZERO;
-
         Order savedOrder = orderRepository.save(order);
 
-        List<OrderItem> items = new ArrayList<>();
-        for (OrderItemRequestDTO itemDto : dto.getOrderItems()) {
-            ProductVariant variant = productVariantRepository.findById(itemDto.getProductVariantId())
-                    .orElseThrow(() -> new CommonException()
-                            .setErrorCode(SystemCodeEnum.ERROR_005.getCode(), messageResource)
-                            .setStatusCode(HttpStatus.BAD_REQUEST));
+        List<Long> variantIds = dto.getOrderItems().stream()
+                .map(OrderItemRequestDTO::getProductVariantId)
+                .toList();
 
-            Product product = productRepository.findById(variant.getProductId())
-                    .orElseThrow(() -> new CommonException()
-                    .setErrorCode(SystemCodeEnum.ERROR_005.getCode(), messageResource)
-                    .setStatusCode(HttpStatus.BAD_REQUEST));
+        Map<Long, ProductVariant> variantsMap = productVariantRepository
+                .findAllById(variantIds).stream()
+                .collect(Collectors.toMap(ProductVariant::getId, v -> v));
+
+        List<Long> productIds = variantsMap.values().stream()
+                .map(ProductVariant::getProductId)
+                .distinct()
+                .toList();
+
+        Map<Long, Product> productsMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        List<OrderItem> items = new ArrayList<>();
+
+        for (OrderItemRequestDTO itemDto : dto.getOrderItems()) {
+            ProductVariant variant = variantsMap.get(itemDto.getProductVariantId());
+            if (variant == null) {
+                throw new CommonException()
+                        .setErrorCode(SystemCodeEnum.ERROR_005.getCode(), messageResource)
+                        .setStatusCode(HttpStatus.BAD_REQUEST);
+            }
+
+            Product product = productsMap.get(variant.getProductId());
+            if (product == null) {
+                throw new CommonException()
+                        .setErrorCode(SystemCodeEnum.ERROR_005.getCode(), messageResource)
+                        .setStatusCode(HttpStatus.BAD_REQUEST);
+            }
 
             if (itemDto.getQuantity() <= 0 || itemDto.getQuantity() > variant.getStockQuantity()) {
                 throw new CommonException()
                         .setErrorCode(SystemCodeEnum.ERROR_022.getCode(), messageResource)
                         .setStatusCode(HttpStatus.BAD_REQUEST);
+            }
+
+            variant.setStockQuantity(variant.getStockQuantity() - itemDto.getQuantity());
+            product.setStockQuantity(product.getStockQuantity() - itemDto.getQuantity());
+
+            if (product.getStockQuantity() == 0) {
+                product.setIsAvailable(false);
             }
 
             BigDecimal unitPrice = product.getPrice();
@@ -110,16 +138,12 @@ public class OrderServiceImpl implements OrderService {
                         .setErrorCode(SystemCodeEnum.ERROR_005.getCode(), messageResource)
                         .setStatusCode(HttpStatus.BAD_REQUEST));
 
-        if (!existingOrder.getStatus().equals(OrderStatusEnum.PENDING.getValue())) {
-            throw new CommonException()
-                    .setErrorCode(SystemCodeEnum.ERROR_016.getCode(), messageResource)
-                    .setStatusCode(HttpStatus.BAD_REQUEST);
+        if (dto.getStatus() != null) {
+            existingOrder.setStatus(dto.getStatus());
         }
 
-        orderItemRepository.deleteAllByOrderId(existingOrder.getId());
-
-        dto.setId(existingOrder.getId());
-        return save(dto);
+        Order saved = orderRepository.save(existingOrder);
+        return orderMapper.entityToResponse(saved);
     }
 
     @Override

@@ -8,6 +8,7 @@
   "attribute": {
     "code": "Order Code",
     "user_id": "User ID",
+    "user_name": "User Name",
     "total_amount": "Total Amount",
     "status": "Status",
     "address": "Address",
@@ -22,6 +23,8 @@
     "codePlaceholder": "Enter order code",
     "userId": "User ID",
     "userIdPlaceholder": "Enter user ID",
+    "userName": "User Name",
+    "userNamePlaceholder": "Enter user name",
     "totalAmount": "Total Amount",
     "totalAmountPlaceholder": "Enter total amount",
     "status": "Status",

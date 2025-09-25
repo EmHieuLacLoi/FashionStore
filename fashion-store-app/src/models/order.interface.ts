@@ -4,6 +4,7 @@ export interface Order {
   id: number;
   code: string;
   user_id: number;
+  user_name?: string;
   total_amount: number;
   status: string;
   address: string;

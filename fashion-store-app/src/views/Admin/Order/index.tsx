@@ -56,13 +56,6 @@ const OrderView = () => {
     }
   );
 
-  const create = (key: string) => {
-    if (key === "create") {
-      setShowModalCreate(true);
-      setActionType("create");
-    }
-  };
-
   const [currentDetailData, setCurrentDetailData] = useState<any>({});
 
   const handleSearch = (values: any) => {
@@ -125,7 +118,7 @@ const OrderView = () => {
         initialFilterValues={lastSearchParams}
         total={pagination.total}
         columnsConfig={columnsConfig}
-        create={create}
+        // create={create}
         handleEdit={handleEditData}
         handleDelete={handleDeleteData}
         onDelete={onDelete}

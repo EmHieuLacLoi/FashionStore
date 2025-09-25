@@ -20,22 +20,33 @@ public interface OrderRepository extends BaseRepository<Order, Long, OrderCriter
     @Query(value = """
     SELECT 
             o.*,
+            u.full_name AS userName,
             uc.id AS createdById,
             uc.username AS createdByName,
             uu.id AS updatedById,
             uu.username AS updatedByName
     FROM `orders` o 
+    LEFT JOIN user u ON o.user_id = u.id
     LEFT JOIN user uc ON o.created_by = uc.id
     LEFT JOIN user uu ON o.updated_by = uu.id
     WHERE
-           (:#{#criteria.userId} IS NULL OR o.user_id = :#{#criteria.userId})
+           (:#{#criteria.code} IS NULL OR o.code LIKE :#{#criteria.code}) AND
+           (:#{#criteria.fullName} IS NULL OR u.full_name LIKE :#{#criteria.fullName}) AND
+           (:#{#criteria.minPrice} IS NULL OR o.total_amount >= :#{#criteria.minPrice}) AND
+           (:#{#criteria.maxPrice} IS NULL OR o.total_amount <= :#{#criteria.maxPrice}) AND
+           (:#{#criteria.status} IS NULL OR o.status = :#{#criteria.status})
     """,
             countQuery = """
     SELECT
             COUNT(*)
     FROM `orders` o
+    LEFT JOIN user u ON o.user_id = u.id
     WHERE
-       (:#{#criteria.userId} IS NULL OR o.user_id = :#{#criteria.userId})
+           (:#{#criteria.code} IS NULL OR o.code LIKE :#{#criteria.code}) AND
+           (:#{#criteria.fullName} IS NULL OR u.full_name LIKE :#{#criteria.fullName}) AND
+           (:#{#criteria.minPrice} IS NULL OR o.total_amount >= :#{#criteria.minPrice}) AND
+           (:#{#criteria.maxPrice} IS NULL OR o.total_amount <= :#{#criteria.maxPrice}) AND
+           (:#{#criteria.status} IS NULL OR o.status = :#{#criteria.status})
     """,
             nativeQuery = true)
     Page<OrderDTO> findAllByCriteria(@Param("criteria") OrderCriteria criteria, Pageable pageable);
@@ -43,11 +54,13 @@ public interface OrderRepository extends BaseRepository<Order, Long, OrderCriter
     @Query(value = """
     SELECT 
             o.*,
+            u.full_name AS userName,
             uc.id AS createdById,
             uc.username AS createdByName,
             uu.id AS updatedById,
             uu.username AS updatedByName
     FROM `orders` o 
+    LEFT JOIN user u ON o.user_id = u.id
     LEFT JOIN user uc ON o.created_by = uc.id
     LEFT JOIN user uu ON o.updated_by = uu.id
     WHERE o.id = :id

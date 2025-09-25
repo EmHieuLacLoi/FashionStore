@@ -1,24 +1,12 @@
 import moment from "moment";
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Col,
-  InputNumber,
-  Select,
-} from "antd";
+import { Button, Form, Modal, Row, Col, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { message } from "@utils/antd-static";
-import {
-  OrderServerStateKeysEnum,
-  useCreateOrder,
-  useUpdateOrder,
-} from "@hooks/OrderHooks";
+import { OrderServerStateKeysEnum, useUpdateOrder } from "@hooks/OrderHooks";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveOutlined } from "@ant-design/icons";
+import { OrderStatus, OrderStatusColor } from "@constants/OrderStatus";
 
 interface FormComponentProps {
   dataEdit?: any;
@@ -36,9 +24,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
   const { t } = useTranslation();
   const [loadingFetch, setLoadingFetch] = useState(false);
   const [form] = Form.useForm();
-  const insertMutation = useCreateOrder();
   const updateMutation = useUpdateOrder();
   const queryClient = useQueryClient();
+
+  console.log(dataEdit);
 
   const transformDates = (
     data: any,
@@ -81,15 +70,9 @@ const FormComponent: React.FC<FormComponentProps> = ({
     try {
       await form.validateFields();
       const formData = form.getFieldsValue();
-      formData.code = formData.code.trim();
-      formData.address = formData.address.trim();
-      formData.phone_number = formData.phone_number.trim();
 
       let res: any;
-      if (type === "create") {
-        res = await insertMutation.mutateAsync(formData);
-      } else {
-        console.log(dataEdit, formData);
+      if (type === "update") {
         res = await updateMutation.mutateAsync({ ...dataEdit, ...formData });
       }
       if (res && (res.error_status === 1 || res.data?.error_status === 1)) {
@@ -136,7 +119,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
       centered
       footer={false}
       onCancel={closeForm}
-      width={800}
+      width={400}
       className="custom-modal"
     >
       <div
@@ -148,68 +131,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
       <div className="max-h-[600px] custom-scrollbar px-4">
         <Form form={form} layout="vertical">
           <Row gutter={[16, 16]}>
-            <Col span={12}>
-              <Form.Item
-                label={t("order.form.code")}
-                name="code"
-                rules={[
-                  {
-                    required: true,
-                    message: t("order.form.codePlaceholder"),
-                  },
-                ]}
-              >
-                <Input
-                  placeholder={t("order.form.codePlaceholder")}
-                  maxLength={50}
-                  autoComplete="off"
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                label={t("order.form.userId")}
-                name="user_id"
-                rules={[
-                  {
-                    required: true,
-                    message: t("order.form.userIdPlaceholder"),
-                  },
-                ]}
-              >
-                <InputNumber
-                  placeholder={t("order.form.userIdPlaceholder")}
-                  min={1}
-                  style={{ width: "100%" }}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                label={t("order.form.totalAmount")}
-                name="total_amount"
-                rules={[
-                  {
-                    required: true,
-                    message: t("order.form.totalAmountPlaceholder"),
-                  },
-                ]}
-              >
-                <InputNumber
-                  placeholder={t("order.form.totalAmountPlaceholder")}
-                  min={0}
-                  style={{ width: "100%" }}
-                  formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as any}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
+            <Col span={24}>
               <Form.Item
                 label={t("order.form.status")}
                 name="status"
@@ -221,52 +143,22 @@ const FormComponent: React.FC<FormComponentProps> = ({
                 ]}
               >
                 <Select placeholder={t("order.form.statusPlaceholder")}>
-                  <Select.Option value="PENDING">Pending</Select.Option>
-                  <Select.Option value="CONFIRMED">Confirmed</Select.Option>
-                  <Select.Option value="PROCESSING">Processing</Select.Option>
-                  <Select.Option value="SHIPPED">Shipped</Select.Option>
-                  <Select.Option value="DELIVERED">Delivered</Select.Option>
-                  <Select.Option value="CANCELLED">Cancelled</Select.Option>
+                  <Select.Option value={OrderStatus.PENDING}>
+                    {OrderStatusColor(t)[OrderStatus.PENDING].label}
+                  </Select.Option>
+                  <Select.Option value={OrderStatus.PROCESSING}>
+                    {OrderStatusColor(t)[OrderStatus.PROCESSING].label}
+                  </Select.Option>
+                  <Select.Option value={OrderStatus.SHIPPED}>
+                    {OrderStatusColor(t)[OrderStatus.SHIPPED].label}
+                  </Select.Option>
+                  <Select.Option value={OrderStatus.COMPLETED}>
+                    {OrderStatusColor(t)[OrderStatus.COMPLETED].label}
+                  </Select.Option>
+                  <Select.Option value={OrderStatus.CANCELLED}>
+                    {OrderStatusColor(t)[OrderStatus.CANCELLED].label}
+                  </Select.Option>
                 </Select>
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                label={t("order.form.phoneNumber")}
-                name="phone_number"
-                rules={[
-                  {
-                    required: true,
-                    message: t("order.form.phoneNumberPlaceholder"),
-                  },
-                ]}
-              >
-                <Input
-                  placeholder={t("order.form.phoneNumberPlaceholder")}
-                  maxLength={20}
-                  autoComplete="off"
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={24}>
-              <Form.Item
-                label={t("order.form.address")}
-                name="address"
-                rules={[
-                  {
-                    required: true,
-                    message: t("order.form.addressPlaceholder"),
-                  },
-                ]}
-              >
-                <Input.TextArea
-                  placeholder={t("order.form.addressPlaceholder")}
-                  maxLength={500}
-                  autoComplete="off"
-                  rows={3}
-                />
               </Form.Item>
             </Col>
           </Row>

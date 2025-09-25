@@ -1,14 +1,15 @@
 import type { ColumnModelBaseTable } from "@components/BaseTable/BaseTable";
 import type { TFunction } from "i18next";
 import { formatNumber } from "@utils/formatNumber";
+import { OrderStatusColor } from "@constants/OrderStatus";
 
 export const columns = (t: TFunction): ColumnModelBaseTable[] => [
   { dataIndex: "code", width: 150, isPrimary: false },
   {
-    dataIndex: "user_id",
-    width: 100,
+    dataIndex: "user_name",
+    width: 180,
     isPrimary: false,
-    render: (text, record) => record?.user_id || "-",
+    render: (text, record) => record?.user_name || "-",
   },
   {
     dataIndex: "total_amount",
@@ -20,7 +21,7 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
     dataIndex: "status",
     width: 120,
     isPrimary: false,
-    render: (text, record) => record?.status || "-",
+    render: (text, record) => OrderStatusColor(t)[record?.status].label || "-",
   },
   {
     dataIndex: "address",
@@ -35,22 +36,10 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
     render: (text, record) => record?.phone_number || "-",
   },
   {
-    dataIndex: "created_by",
-    width: 100,
-    isPrimary: false,
-    render: (text, record) => record?.created_by || "-",
-  },
-  {
     dataIndex: "created_at",
     width: 150,
     dataType: "datetime",
     isPrimary: false,
-  },
-  {
-    dataIndex: "updated_by",
-    width: 100,
-    isPrimary: false,
-    render: (text, record) => record?.updated_by || "-",
   },
   {
     dataIndex: "updated_at",

@@ -21,9 +21,6 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   useEffect(() => {
     if (initialValues) {
       const formValues = { ...initialValues };
-      if (typeof formValues.status === "string" && formValues.status) {
-        formValues.status = formValues.status.split(",").map(String);
-      }
       form.setFieldsValue(formValues);
     }
   }, [initialValues, form]);
@@ -42,17 +39,8 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
   }));
 
   const prepareSearchPayload = (values: any) => {
-    const statusArray = Array.isArray(values.status) ? values.status : [];
-    const cleanedStatus = statusArray.filter(
-      (v: any) => v !== "" && v !== null && v !== undefined
-    );
     const payload = { ...values };
 
-    if (cleanedStatus.length) {
-      payload.status = cleanedStatus.join(",");
-    } else {
-      delete payload.status;
-    }
     return payload;
   };
 
@@ -97,38 +85,42 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("order.form.userId")} name="user_id">
-            <InputNumber
+          <Form.Item label={t("order.form.userName")} name="fullName">
+            <Input
               className="w-full"
-              placeholder={t("order.form.userIdPlaceholder")}
-              min={1}
+              placeholder={t("order.form.userNamePlaceholder")}
               style={{ width: "100%" }}
+              allowClear
             />
           </Form.Item>
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("order.form.minTotalAmount")} name="min_total_amount">
+          <Form.Item label={t("order.form.minTotalAmount")} name="minPrice">
             <InputNumber
               className="w-full"
               placeholder={t("order.form.minTotalAmountPlaceholder")}
               min={0}
               style={{ width: "100%" }}
-              formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+              formatter={(value) =>
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as any}
             />
           </Form.Item>
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("order.form.maxTotalAmount")} name="max_total_amount">
+          <Form.Item label={t("order.form.maxTotalAmount")} name="maxPrice">
             <InputNumber
               className="w-full"
               placeholder={t("order.form.maxTotalAmountPlaceholder")}
               min={0}
               style={{ width: "100%" }}
-              formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+              formatter={(value) =>
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as any}
             />
           </Form.Item>
         </Col>
@@ -139,14 +131,22 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
               className="w-full"
               allowClear
               placeholder={t("order.form.statusPlaceholder")}
-              mode="multiple"
             >
-              <Select.Option value="PENDING">Pending</Select.Option>
-              <Select.Option value="CONFIRMED">Confirmed</Select.Option>
-              <Select.Option value="PROCESSING">Processing</Select.Option>
-              <Select.Option value="SHIPPED">Shipped</Select.Option>
-              <Select.Option value="DELIVERED">Delivered</Select.Option>
-              <Select.Option value="CANCELLED">Cancelled</Select.Option>
+              <Select.Option value={0}>
+                {t("order.constant.PENDING")}
+              </Select.Option>
+              <Select.Option value={1}>
+                {t("order.constant.PROCESSING")}
+              </Select.Option>
+              <Select.Option value={2}>
+                {t("order.constant.SHIPPED")}
+              </Select.Option>
+              <Select.Option value={3}>
+                {t("order.constant.COMPLETED")}
+              </Select.Option>
+              <Select.Option value={4}>
+                {t("order.constant.CANCELLED")}
+              </Select.Option>
             </Select>
           </Form.Item>
         </Col>
