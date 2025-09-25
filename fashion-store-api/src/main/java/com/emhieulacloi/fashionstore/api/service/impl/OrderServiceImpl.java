@@ -120,6 +120,9 @@ public class OrderServiceImpl implements OrderService {
 
         orderItemRepository.saveAll(items);
 
+        productVariantRepository.saveAll(variantsMap.values());
+        productRepository.saveAll(productsMap.values());
+
         savedOrder.setTotalAmount(totalAmount);
         orderRepository.save(savedOrder);
 
@@ -154,7 +157,44 @@ public class OrderServiceImpl implements OrderService {
                         .setErrorCode(SystemCodeEnum.ERROR_005.getCode(), messageResource)
                         .setStatusCode(HttpStatus.BAD_REQUEST));
 
-        if (!existingOrder.getStatus().equals(OrderStatusEnum.PENDING.getValue())) {
+        if (existingOrder.getStatus().equals(OrderStatusEnum.PENDING.getValue())) {
+            List<OrderItem> itemsToRestore = orderItemRepository.findAllByOrderId(id);
+
+            if (!itemsToRestore.isEmpty()) {
+                List<Long> variantIds = itemsToRestore.stream()
+                        .map(OrderItem::getProductVariantId)
+                        .toList();
+
+                Map<Long, ProductVariant> variantsMap = productVariantRepository.findAllById(variantIds).stream()
+                        .collect(Collectors.toMap(ProductVariant::getId, v -> v));
+
+                List<Long> productIds = variantsMap.values().stream()
+                        .map(ProductVariant::getProductId)
+                        .distinct()
+                        .toList();
+                Map<Long, Product> productsMap = productRepository.findAllById(productIds).stream()
+                        .collect(Collectors.toMap(Product::getId, p -> p));
+
+                for (OrderItem item : itemsToRestore) {
+                    ProductVariant variant = variantsMap.get(item.getProductVariantId());
+                    if (variant != null) {
+                        Product product = productsMap.get(variant.getProductId());
+
+                        variant.setStockQuantity(variant.getStockQuantity() + item.getQuantity());
+
+                        if (product != null) {
+                            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+                            if (!product.getIsAvailable() && product.getStockQuantity() > 0) {
+                                product.setIsAvailable(true);
+                            }
+                        }
+                    }
+                }
+
+                productVariantRepository.saveAll(variantsMap.values());
+                productRepository.saveAll(productsMap.values());
+            }
+        } else {
             throw new CommonException()
                     .setErrorCode(SystemCodeEnum.ERROR_023.getCode(), messageResource)
                     .setStatusCode(HttpStatus.BAD_REQUEST);
@@ -162,6 +202,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderItemRepository.deleteAllByOrderId(id);
         orderRepository.deleteById(id);
+
         return 1;
     }
 
