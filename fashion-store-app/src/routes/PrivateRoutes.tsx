@@ -1,20 +1,28 @@
 import type { RouteObject } from "react-router";
 import AdminLayout from "@layouts/AdminLayout/AdminLayout";
 import { adminCategory } from "@routes/modules/AdminCategoryRoute";
+import { adminDashboard } from "@routes/modules/AdminDashboard";
 import { adminOrder } from "@routes/modules/AdminOrderRoute";
 import { adminPayment } from "@routes/modules/AdminPaymentRoute";
 import { adminProduct } from "@routes/modules/AdminProductRoute";
 import { adminUser } from "@routes/modules/AdminUserRoute";
+import AdminGuard from "@routes/guards/AdminGuard";
 export const privateRoutes: RouteObject[] = [
   {
-    path: "/admin",
-    element: <AdminLayout />,
+    element: <AdminGuard />,
     children: [
-      ...adminCategory,
-      ...adminOrder,
-      ...adminPayment,
-      ...adminProduct,
-      ...adminUser,
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
+          ...adminDashboard,
+          ...adminCategory,
+          ...adminOrder,
+          ...adminPayment,
+          ...adminProduct,
+          ...adminUser,
+        ],
+      },
     ],
   },
 ];

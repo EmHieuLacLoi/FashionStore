@@ -103,6 +103,9 @@ const MainLayout = () => {
           danger: true,
           onClick: () => {
             removeToken();
+            message.success(
+              t("common.message.success", { value: t("auth.logout") })
+            );
             navigate("/");
           },
         },

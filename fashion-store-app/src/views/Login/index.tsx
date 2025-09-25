@@ -4,13 +4,17 @@ import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useLogin } from "@hooks/AuthHooks";
 import { getAxiosErrorMessage } from "@utils/axiosUtils";
-import { saveToken } from "@utils/auth";
+import { getToken, saveToken } from "@utils/auth";
 
 const Login = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const loginMutation = useLogin();
+
+  if (getToken()) {
+    navigate("/");
+  }
 
   const handleFinish = async () => {
     const values = await form.validateFields();
@@ -26,7 +30,11 @@ const Login = () => {
       }
 
       setTimeout(() => {
-        navigate("/");
+        if (res?.data?.roles?.includes("ROLE_ADMIN")) {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       }, 1000);
     } catch (error) {
       console.log(error);
