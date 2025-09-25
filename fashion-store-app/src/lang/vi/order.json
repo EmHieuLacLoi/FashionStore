@@ -1,5 +1,40 @@
 {
-  "order": "Đơn hàng",
+  "name": "Đơn hàng",
+  "title": {
+    "create": "Tạo đơn hàng",
+    "update": "Cập nhật đơn hàng",
+    "delete": "Xóa đơn hàng"
+  },
+  "attribute": {
+    "code": "Mã đơn hàng",
+    "user_id": "ID người dùng",
+    "total_amount": "Tổng tiền",
+    "status": "Trạng thái",
+    "address": "Địa chỉ",
+    "phone_number": "Số điện thoại",
+    "created_at": "Ngày tạo",
+    "created_by": "Người tạo",
+    "updated_at": "Ngày cập nhật",
+    "updated_by": "Người cập nhật"
+  },
+  "form": {
+    "code": "Mã đơn hàng",
+    "codePlaceholder": "Nhập mã đơn hàng",
+    "userId": "ID người dùng",
+    "userIdPlaceholder": "Nhập ID người dùng",
+    "totalAmount": "Tổng tiền",
+    "totalAmountPlaceholder": "Nhập tổng tiền",
+    "status": "Trạng thái",
+    "statusPlaceholder": "Chọn trạng thái",
+    "address": "Địa chỉ",
+    "addressPlaceholder": "Nhập địa chỉ",
+    "phoneNumber": "Số điện thoại",
+    "phoneNumberPlaceholder": "Nhập số điện thoại",
+    "minTotalAmount": "Tổng tiền tối thiểu",
+    "minTotalAmountPlaceholder": "Nhập tổng tiền tối thiểu",
+    "maxTotalAmount": "Tổng tiền tối đa",
+    "maxTotalAmountPlaceholder": "Nhập tổng tiền tối đa"
+  },
   "constant": {
     "PENDING": "Chờ xử lý",
     "PROCESSING": "Đang xử lý",

@@ -10,12 +10,14 @@ import {
   UserOutlined,
   LogoutOutlined,
   DesktopOutlined,
+  TranslationOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation, Outlet } from "react-router";
 import "./AdminLayout.scss";
 import { useTranslation } from "react-i18next";
 import { removeToken } from "@utils/auth";
 import LoadingSpinner from "@components/LoadingSpinner";
+import { useGlobalContext } from "../../GlobalContext";
 
 const { Sider, Content } = Layout;
 const { Text, Title } = Typography;
@@ -24,7 +26,8 @@ const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { lang, setLang } = useGlobalContext();
 
   const menuItems = [
     {
@@ -67,8 +70,24 @@ const AdminLayout: React.FC = () => {
 
   const userMenuItems = [
     {
+      key: "language",
+      label: t("common.change_language"),
+      icon: <TranslationOutlined />,
+      onClick: () => {
+        if (lang === "vi") {
+          localStorage.setItem("lang", "en");
+          i18n.changeLanguage("en");
+          setLang("en");
+        } else {
+          localStorage.setItem("lang", "vi");
+          i18n.changeLanguage("vi");
+          setLang("vi");
+        }
+      },
+    },
+    {
       key: "logout",
-      label: t("common.auth.logout"),
+      label: t("common.logout"),
       icon: <LogoutOutlined />,
       danger: true,
       onClick: handleLogout,

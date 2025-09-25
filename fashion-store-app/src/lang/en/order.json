@@ -1,5 +1,40 @@
 {
-  "order": "Order",
+  "name": "Order",
+  "title": {
+    "create": "Create Order",
+    "update": "Update Order",
+    "delete": "Delete Order"
+  },
+  "attribute": {
+    "code": "Order Code",
+    "user_id": "User ID",
+    "total_amount": "Total Amount",
+    "status": "Status",
+    "address": "Address",
+    "phone_number": "Phone Number",
+    "created_at": "Created At",
+    "created_by": "Created By",
+    "updated_at": "Updated At",
+    "updated_by": "Updated By"
+  },
+  "form": {
+    "code": "Order Code",
+    "codePlaceholder": "Enter order code",
+    "userId": "User ID",
+    "userIdPlaceholder": "Enter user ID",
+    "totalAmount": "Total Amount",
+    "totalAmountPlaceholder": "Enter total amount",
+    "status": "Status",
+    "statusPlaceholder": "Select status",
+    "address": "Address",
+    "addressPlaceholder": "Enter address",
+    "phoneNumber": "Phone Number",
+    "phoneNumberPlaceholder": "Enter phone number",
+    "minTotalAmount": "Min Total Amount",
+    "minTotalAmountPlaceholder": "Enter minimum total amount",
+    "maxTotalAmount": "Max Total Amount",
+    "maxTotalAmountPlaceholder": "Enter maximum total amount"
+  },
   "constant": {
     "PENDING": "Pending",
     "PROCESSING": "Processing",

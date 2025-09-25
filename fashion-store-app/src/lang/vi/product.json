@@ -1,0 +1,41 @@
+{
+  "name": "Sản phẩm",
+  "title": {
+    "create": "Tạo sản phẩm",
+    "update": "Cập nhật sản phẩm",
+    "delete": "Xóa sản phẩm"
+  },
+  "attribute": {
+    "name": "Tên",
+    "description": "Mô tả",
+    "price": "Giá",
+    "original_price": "Giá gốc",
+    "stock_quantity": "Số lượng tồn kho",
+    "category_name": "Danh mục",
+    "is_available": "Tình trạng",
+    "created_at": "Ngày tạo",
+    "created_by": "Người tạo",
+    "updated_at": "Ngày cập nhật",
+    "updated_by": "Người cập nhật"
+  },
+  "form": {
+    "name": "Tên",
+    "namePlaceholder": "Nhập tên sản phẩm",
+    "description": "Mô tả",
+    "descriptionPlaceholder": "Nhập mô tả sản phẩm",
+    "category": "Danh mục",
+    "categoryPlaceholder": "Chọn danh mục",
+    "price": "Giá",
+    "pricePlaceholder": "Nhập giá",
+    "originalPrice": "Giá gốc",
+    "originalPricePlaceholder": "Nhập giá gốc",
+    "stockQuantity": "Số lượng tồn kho",
+    "stockQuantityPlaceholder": "Nhập số lượng tồn kho",
+    "isAvailable": "Có sẵn",
+    "isAvailablePlaceholder": "Sản phẩm có sẵn không?",
+    "minPrice": "Giá tối thiểu",
+    "minPricePlaceholder": "Nhập giá tối thiểu",
+    "maxPrice": "Giá tối đa",
+    "maxPricePlaceholder": "Nhập giá tối đa"
+  }
+}

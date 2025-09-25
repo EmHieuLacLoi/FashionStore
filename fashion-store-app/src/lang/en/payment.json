@@ -1,12 +1,50 @@
 {
-  "payment": "Payment",
+  "name": "Payment",
+  "title": {
+    "create": "Create Payment",
+    "update": "Update Payment",
+    "delete": "Delete Payment"
+  },
+  "attribute": {
+    "order_id": "Order ID",
+    "amount": "Amount",
+    "payment_method": "Payment Method",
+    "status": "Status",
+    "transaction_id": "Transaction ID",
+    "payment_date": "Payment Date",
+    "created_at": "Created At",
+    "created_by": "Created By",
+    "updated_at": "Updated At",
+    "updated_by": "Updated By"
+  },
+  "form": {
+    "orderId": "Order ID",
+    "orderIdPlaceholder": "Enter order ID",
+    "amount": "Amount",
+    "amountPlaceholder": "Enter amount",
+    "paymentMethod": "Payment Method",
+    "paymentMethodPlaceholder": "Select payment method",
+    "status": "Status",
+    "statusPlaceholder": "Select status",
+    "transactionId": "Transaction ID",
+    "transactionIdPlaceholder": "Enter transaction ID",
+    "paymentDate": "Payment Date",
+    "paymentDatePlaceholder": "Select payment date",
+    "minAmount": "Min Amount",
+    "minAmountPlaceholder": "Enter minimum amount",
+    "maxAmount": "Max Amount",
+    "maxAmountPlaceholder": "Enter maximum amount"
+  },
   "constant": {
+    "CREDIT_CARD": "Credit Card",
+    "DEBIT_CARD": "Debit Card",
+    "PAYPAL": "PayPal",
+    "BANK_TRANSFER": "Bank Transfer",
+    "CASH_ON_DELIVERY": "Cash on Delivery",
     "PENDING": "Pending",
+    "PROCESSING": "Processing",
     "COMPLETED": "Completed",
     "FAILED": "Failed",
-    "MOMO": "Momo",
-    "ZALOPAY": "ZaloPay",
-    "COD": "COD",
-    "BANK_TRANSFER": "Bank Transfer"
+    "REFUNDED": "Refunded"
   }
 }

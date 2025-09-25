@@ -15,7 +15,8 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
     dataIndex: "original_price",
     width: 120,
     isPrimary: false,
-    render: (text, record) => record?.original_price ? formatNumber(record.original_price) : "-",
+    render: (text, record) =>
+      record?.original_price ? formatNumber(record.original_price) : "-",
   },
   {
     dataIndex: "stock_quantity",
@@ -33,7 +34,8 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
     dataIndex: "is_available",
     width: 100,
     isPrimary: false,
-    render: (text, record) => record?.is_available ? "Available" : "Unavailable",
+    render: (text, record) =>
+      record?.is_available ? "Available" : "Unavailable",
   },
   {
     dataIndex: "created_by",

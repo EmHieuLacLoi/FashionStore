@@ -101,5 +101,7 @@
   "hot": "Hot products",
   "premium": "Premium Fashion",
   "trending": "Trending Now",
-  "limited": "Limited Edition"
+  "limited": "Limited Edition",
+  "change_language": "Change language",
+  "logout": "Logout"
 }

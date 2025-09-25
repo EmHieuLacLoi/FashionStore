@@ -1,0 +1,41 @@
+{
+  "name": "Product",
+  "title": {
+    "create": "Create Product",
+    "update": "Update Product",
+    "delete": "Delete Product"
+  },
+  "attribute": {
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "original_price": "Original Price",
+    "stock_quantity": "Stock Quantity",
+    "category_name": "Category",
+    "is_available": "Availability",
+    "created_at": "Created At",
+    "created_by": "Created By",
+    "updated_at": "Updated At",
+    "updated_by": "Updated By"
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "Enter product name",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter product description",
+    "category": "Category",
+    "categoryPlaceholder": "Select category",
+    "price": "Price",
+    "pricePlaceholder": "Enter price",
+    "originalPrice": "Original Price",
+    "originalPricePlaceholder": "Enter original price",
+    "stockQuantity": "Stock Quantity",
+    "stockQuantityPlaceholder": "Enter stock quantity",
+    "isAvailable": "Available",
+    "isAvailablePlaceholder": "Is product available?",
+    "minPrice": "Min Price",
+    "minPricePlaceholder": "Enter minimum price",
+    "maxPrice": "Max Price",
+    "maxPricePlaceholder": "Enter maximum price"
+  }
+}
