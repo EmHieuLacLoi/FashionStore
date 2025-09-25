@@ -103,5 +103,12 @@
   "trending": "Xu hướng hot",
   "limited": "Phiên bản giới hạn",
   "change_language": "Đổi ngôn ngữ",
-  "logout": "Đăng xuất"
+  "logout": "Đăng xuất",
+  "admin": "Trang quản trị",
+  "constant": {
+    "ACTIVE": "Kích hoạt",
+    "INACTIVE": "Không kích hoạt",
+    "ADMIN": "Quản trị viên",
+    "USER": "Người dùng"
+  }
 }

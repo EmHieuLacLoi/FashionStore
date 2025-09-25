@@ -97,6 +97,18 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
+          <Form.Item label={t("user.form.full_name")} name="full_name">
+            <Input
+              className="w-full"
+              allowClear
+              placeholder={t("user.form.full_namePlaceholder")}
+              maxLength={100}
+              autoComplete="off"
+            />
+          </Form.Item>
+        </Col>
+
+        <Col flex={1} style={{ width: maxWidthInput }}>
           <Form.Item label={t("user.form.email")} name="email">
             <Input
               className="w-full"
@@ -109,32 +121,14 @@ const SearchAction = forwardRef<unknown, SearchActionProps>((props, ref) => {
         </Col>
 
         <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("user.form.role")} name="role">
-            <Select
+          <Form.Item label={t("user.form.phone_number")} name="phone_number">
+            <Input
               className="w-full"
               allowClear
-              placeholder={t("user.form.rolePlaceholder")}
-              mode="multiple"
-            >
-              <Select.Option value="ADMIN">Admin</Select.Option>
-              <Select.Option value="USER">User</Select.Option>
-              <Select.Option value="MANAGER">Manager</Select.Option>
-            </Select>
-          </Form.Item>
-        </Col>
-
-        <Col flex={1} style={{ width: maxWidthInput }}>
-          <Form.Item label={t("user.form.status")} name="status">
-            <Select
-              className="w-full"
-              allowClear
-              placeholder={t("user.form.statusPlaceholder")}
-              mode="multiple"
-            >
-              <Select.Option value="ACTIVE">Active</Select.Option>
-              <Select.Option value="INACTIVE">Inactive</Select.Option>
-              <Select.Option value="PENDING">Pending</Select.Option>
-            </Select>
+              placeholder={t("user.form.phoneNumberPlaceholder")}
+              maxLength={10}
+              autoComplete="off"
+            />
           </Form.Item>
         </Col>
       </Row>

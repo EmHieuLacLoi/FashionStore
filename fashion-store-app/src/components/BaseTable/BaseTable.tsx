@@ -115,7 +115,6 @@ const BaseTable: React.FC<BaseTableProps> = ({
   getCheckboxProps,
 }) => {
   const { t, i18n } = useTranslation();
-  const tableRef = useRef<any>(null);
   const [columnModel, setColumnModel] = useState<ColumnModelBaseTable[]>(
     columnsConfig || []
   );
@@ -144,12 +143,14 @@ const BaseTable: React.FC<BaseTableProps> = ({
     fixed: "right",
     isPrimary: true,
     onHeaderCell: () => ({
-      style: { textAlign: "center" },
+      style: {
+        textAlign: "center",
+        right: data && Array.isArray(data) && data.length <= 7 ? 0 : 15,
+      },
     }),
     onCell: () => ({
       style: { textAlign: "center", backgroundColor: "#fff" },
     }),
-    width: 70,
     render: (_, record) => (
       <Space size="small">
         <Tooltip title={t("common.button.edit")}>
@@ -328,53 +329,6 @@ const BaseTable: React.FC<BaseTableProps> = ({
       },
       onOk() {
         onDelete(id);
-      },
-    });
-  };
-
-  const showCancelConfirm = (
-    recordName: string,
-    onCancel: (data: any, reason: string) => void
-  ) => {
-    let inputValue = "";
-    Modal.confirm({
-      title: t("common.cancellation.cancel_confirm_title"),
-      content: (
-        <div>
-          <div>
-            {t("common.cancellation.cancel_single_content", {
-              key: recordName,
-            })}
-          </div>
-          <Input.TextArea
-            style={{ margin: "16px 0", width: "100%" }}
-            placeholder={t("common.cancellation.reason")}
-            onChange={(e) => {
-              inputValue = e.target.value;
-            }}
-            rows={4}
-            showCount
-            maxLength={255}
-            autoComplete="off"
-          />
-        </div>
-      ),
-      okText: t("common.cancellation.confirm"),
-      cancelText: t("common.cancellation.cancel"),
-      okButtonProps: {
-        style: {
-          backgroundColor: "#1677ff",
-          borderColor: "#1677ff",
-          color: "#fff",
-        },
-      },
-      cancelButtonProps: {
-        style: {
-          color: "#333",
-        },
-      },
-      onOk() {
-        onCancel(data, inputValue);
       },
     });
   };

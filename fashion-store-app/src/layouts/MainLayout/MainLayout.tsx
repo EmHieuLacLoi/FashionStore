@@ -19,6 +19,7 @@ import {
   UserOutlined,
   UserAddOutlined,
   LogoutOutlined,
+  DesktopOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router";
 import "./MainLayout.scss";
@@ -29,7 +30,7 @@ import logoRed from "@assets/images/Logo_red.svg";
 import { useGlobalContext } from "../../GlobalContext";
 import { getToken, removeToken } from "@utils/auth";
 import { useSendEmail } from "@hooks/EmailHook";
-
+import { getUserInfo } from "@services/AuthService";
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
@@ -43,6 +44,29 @@ const MainLayout = () => {
   const { cartItems } = useGlobalContext();
   const totalCartQty = cartItems.reduce((sum, i) => sum + i.quantity, 0);
   const sendEmailMutation = useSendEmail();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (token) {
+        try {
+          const response = await getUserInfo();
+          if (response.data && response.data.role === "ROLE_ADMIN") {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user info:", error);
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
+    };
+
+    fetchUserRole();
+  }, [token]);
 
   useEffect(() => {
     const randomNum = Math.floor(Math.random() * 3) + 1;
@@ -93,6 +117,14 @@ const MainLayout = () => {
           icon: <UserOutlined />,
           onClick: () => navigate("/profile"),
         },
+        isAdmin
+          ? {
+              key: "admin",
+              label: t("common.admin"),
+              icon: <DesktopOutlined />,
+              onClick: () => navigate("/admin"),
+            }
+          : null,
         {
           type: "divider",
         },

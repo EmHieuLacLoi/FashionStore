@@ -1,11 +1,17 @@
 import moment from "moment";
-import { Button, Form, Input, Modal, Row, Col, message, Select } from "antd";
-import React, { useEffect, useState } from "react";
 import {
-  ServerStateKeysEnum,
-  useCreate,
-  useUpdate,
-} from "@hooks/UserHooks";
+  Button,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Col,
+  message,
+  Select,
+  notification,
+} from "antd";
+import React, { useEffect, useState } from "react";
+import { ServerStateKeysEnum, useCreate, useUpdate } from "@hooks/UserHooks";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveOutlined } from "@ant-design/icons";
@@ -59,7 +65,11 @@ const FormComponent: React.FC<FormComponentProps> = ({
         ...transformDates(dataEdit, mapping),
       };
 
-      const transformedData = transformedDataBase;
+      const transformedData = {
+        ...transformedDataBase,
+        role: transformedDataBase.role == "ROLE_ADMIN" ? 1 : 2,
+      };
+
       form.setFieldsValue({
         ...transformedData,
       });
@@ -73,20 +83,25 @@ const FormComponent: React.FC<FormComponentProps> = ({
       const formData = form.getFieldsValue();
       formData.username = formData.username.trim();
       formData.email = formData.email.trim();
-      formData.firstName = formData.firstName.trim();
-      formData.lastName = formData.lastName.trim();
+      formData.full_name = formData.full_name.trim();
 
       let res: any;
       if (type === "create") {
         res = await insertMutation.mutateAsync(formData);
       } else {
-        console.log(dataEdit, formData);
-        res = await updateMutation.mutateAsync({ ...dataEdit, ...formData });
+        const dataUpdate = {
+          ...dataEdit,
+          ...formData,
+          id: dataEdit.id,
+        };
+        res = await updateMutation.mutateAsync(dataUpdate);
       }
-      if (res && (res.error_status === 1 || res.data?.error_status === 1)) {
-        message.success(
-          t(`common.message.${type}_success`, { value: t(`user.name`) })
-        );
+      if (res && (res?.error_status == 1 || res?.data?.error_status == 1)) {
+        notification.success({
+          message: t(`common.message.${type}_success`, {
+            value: t(`user.name`),
+          }),
+        });
         queryClient.invalidateQueries({
           queryKey: [ServerStateKeysEnum.Items],
         });
@@ -180,17 +195,17 @@ const FormComponent: React.FC<FormComponentProps> = ({
 
             <Col span={12}>
               <Form.Item
-                label={t("user.form.firstName")}
-                name="firstName"
+                label={t("user.form.full_name")}
+                name="full_name"
                 rules={[
                   {
                     required: true,
-                    message: t("user.form.firstNamePlaceholder"),
+                    message: t("user.form.full_namePlaceholder"),
                   },
                 ]}
               >
                 <Input
-                  placeholder={t("user.form.firstNamePlaceholder")}
+                  placeholder={t("user.form.full_namePlaceholder")}
                   maxLength={50}
                   autoComplete="off"
                 />
@@ -199,18 +214,37 @@ const FormComponent: React.FC<FormComponentProps> = ({
 
             <Col span={12}>
               <Form.Item
-                label={t("user.form.lastName")}
-                name="lastName"
+                label={t("user.form.phone_number")}
+                name="phone_number"
                 rules={[
                   {
                     required: true,
-                    message: t("user.form.lastNamePlaceholder"),
+                    message: t("user.form.phoneNumberPlaceholder"),
                   },
                 ]}
               >
                 <Input
-                  placeholder={t("user.form.lastNamePlaceholder")}
-                  maxLength={50}
+                  placeholder={t("user.form.phoneNumberPlaceholder")}
+                  maxLength={10}
+                  autoComplete="off"
+                />
+              </Form.Item>
+            </Col>
+
+            <Col span={12}>
+              <Form.Item
+                label={t("user.form.address")}
+                name="address"
+                rules={[
+                  {
+                    required: true,
+                    message: t("user.form.addressPlaceholder"),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={t("user.form.addressPlaceholder")}
+                  maxLength={255}
                   autoComplete="off"
                 />
               </Form.Item>
@@ -228,9 +262,12 @@ const FormComponent: React.FC<FormComponentProps> = ({
                 ]}
               >
                 <Select placeholder={t("user.form.rolePlaceholder")}>
-                  <Select.Option value="ADMIN">Admin</Select.Option>
-                  <Select.Option value="USER">User</Select.Option>
-                  <Select.Option value="MANAGER">Manager</Select.Option>
+                  <Select.Option value={1}>
+                    {t("common.constant.ADMIN")}
+                  </Select.Option>
+                  <Select.Option value={2}>
+                    {t("common.constant.USER")}
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -247,9 +284,12 @@ const FormComponent: React.FC<FormComponentProps> = ({
                 ]}
               >
                 <Select placeholder={t("user.form.statusPlaceholder")}>
-                  <Select.Option value="ACTIVE">Active</Select.Option>
-                  <Select.Option value="INACTIVE">Inactive</Select.Option>
-                  <Select.Option value="PENDING">Pending</Select.Option>
+                  <Select.Option value={1}>
+                    {t("common.constant.ACTIVE")}
+                  </Select.Option>
+                  <Select.Option value={0}>
+                    {t("common.constant.INACTIVE")}
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </Col>

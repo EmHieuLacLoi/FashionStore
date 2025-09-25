@@ -103,5 +103,12 @@
   "trending": "Trending Now",
   "limited": "Limited Edition",
   "change_language": "Change language",
-  "logout": "Logout"
+  "logout": "Logout",
+  "admin": "Admin Panel",
+  "constant": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "ADMIN": "Admin",
+    "USER": "User"
+  }
 }

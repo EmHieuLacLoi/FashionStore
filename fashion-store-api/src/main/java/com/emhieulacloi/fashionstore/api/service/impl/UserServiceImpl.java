@@ -123,7 +123,12 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO update(UserRequestDTO userRequestDTO) {
         try {
             User userLogin = AuthUtils.getCurrentUser();
-            User user = userRepository.findById(userLogin.getId()).orElse(null);
+            User user;
+            if (userRequestDTO.getId() != null) {
+                user = userRepository.findById(userRequestDTO.getId()).orElse(null);
+            } else {
+                user = userRepository.findById(userLogin.getId()).orElse(null);
+            }
             if (Objects.isNull(user)) {
                 throw new CommonException()
                         .setStatusCode(HttpStatus.BAD_REQUEST)
@@ -253,8 +258,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponseDTO> getList(UserRequestDTO request, Pageable pageable) {
-        Long roleId = request.getRoleId();
-
         Page<User> users = userRepository.findUsersByFilters(
                 request.getUsername() == null ? null : request.getUsername().trim(),
                 request.getEmail(),
@@ -262,9 +265,31 @@ public class UserServiceImpl implements UserService {
                 request.getPhoneNumber() == null ? null : request.getPhoneNumber().trim(),
                 pageable);
 
+        List<Long> userId = users.getContent().stream().map(User::getId).toList();
+        List<UserRole> userRoles = userRoleRepository.findByUserIdIn(userId);
+
+        Set<Long> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toSet());
+
+        List<Role> roles = roleRepository.findAllByIdIn(roleIds.stream().toList());
+        Map<Long, String> roleIdToNameMap = roles.stream()
+                .collect(Collectors.toMap(Role::getId, Role::getName));
+
+        Map<Long, Long> userIdToRoleIdMap = userRoles.stream()
+                .collect(Collectors.toMap(UserRole::getUserId, UserRole::getRoleId));
+
         List<UserResponseDTO> responseDTOs = users.getContent().stream()
-                .map(userMapper::entityToResponse)
-                .collect(Collectors.toList());
+                .map(user -> {
+                    UserResponseDTO dto = userMapper.entityToResponse(user);
+
+                    Long roleId = userIdToRoleIdMap.get(user.getId());
+
+                    if (roleId != null) {
+                        String roleName = roleIdToNameMap.get(roleId);
+                        dto.setRole(roleName);
+                    }
+                    return dto;
+                })
+                .toList();
 
         return new PageImpl<>(responseDTOs, pageable, users.getTotalElements());
     }

@@ -9,7 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCriteria {
-    String code;
     String name;
     Integer status;
+    String email;
+    String phoneNumber;
 }
