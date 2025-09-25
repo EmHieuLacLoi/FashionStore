@@ -1,4 +1,5 @@
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
+import { message } from "@utils/antd-static";
 import "./index.scss";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";

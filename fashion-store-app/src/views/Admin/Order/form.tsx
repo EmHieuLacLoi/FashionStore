@@ -1,6 +1,16 @@
 import moment from "moment";
-import { Button, Form, Input, Modal, Row, Col, message, InputNumber, Select } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Col,
+  InputNumber,
+  Select,
+} from "antd";
 import React, { useEffect, useState } from "react";
+import { message } from "@utils/antd-static";
 import {
   OrderServerStateKeysEnum,
   useCreateOrder,
@@ -191,8 +201,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
                   placeholder={t("order.form.totalAmountPlaceholder")}
                   min={0}
                   style={{ width: "100%" }}
-                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+                  formatter={(value) =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as any}
                 />
               </Form.Item>
             </Col>

@@ -1,5 +1,14 @@
 import moment from "moment";
-import { Button, Form, Input, Modal, Row, Col, message, InputNumber, Select } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Col,
+  InputNumber,
+  Select,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import {
   PaymentServerStateKeysEnum,
@@ -9,6 +18,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveOutlined } from "@ant-design/icons";
+import { message } from "@utils/antd-static";
 
 interface FormComponentProps {
   dataEdit?: any;
@@ -170,8 +180,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
                   placeholder={t("payment.form.amountPlaceholder")}
                   min={0}
                   style={{ width: "100%" }}
-                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+                  formatter={(value) =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as any}
                 />
               </Form.Item>
             </Col>
@@ -187,12 +199,18 @@ const FormComponent: React.FC<FormComponentProps> = ({
                   },
                 ]}
               >
-                <Select placeholder={t("payment.form.paymentMethodPlaceholder")}>
+                <Select
+                  placeholder={t("payment.form.paymentMethodPlaceholder")}
+                >
                   <Select.Option value="CREDIT_CARD">Credit Card</Select.Option>
                   <Select.Option value="DEBIT_CARD">Debit Card</Select.Option>
                   <Select.Option value="PAYPAL">PayPal</Select.Option>
-                  <Select.Option value="BANK_TRANSFER">Bank Transfer</Select.Option>
-                  <Select.Option value="CASH_ON_DELIVERY">Cash on Delivery</Select.Option>
+                  <Select.Option value="BANK_TRANSFER">
+                    Bank Transfer
+                  </Select.Option>
+                  <Select.Option value="CASH_ON_DELIVERY">
+                    Cash on Delivery
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </Col>

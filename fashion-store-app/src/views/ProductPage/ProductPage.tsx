@@ -19,9 +19,8 @@ import {
   Checkbox,
   Divider,
   Badge,
-  message,
 } from "antd";
-
+import { message } from "@utils/antd-static";
 import {
   SearchOutlined,
   ShoppingCartOutlined,

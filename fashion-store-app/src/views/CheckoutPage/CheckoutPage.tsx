@@ -10,9 +10,9 @@ import {
   Input,
   Button,
   Tooltip,
-  message,
   Radio,
 } from "antd";
+import { message } from "@utils/antd-static";
 import {
   CopyOutlined,
   RollbackOutlined,

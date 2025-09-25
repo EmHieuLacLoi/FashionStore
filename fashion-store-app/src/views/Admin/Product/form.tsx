@@ -1,5 +1,14 @@
 import moment from "moment";
-import { Button, Form, Input, Modal, Row, Col, message, InputNumber, Switch, Select } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Col,
+  InputNumber,
+  Switch,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import {
   ProductServerStateKeysEnum,
@@ -9,6 +18,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveOutlined } from "@ant-design/icons";
+import { message } from "@utils/antd-static";
 
 interface FormComponentProps {
   dataEdit?: any;
@@ -190,8 +200,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
                   placeholder={t("product.form.pricePlaceholder")}
                   min={0}
                   style={{ width: "100%" }}
-                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+                  formatter={(value) =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as any}
                 />
               </Form.Item>
             </Col>
@@ -205,8 +217,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
                   placeholder={t("product.form.originalPricePlaceholder")}
                   min={0}
                   style={{ width: "100%" }}
-                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+                  formatter={(value) =>
+                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value?.replace(/\$\s?|(,*)/g, "") as any}
                 />
               </Form.Item>
             </Col>
@@ -261,10 +275,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
             </Col>
 
             <Col span={24}>
-              <Form.Item
-                label={t("product.form.imageUrl")}
-                name="image_url"
-              >
+              <Form.Item label={t("product.form.imageUrl")} name="image_url">
                 <Input
                   placeholder={t("product.form.imageUrlPlaceholder")}
                   maxLength={500}

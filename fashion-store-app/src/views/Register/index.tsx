@@ -1,9 +1,10 @@
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
 import "./index.scss";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useCreate } from "@hooks/UserHooks";
 import { getAxiosErrorMessage } from "@utils/axiosUtils";
+import { message } from "@utils/antd-static";
 
 const Register = () => {
   const navigate = useNavigate();

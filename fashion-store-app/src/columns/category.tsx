@@ -2,11 +2,11 @@ import type { ColumnModelBaseTable } from "@components/BaseTable/BaseTable";
 import type { TFunction } from "i18next";
 
 export const columns = (t: TFunction): ColumnModelBaseTable[] => [
-  { dataIndex: "name", width: 150, isPrimary: false },
-  { dataIndex: "description", width: 150, isPrimary: false },
+  { dataIndex: "name", width: 180, isPrimary: false },
+  { dataIndex: "description", width: 260, isPrimary: false },
   {
     dataIndex: "created_by",
-    width: 100,
+    width: 130,
     isPrimary: false,
     render: (text, record) => record?.created_by || "-",
   },
@@ -18,7 +18,7 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
   },
   {
     dataIndex: "updated_by",
-    width: 100,
+    width: 130,
     isPrimary: false,
     render: (text, record) => record?.updated_by || "-",
   },

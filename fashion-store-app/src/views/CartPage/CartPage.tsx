@@ -13,8 +13,8 @@ import {
   Typography,
   Divider,
   Tag,
-  message,
 } from "antd";
+import { message } from "@utils/antd-static";
 import {
   DeleteOutlined,
   ShoppingCartOutlined,

@@ -8,4 +8,8 @@ import lombok.Setter;
 public class CategoryCriteria {
     private String name;
     private String description;
+
+    public String getName() {
+        return name == null || name.isEmpty() ? null : "%" + name.trim() + "%";
+    }
 }

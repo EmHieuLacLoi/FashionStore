@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  message,
-  Typography,
-  Divider,
-  Row,
-  Col,
-} from "antd";
+import { Form, Input, Button, Card, Typography, Divider, Row, Col } from "antd";
+import { message } from "@utils/antd-static";
 import {
   UserOutlined,
   MailOutlined,

@@ -1,20 +1,11 @@
 import moment from "moment";
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Col,
-  message,
-  Select,
-  notification,
-} from "antd";
+import { Button, Form, Input, Modal, Row, Col, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { ServerStateKeysEnum, useCreate, useUpdate } from "@hooks/UserHooks";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveOutlined } from "@ant-design/icons";
+import { message } from "@utils/antd-static";
 
 interface FormComponentProps {
   dataEdit?: any;
@@ -97,11 +88,11 @@ const FormComponent: React.FC<FormComponentProps> = ({
         res = await updateMutation.mutateAsync(dataUpdate);
       }
       if (res && (res?.error_status == 1 || res?.data?.error_status == 1)) {
-        notification.success({
-          message: t(`common.message.${type}_success`, {
+        message.success(
+          t(`common.message.${type}_success`, {
             value: t(`user.name`),
-          }),
-        });
+          })
+        );
         queryClient.invalidateQueries({
           queryKey: [ServerStateKeysEnum.Items],
         });

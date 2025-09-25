@@ -1,15 +1,5 @@
-import {
-  Button,
-  Space,
-  Table,
-  Tooltip,
-  Row,
-  Col,
-  Modal,
-  message,
-  Input,
-  Empty,
-} from "antd";
+import { Button, Space, Table, Tooltip, Row, Col, Empty } from "antd";
+import { message, modal as Modal } from "@utils/antd-static";
 import type { GetProp } from "antd/es";
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import type { ColumnType, TableProps } from "antd/es/table";
@@ -301,7 +291,7 @@ const BaseTable: React.FC<BaseTableProps> = ({
     selectedRowKeys,
     i18n.language,
   ]);
-  // #endregion
+
   const showDeleteConfirm = (
     recordName: string,
     id: string | number,
@@ -334,7 +324,7 @@ const BaseTable: React.FC<BaseTableProps> = ({
   };
 
   const handleDeleteRecord = (record: any) => {
-    const key = keyName ? record[keyName] : record.code;
+    const key = keyName ? record[keyName] : record.name;
     if (onDelete) {
       showDeleteConfirm(key, record.id, async (id) => {
         try {

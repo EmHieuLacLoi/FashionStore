@@ -1,5 +1,5 @@
 import type { Category } from "@models/category.interface";
-import { message } from "antd";
+import { message } from "@utils/antd-static";
 import { useEffect, useState } from "react";
 import FormComponent from "./form";
 import { useTranslation } from "react-i18next";

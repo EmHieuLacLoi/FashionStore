@@ -1,5 +1,5 @@
 import moment from "moment";
-import { Button, Form, Input, Modal, Row, Col, message } from "antd";
+import { Button, Form, Input, Modal, Row, Col } from "antd";
 import React, { useEffect, useState } from "react";
 import {
   CategoryServerStateKeysEnum,
@@ -9,6 +9,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveOutlined } from "@ant-design/icons";
+import { message } from "@utils/antd-static";
 
 interface FormComponentProps {
   dataEdit?: any;
@@ -78,7 +79,6 @@ const FormComponent: React.FC<FormComponentProps> = ({
       if (type === "create") {
         res = await insertMutation.mutateAsync(formData);
       } else {
-        console.log(dataEdit, formData);
         res = await updateMutation.mutateAsync({ ...dataEdit, ...formData });
       }
       if (res && (res.error_status === 1 || res.data?.error_status === 1)) {

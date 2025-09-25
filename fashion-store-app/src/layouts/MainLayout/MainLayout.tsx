@@ -10,8 +10,8 @@ import {
   Select,
   Dropdown,
   Badge,
-  message,
 } from "antd";
+import { message } from "@utils/antd-static";
 import {
   ShoppingCartOutlined,
   LoginOutlined,

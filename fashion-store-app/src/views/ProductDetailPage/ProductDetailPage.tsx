@@ -22,8 +22,8 @@ import {
   Alert,
   Radio,
   Select,
-  message,
 } from "antd";
+import { message } from "@utils/antd-static";
 import {
   ShoppingCartOutlined,
   HeartOutlined,

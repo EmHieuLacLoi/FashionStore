@@ -8,7 +8,8 @@ import { createBrowserRouter } from "react-router";
 import ErrorBoundary from "@components/ErrorBoundary/ErrorBoundary";
 import { GlobalProvider } from "./GlobalContext";
 import { RouterProvider } from "react-router";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, App as AntdApp } from "antd";
+import StaticAntdProvider from "./StaticAntdProvider";
 
 const queryClient = new QueryClient();
 const router = createBrowserRouter(routes);
@@ -16,13 +17,17 @@ const router = createBrowserRouter(routes);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
-        <ConfigProvider input={{ autoComplete: "off" }}>
-          <GlobalProvider>
-            <RouterProvider router={router} />
-          </GlobalProvider>
-        </ConfigProvider>
-      </ErrorBoundary>
+      <ConfigProvider input={{ autoComplete: "off" }}>
+        <AntdApp>
+          <ErrorBoundary>
+            <GlobalProvider>
+              <StaticAntdProvider>
+                <RouterProvider router={router} />
+              </StaticAntdProvider>
+            </GlobalProvider>
+          </ErrorBoundary>
+        </AntdApp>
+      </ConfigProvider>
     </QueryClientProvider>
   </StrictMode>
 );
