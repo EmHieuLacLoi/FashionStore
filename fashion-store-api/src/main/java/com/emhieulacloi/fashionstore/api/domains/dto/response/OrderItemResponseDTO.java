@@ -20,6 +20,9 @@ public class OrderItemResponseDTO {
 
     @JsonProperty("product_variant_id")
     private Long productVariantId;
+
+    @JsonProperty("product_variant")
+    private ProductVariantResponseDTO productVariant;
     
     @JsonProperty("product_name")
     private String productName;

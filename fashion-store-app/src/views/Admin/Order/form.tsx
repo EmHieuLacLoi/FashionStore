@@ -27,8 +27,6 @@ const FormComponent: React.FC<FormComponentProps> = ({
   const updateMutation = useUpdateOrder();
   const queryClient = useQueryClient();
 
-  console.log(dataEdit);
-
   const transformDates = (
     data: any,
     keyMapping: { [targetKey: string]: string },

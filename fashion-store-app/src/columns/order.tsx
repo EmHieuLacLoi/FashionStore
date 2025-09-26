@@ -3,8 +3,32 @@ import type { TFunction } from "i18next";
 import { formatNumber } from "@utils/formatNumber";
 import { OrderStatusColor } from "@constants/OrderStatus";
 
-export const columns = (t: TFunction): ColumnModelBaseTable[] => [
-  { dataIndex: "code", width: 150, isPrimary: false },
+interface DetailHandler {
+  onDetailClick: (record: any) => void;
+}
+
+export const columns = (
+  t: TFunction,
+  detailHandler: DetailHandler
+): ColumnModelBaseTable[] => [
+  {
+    dataIndex: "code",
+    width: 150,
+    isPrimary: false,
+    render: (code, record) => (
+      <span>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            detailHandler.onDetailClick(record);
+          }}
+        >
+          {code}
+        </a>
+      </span>
+    ),
+  },
   {
     dataIndex: "user_name",
     width: 180,

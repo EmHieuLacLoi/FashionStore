@@ -1,52 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Modal,
   Descriptions,
-  Spin,
   Empty,
   Button,
   Divider,
-  Table,
   Tag,
-} from "antd"; // Thêm Divider, Table, Tag
-import moment from "moment"; // Dùng moment để format ngày tháng
+  Table,
+  type TableProps,
+} from "antd";
+import moment from "moment";
+import { OrderStatusColor } from "@constants/OrderStatus";
+import { PaymentMethodLabel } from "@constants/PaymentMethod";
+import { PaymentStatusColor } from "@constants/PaymentStatus";
 
 interface OrderDetailComponentProps {
-  data?: any;
+  data: any;
   visible: boolean;
   onOk: () => void;
   onCancel: () => void;
   loading?: boolean;
 }
 
-// --- Các hàm và object tiện ích để chuyển đổi dữ liệu ---
-
-// Chuyển đổi status đơn hàng
-const orderStatusMap: { [key: number]: { text: string; color: string } } = {
-  1: { text: "Pending", color: "gold" },
-  2: { text: "Confirmed", color: "lime" },
-  3: { text: "Processing", color: "processing" },
-  4: { text: "Shipped", color: "geekblue" },
-  5: { text: "Delivered", color: "success" },
-  6: { text: "Cancelled", color: "error" },
-};
-
-// Chuyển đổi status thanh toán
-const paymentStatusMap: { [key: number]: { text: string; color: string } } = {
-  0: { text: "Chưa thanh toán", color: "orange" },
-  1: { text: "Đã thanh toán", color: "success" },
-  2: { text: "Thất bại", color: "error" },
-};
-
-// Chuyển đổi phương thức thanh toán
-const paymentMethodMap: { [key: number]: string } = {
-  1: "Thanh toán khi nhận hàng (COD)",
-  2: "Chuyển khoản ngân hàng",
-  3: "Thanh toán qua VNPAY",
-};
-
-// Định dạng tiền tệ
 const currencyFormatter = new Intl.NumberFormat("vi-VN", {
   style: "currency",
   currency: "VND",
@@ -57,35 +33,51 @@ const OrderDetailComponent: React.FC<OrderDetailComponentProps> = ({
   visible,
   onOk,
   onCancel,
-  loading,
 }) => {
   const { t } = useTranslation();
 
-  const hasData = data && Object.keys(data).length > 0;
-  const isLoading = loading || (visible && !data);
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
 
-  // Cấu hình cột cho bảng chi tiết sản phẩm
-  const itemColumns = [
+  const itemColumns: TableProps<any>["columns"] = [
     {
-      title: "Sản phẩm",
+      title: t("order.detail.product_name"),
       dataIndex: "product_name",
       key: "product_name",
+      align: "left",
     },
     {
-      title: "Số lượng",
+      title: t("order.detail.color"),
+      dataIndex: "color",
+      key: "color",
+      align: "left",
+      render: (text, record) => record?.product_variant?.color || "",
+    },
+    {
+      title: t("order.detail.size"),
+      dataIndex: "size",
+      key: "size",
+      align: "left",
+      render: (text, record) => record?.product_variant?.size || "",
+    },
+    {
+      title: t("order.detail.quantity"),
       dataIndex: "quantity",
       key: "quantity",
       align: "center",
     },
     {
-      title: "Đơn giá",
+      title: t("order.detail.unit_price"),
       dataIndex: "unit_price",
       key: "unit_price",
       align: "right",
       render: (price: number) => currencyFormatter.format(price),
     },
     {
-      title: "Thành tiền",
+      title: t("order.detail.total_price"),
       dataIndex: "total_price",
       key: "total_price",
       align: "right",
@@ -95,11 +87,11 @@ const OrderDetailComponent: React.FC<OrderDetailComponentProps> = ({
 
   return (
     <Modal
-      title={`${t("order.detail_title")} - ${data?.code || ""}`}
+      title={`${t("order.detail.title")} - ${data?.code || ""}`}
       open={visible}
       onOk={onOk}
       onCancel={onCancel}
-      width={800} // Tăng chiều rộng để hiển thị bảng
+      width={800}
       centered
       footer={[
         <Button key="ok" type="primary" onClick={onOk}>
@@ -107,59 +99,79 @@ const OrderDetailComponent: React.FC<OrderDetailComponentProps> = ({
         </Button>,
       ]}
     >
-      {isLoading ? (
-        <div style={{ textAlign: "center", padding: "50px 0" }}>
-          <Spin size="large" />
-        </div>
-      ) : hasData ? (
-        <div className="max-h-[600px] overflow-y-auto custom-scrollbar pr-4">
-          {/* === Thông tin chính của đơn hàng === */}
-          <Divider orientation="left">Thông tin đơn hàng</Divider>
+      {data ? (
+        <div className="max-h-[500px] overflow-y-auto custom-scrollbar pr-4">
+          <Divider orientation="left">{t("order.detail.order_info")}</Divider>
           <Descriptions bordered size="small" column={2}>
-            <Descriptions.Item label="Mã đơn hàng">
+            <Descriptions.Item label={t("order.attribute.code")}>
               {data.code}
             </Descriptions.Item>
-            <Descriptions.Item label="Trạng thái">
-              <Tag color={orderStatusMap[data.status]?.color}>
-                {orderStatusMap[data.status]?.text || "Không xác định"}
+            <Descriptions.Item label={t("order.attribute.status")}>
+              <Tag
+                className={
+                  OrderStatusColor(t)[data?.status || 0].color + " text-white"
+                }
+              >
+                {OrderStatusColor(t)[data?.status || 0].label}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Khách hàng">
+            <Descriptions.Item label={t("order.attribute.user_name")}>
               {data.user_name}
             </Descriptions.Item>
-            <Descriptions.Item label="Ngày đặt">
+            <Descriptions.Item label={t("order.attribute.created_at")}>
               {moment(data.created_at).format("HH:mm DD/MM/YYYY")}
             </Descriptions.Item>
-            <Descriptions.Item label="Số điện thoại" span={2}>
+            <Descriptions.Item
+              label={t("order.attribute.phone_number")}
+              span={2}
+            >
               {data.phone_number}
             </Descriptions.Item>
-            <Descriptions.Item label="Địa chỉ giao hàng" span={2}>
+            <Descriptions.Item label={t("order.attribute.address")} span={2}>
               {data.address}
             </Descriptions.Item>
-            <Descriptions.Item label="Phí vận chuyển">
+            <Descriptions.Item label={t("order.attribute.shipping_fee")}>
               {currencyFormatter.format(data.shipping_fee || 0)}
             </Descriptions.Item>
-            <Descriptions.Item label="Tổng tiền hàng">
+            <Descriptions.Item label={t("order.attribute.total_amount")}>
               {currencyFormatter.format(data.total_amount || 0)}
             </Descriptions.Item>
           </Descriptions>
 
-          {/* === Chi tiết thanh toán === */}
+          <Divider orientation="left">{t("order.detail.product_info")}</Divider>
+          <Table
+            columns={itemColumns}
+            dataSource={data.order_items || []}
+            rowKey="id"
+            pagination={false}
+            size="small"
+          />
+
           {data.payment && (
             <>
-              <Divider orientation="left">Thông tin thanh toán</Divider>
+              <Divider orientation="left">
+                {t("order.detail.payment_info")}
+              </Divider>
               <Descriptions bordered size="small" column={1}>
-                <Descriptions.Item label="Phương thức">
-                  {paymentMethodMap[data.payment.payment_method] ||
-                    "Không xác định"}
+                <Descriptions.Item
+                  label={t("payment.attribute.payment_method")}
+                >
+                  {
+                    PaymentMethodLabel(t)[data.payment?.payment_method || 0]
+                      .label
+                  }
                 </Descriptions.Item>
-                <Descriptions.Item label="Trạng thái thanh toán">
-                  <Tag color={paymentStatusMap[data.payment.status]?.color}>
-                    {paymentStatusMap[data.payment.status]?.text ||
-                      "Không xác định"}
+                <Descriptions.Item label={t("payment.attribute.status")}>
+                  <Tag
+                    className={
+                      PaymentStatusColor(t)[data.payment?.status || 0].color +
+                      " text-white"
+                    }
+                  >
+                    {PaymentStatusColor(t)[data.payment?.status || 0].label}
                   </Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label="Tổng tiền thanh toán">
+                <Descriptions.Item label={t("payment.attribute.amount")}>
                   <strong>
                     {currencyFormatter.format(data.payment.amount || 0)}
                   </strong>
@@ -167,16 +179,6 @@ const OrderDetailComponent: React.FC<OrderDetailComponentProps> = ({
               </Descriptions>
             </>
           )}
-
-          {/* === Danh sách sản phẩm === */}
-          <Divider orientation="left">Chi tiết sản phẩm</Divider>
-          {/* <Table
-            columns={itemColumns}
-            dataSource={data.order_items || []}
-            rowKey="id"
-            pagination={false}
-            size="small"
-          /> */}
         </div>
       ) : (
         <Empty description={t("common.change_info.no_detail_data")} />

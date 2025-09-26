@@ -45,6 +45,7 @@
     "PROCESSING": "Đang xử lý",
     "COMPLETED": "Thành công",
     "FAILED": "Thất bại",
-    "REFUNDED": "Đã hoàn tiền"
+    "REFUNDED": "Đã hoàn tiền",
+    "COD": "Thanh toán khi nhận hàng"
   }
 }

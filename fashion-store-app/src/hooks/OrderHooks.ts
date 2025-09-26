@@ -1,4 +1,10 @@
-import { getList, create, update, deleteData } from "@services/OrderService";
+import {
+  getList,
+  create,
+  update,
+  deleteData,
+  getDetail,
+} from "@services/OrderService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const OrderServerStateKeysEnum = {
@@ -9,6 +15,14 @@ export const useGetOrderList = (params: any, config: object): any => {
   return useQuery({
     queryKey: [OrderServerStateKeysEnum.Items, params],
     queryFn: () => getList(params),
+    ...config,
+  });
+};
+
+export const useGetOrderDetail = (id: number, config: object): any => {
+  return useQuery({
+    queryKey: [OrderServerStateKeysEnum.Items, id],
+    queryFn: () => getDetail(id),
     ...config,
   });
 };

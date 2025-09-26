@@ -45,6 +45,7 @@
     "PROCESSING": "Processing",
     "COMPLETED": "Completed",
     "FAILED": "Failed",
-    "REFUNDED": "Refunded"
+    "REFUNDED": "Refunded",
+    "COD": "Cash on Delivery"
   }
 }

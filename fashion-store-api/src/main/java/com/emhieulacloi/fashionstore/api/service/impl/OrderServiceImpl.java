@@ -9,6 +9,7 @@ import com.emhieulacloi.fashionstore.api.domains.dto.request.OrderRequestDTO;
 import com.emhieulacloi.fashionstore.api.domains.dto.response.OrderItemResponseDTO;
 import com.emhieulacloi.fashionstore.api.domains.dto.response.OrderResponseDTO;
 import com.emhieulacloi.fashionstore.api.domains.dto.response.PaymentResponseDTO;
+import com.emhieulacloi.fashionstore.api.domains.dto.response.ProductVariantResponseDTO;
 import com.emhieulacloi.fashionstore.api.domains.entity.*;
 import com.emhieulacloi.fashionstore.api.enums.OrderStatusEnum;
 import com.emhieulacloi.fashionstore.api.enums.SystemCodeEnum;
@@ -17,6 +18,7 @@ import com.emhieulacloi.fashionstore.api.service.OrderService;
 import com.emhieulacloi.fashionstore.api.service.mapper.OrderItemMapper;
 import com.emhieulacloi.fashionstore.api.service.mapper.OrderMapper;
 import com.emhieulacloi.fashionstore.api.service.mapper.PaymentMapper;
+import com.emhieulacloi.fashionstore.api.service.mapper.ProductVariantMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+    private final ProductVariantMapper productVariantMapper;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Throwable.class})
@@ -213,6 +217,19 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemResponseDTO> allOrderItems = orderItemRepository
                 .findAllByOrderIdIn(orderDTOS.getContent().stream().map(OrderDTO::getId).toList())
                 .stream().map(orderItemMapper::dtoToResponse).toList();
+
+        Set<Long> variantIds = allOrderItems.stream()
+                .map(OrderItemResponseDTO::getProductVariantId).collect(Collectors.toSet());
+
+        List<ProductVariantResponseDTO> allProductVariants =
+                productVariantRepository.findAllByIdIn(variantIds)
+                        .stream().map(productVariantMapper::entityToResponse).toList();
+
+        allOrderItems.forEach(orderItem -> allProductVariants.stream()
+            .filter(productVariant ->
+                    productVariant.getId().equals(orderItem.getProductVariantId()))
+            .findFirst()
+            .ifPresent(orderItem::setProductVariant));
 
         List<Payment> allPayments = paymentRepository
                 .findAllByOrderIdIn(orderDTOS.getContent().stream().map(OrderDTO::getId).toList());

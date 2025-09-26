@@ -13,6 +13,7 @@
     "status": "Trạng thái",
     "address": "Địa chỉ",
     "phone_number": "Số điện thoại",
+    "shipping_fee": "Phí giao hàng",
     "created_at": "Ngày tạo",
     "created_by": "Người tạo",
     "updated_at": "Ngày cập nhật",
@@ -44,5 +45,17 @@
     "SHIPPED": "Đã giao hàng",
     "COMPLETED": "Hoàn thành",
     "CANCELLED": "Hủy bỏ"
+  },
+  "detail": {
+    "title": "Chi tiết đơn hàng",
+    "order_info": "Thông tin đơn hàng",
+    "product_info": "Thông tin sản phẩm",
+    "payment_info": "Thông tin thanh toán",
+    "product_name": "Tên sản phẩm",
+    "color": "Màu sắc",
+    "size": "Kích thước",
+    "quantity": "Số lượng",
+    "unit_price": "Đơn giá",
+    "total_price": "Thành tiền"
   }
 }

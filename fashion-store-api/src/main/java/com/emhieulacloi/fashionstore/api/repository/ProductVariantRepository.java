@@ -5,10 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
     void deleteByProductId(Long productId);
+
+    List<ProductVariant> findAllByIdIn(Set<Long> variantIds);
 
     List<ProductVariant> findAllByProductIdIn(List<Long> productIds);
 

@@ -4,6 +4,12 @@ export const getList = async (data: any) => {
   const response = await axiosInstance.get("api/v1/orders", { params: data });
   return response.data;
 };
+
+export const getDetail = async (id: number) => {
+  const response = await axiosInstance.get(`api/v1/orders/${id}`);
+  return response.data;
+};
+
 export const create = async (data: any) => {
   const response = await axiosInstance.post("api/v1/orders", data);
   return response.data;

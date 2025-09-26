@@ -8,12 +8,14 @@ import BaseTable from "@components/BaseTable/BaseTable";
 import type { ColumnModelBaseTable } from "@components/BaseTable/BaseTable";
 import { columns } from "@columns/order";
 import SearchAction from "./search";
+import OrderDetailComponent from "./detail";
 
 const OrderView = () => {
   const [actionType, setActionType] = useState<"create" | "update" | "delete">(
     "create"
   );
   const [showModalCreate, setShowModalCreate] = useState<boolean>(false);
+  const [showModalDetail, setShowModalDetail] = useState<boolean>(false);
 
   const { t } = useTranslation();
 
@@ -66,7 +68,12 @@ const OrderView = () => {
     refetch();
   };
 
-  const columnsConfig: ColumnModelBaseTable[] = columns(t);
+  const columnsConfig: ColumnModelBaseTable[] = columns(t, {
+    onDetailClick: (record: Order) => {
+      setCurrentDetailData(record);
+      setShowModalDetail(true);
+    },
+  });
 
   const handleEditData = (record: Order) => {
     setCurrentDetailData(record);
@@ -118,7 +125,6 @@ const OrderView = () => {
         initialFilterValues={lastSearchParams}
         total={pagination.total}
         columnsConfig={columnsConfig}
-        // create={create}
         handleEdit={handleEditData}
         handleDelete={handleDeleteData}
         onDelete={onDelete}
@@ -133,6 +139,12 @@ const OrderView = () => {
         showModal={showModalCreate}
         dataEdit={currentDetailData}
         type={actionType}
+      />
+      <OrderDetailComponent
+        data={currentDetailData}
+        visible={showModalDetail}
+        onOk={() => setShowModalDetail(false)}
+        onCancel={() => setShowModalDetail(false)}
       />
     </>
   );
