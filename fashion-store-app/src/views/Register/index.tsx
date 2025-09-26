@@ -1,4 +1,4 @@
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Col, Row } from "antd";
 import "./index.scss";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -43,125 +43,137 @@ const Register = () => {
         onFinish={handleFinish}
         autoComplete="off"
       >
-        <input
-          type="text"
-          name="fake_user"
-          autoComplete="username"
-          style={{ display: "none" }}
-        />
-        <input
-          type="password"
-          name="fakepasswordremembered"
-          style={{ display: "none" }}
-        />
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="username"
+              label={t("auth.register.username")}
+              rules={[
+                {
+                  required: true,
+                  message: t("auth.register.username_required"),
+                },
+              ]}
+            >
+              <Input
+                autoComplete="off"
+                placeholder={t("auth.register.username_placeholder")}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="full_name"
+              label={t("auth.register.name")}
+              rules={[
+                { required: true, message: t("auth.register.name_required") },
+              ]}
+            >
+              <Input
+                autoComplete="off"
+                placeholder={t("auth.register.name_placeholder")}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item
-          name="username"
-          label={t("auth.register.username")}
-          rules={[
-            { required: true, message: t("auth.register.username_required") },
-          ]}
-        >
-          <Input
-            autoComplete="off"
-            placeholder={t("auth.register.username_placeholder")}
-          />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="password"
+              label={t("auth.register.password")}
+              rules={[
+                {
+                  required: true,
+                  message: t("auth.register.password_required"),
+                },
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    if (value.length < 8) {
+                      return Promise.reject(t("auth.register.password_min"));
+                    }
+                    if (!/[A-Z]/.test(value)) {
+                      return Promise.reject(
+                        t("auth.register.password_uppercase")
+                      );
+                    }
+                    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                      return Promise.reject(
+                        t("auth.register.password_special")
+                      );
+                    }
+                    if (/\s/.test(value)) {
+                      return Promise.reject(
+                        t("auth.register.password_whitespace")
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <Input.Password
+                autoComplete="off"
+                placeholder={t("auth.register.password_placeholder")}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="confirm_password"
+              label={t("auth.register.confirm_password")}
+              dependencies={["password"]}
+              rules={[
+                {
+                  required: true,
+                  message: t("auth.register.confirm_password_required"),
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error(t("auth.register.confirm_password_not_match"))
+                    );
+                  },
+                }),
+              ]}
+            >
+              <Input.Password
+                autoComplete="off"
+                placeholder={t("auth.register.confirm_password_placeholder")}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item
-          name="full_name"
-          label={t("auth.register.name")}
-          rules={[
-            { required: true, message: t("auth.register.name_required") },
-          ]}
-        >
-          <Input
-            autoComplete="off"
-            placeholder={t("auth.register.name_placeholder")}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="password"
-          label={t("auth.register.password")}
-          rules={[
-            { required: true, message: t("auth.register.password_required") },
-            {
-              validator: (_, value) => {
-                if (!value) return Promise.resolve();
-
-                if (value.length < 8) {
-                  return Promise.reject(t("auth.register.password_min"));
-                }
-
-                if (!/[A-Z]/.test(value)) {
-                  return Promise.reject(t("auth.register.password_uppercase"));
-                }
-
-                if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
-                  return Promise.reject(t("auth.register.password_special"));
-                }
-
-                if (/\s/.test(value)) {
-                  return Promise.reject(t("auth.register.password_whitespace"));
-                }
-
-                return Promise.resolve();
-              },
-            },
-          ]}
-        >
-          <Input.Password
-            autoComplete="off"
-            placeholder={t("auth.register.password_placeholder")}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="confirm_password"
-          label={t("auth.register.confirm_password")}
-          rules={[
-            {
-              required: true,
-              message: t("auth.register.confirm_password_required"),
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  new Error(t("auth.register.confirm_password_not_match"))
-                );
-              },
-            }),
-          ]}
-        >
-          <Input.Password
-            autoComplete="off"
-            placeholder={t("auth.register.confirm_password_placeholder")}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="email"
-          label={t("auth.register.email")}
-          rules={[
-            { type: "email", message: t("auth.register.email_not_valid") },
-          ]}
-        >
-          <Input
-            autoComplete="off"
-            placeholder={t("auth.register.email_placeholder")}
-          />
-        </Form.Item>
-
-        <Form.Item name="phone_number" label={t("auth.register.phone")}>
-          <Input
-            autoComplete="off"
-            placeholder={t("auth.register.phone_placeholder")}
-          />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="email"
+              label={t("auth.register.email")}
+              rules={[
+                { required: true, message: t("auth.register.email_required") },
+                { type: "email", message: t("auth.register.email_not_valid") },
+              ]}
+            >
+              <Input
+                autoComplete="off"
+                placeholder={t("auth.register.email_placeholder")}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="phone_number" label={t("auth.register.phone")}>
+              <Input
+                autoComplete="off"
+                placeholder={t("auth.register.phone_placeholder")}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
         <Form.Item name={"address"} label={t("auth.register.address")}>
           <Input
