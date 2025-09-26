@@ -6,11 +6,10 @@
     "delete": "Delete Payment"
   },
   "attribute": {
-    "order_id": "Order ID",
+    "order_code": "Order Code",
     "amount": "Amount",
     "payment_method": "Payment Method",
     "status": "Status",
-    "transaction_id": "Transaction ID",
     "payment_date": "Payment Date",
     "created_at": "Created At",
     "created_by": "Created By",
@@ -18,8 +17,8 @@
     "updated_by": "Updated By"
   },
   "form": {
-    "orderId": "Order ID",
-    "orderIdPlaceholder": "Enter order ID",
+    "orderCode": "Order Code",
+    "orderCodePlaceholder": "Enter order code",
     "amount": "Amount",
     "amountPlaceholder": "Enter amount",
     "paymentMethod": "Payment Method",
@@ -33,7 +32,8 @@
     "minAmount": "Min Amount",
     "minAmountPlaceholder": "Enter minimum amount",
     "maxAmount": "Max Amount",
-    "maxAmountPlaceholder": "Enter maximum amount"
+    "maxAmountPlaceholder": "Enter maximum amount",
+    "paymentMethodSearch": "Payment Method"
   },
   "constant": {
     "CREDIT_CARD": "Credit Card",

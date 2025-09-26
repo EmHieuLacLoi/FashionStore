@@ -444,7 +444,7 @@ const BaseTable: React.FC<BaseTableProps> = ({
           bordered
           size={size}
           dataSource={data}
-          scroll={{ y: 400, x: "max-content" }}
+          scroll={{ y: 370, x: "max-content" }}
           locale={{
             emptyText: (
               <Empty

@@ -20,20 +20,16 @@ import {
   Progress,
   Badge,
   Alert,
-  Radio,
-  Select,
+  Form,
+  Input,
 } from "antd";
 import { message } from "@utils/antd-static";
 import {
   ShoppingCartOutlined,
-  HeartOutlined,
-  ShareAltOutlined,
   MinusOutlined,
   PlusOutlined,
   StarOutlined,
-  CheckCircleOutlined,
   TruckOutlined,
-  SafetyOutlined,
   ReloadOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
@@ -43,6 +39,9 @@ import type { ProductVariant } from "@models/productVariant.interface";
 import { useGetProductDetail } from "@hooks/ProductHooks";
 import { useTranslation } from "react-i18next";
 import { formatPrice } from "@utils/formatPrice";
+import { useGetReviewList, useCreateReview } from "@hooks/ReviewHooks";
+import { getToken } from "@utils/auth";
+import { useGetUserInfo } from "@hooks/AuthHooks";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -50,11 +49,10 @@ const { TabPane } = Tabs;
 
 interface Review {
   id: number;
-  userName: string;
-  rating: number;
+  customer_id: number;
+  customer_name: string;
   comment: string;
-  date: string;
-  verified: boolean;
+  created_at: string;
 }
 
 interface ProductDetailPageProps {
@@ -68,6 +66,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 }) => {
   const navigate = useNavigate();
   const params = useParams();
+  const [form] = Form.useForm();
   const { addToCart, cloudinaryUrl, allProducts } = useGlobalContext();
   const resolvedProductId = (productId ?? Number(params.id)) || 1;
   const [quantity, setQuantity] = useState(1);
@@ -77,7 +76,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     null
   );
+  const [loadingComment, setLoadingComment] = useState(false);
   const { t } = useTranslation();
+  const createReviewMutation = useCreateReview();
+  const [review, setReview] = useState<Review[]>([]);
 
   const { data: productData } = useGetProductDetail(resolvedProductId, {
     enabled: !!resolvedProductId,
@@ -85,6 +87,17 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       message.error(t("product_detail_page.error.product_detail"));
     },
   });
+
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const { data: tokenUser } = useGetUserInfo({
+    enabled: !!resolvedProductId && getToken() != null,
+  });
+
+  useEffect(() => {
+    if (tokenUser?.data) {
+      setCurrentUser(tokenUser.data);
+    }
+  }, [tokenUser]);
 
   const product: Product = useMemo((): Product => {
     if (!productData?.data) {
@@ -104,35 +117,18 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     };
   }, [productData, cloudinaryUrl]);
 
-  const reviews: Review[] = [
+  const { data: reviewsData, isLoading: isLoadingReviews } = useGetReviewList(
+    { productId: resolvedProductId, size: 99999999 },
     {
-      id: 1,
-      userName: "Nguyễn Văn A",
-      rating: 5,
-      comment:
-        "Sản phẩm tuyệt vời, camera chụp rất đẹp, pin trâu. Giao hàng nhanh, đóng gói cẩn thận.",
-      date: "2024-12-15",
-      verified: true,
-    },
-    {
-      id: 2,
-      userName: "Trần Thị B",
-      rating: 4,
-      comment:
-        "Máy chạy mượt, thiết kế đẹp. Tuy nhiên giá hơi cao so với mong đợi.",
-      date: "2024-12-10",
-      verified: true,
-    },
-    {
-      id: 3,
-      userName: "Lê Minh C",
-      rating: 5,
-      comment:
-        "Đã dùng được 2 tuần, rất hài lòng. Chip A17 Pro xử lý mọi tác vụ rất mượt mà.",
-      date: "2024-12-08",
-      verified: false,
-    },
-  ];
+      enabled: !!resolvedProductId,
+    }
+  );
+
+  useEffect(() => {
+    if (reviewsData?.data && reviewsData?.data?.content) {
+      setReview(reviewsData.data.content);
+    }
+  }, [reviewsData]);
 
   const uniqueColors = useMemo(() => {
     if (!product?.variants) {
@@ -259,14 +255,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     navigate("/cart");
   };
 
-  const ratingDistribution = [
-    { stars: 5, count: 856, percentage: 67 },
-    { stars: 4, count: 257, percentage: 20 },
-    { stars: 3, count: 103, percentage: 8 },
-    { stars: 2, count: 39, percentage: 3 },
-    { stars: 1, count: 29, percentage: 2 },
-  ];
-
   const handleBack = () => {
     if (onBackToList) return onBackToList();
     navigate("/products");
@@ -294,6 +282,28 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   if (!product.id) {
     return <div>{t("product_detail_page.loading.product_detail")}</div>;
   }
+
+  const handleFinishReview = async (values: any) => {
+    setLoadingComment(true);
+
+    try {
+      const response = await createReviewMutation.mutateAsync({
+        product_id: resolvedProductId,
+        comment: values.comment,
+      });
+
+      if (response && response.error_status == 1) {
+        message.success("Cảm ơn bạn đã gửi đánh giá");
+      } else {
+        message.error("Gửi đánh giá thất bại");
+      }
+    } catch (error) {
+      message.error("Gửi đánh giá thất bại");
+      console.error(error);
+    } finally {
+      setLoadingComment(false);
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
@@ -657,105 +667,160 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
                 <TabPane
                   tab={t("product_detail_page.reviews", {
-                    count: 2,
+                    count: review.length || 0,
                   })}
                   key="3"
                 >
-                  <Row gutter={[24, 24]}>
-                    <Col xs={24} md={8}>
-                      <Card>
-                        <div style={{ textAlign: "center" }}>
-                          <Rate disabled value={2} allowHalf />
-                          <div style={{ marginTop: 8 }}>
-                            <Text type="secondary">2 đánh giá</Text>
-                          </div>
-                        </div>
+                  {getToken() ? (
+                    <Card style={{ marginBottom: 24 }}>
+                      <Title level={4}>
+                        {t("product_detail_page.write_your_reviews")}
+                      </Title>
+                      <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={handleFinishReview}
+                        initialValues={{ comment: "" }}
+                      >
+                        <Form.Item
+                          name="comment"
+                          label={t("product_detail_page.your_review")}
+                          rules={[
+                            {
+                              required: true,
+                              message: t("product_detail_page.review_required"),
+                            },
+                          ]}
+                        >
+                          <Input.TextArea
+                            rows={2}
+                            placeholder={t(
+                              "product_detail_page.review_placeholder"
+                            )}
+                          />
+                        </Form.Item>
+                        <Form.Item>
+                          <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={loadingComment}
+                          >
+                            {t("product_detail_page.submit_review")}
+                          </Button>
+                        </Form.Item>
+                      </Form>
+                    </Card>
+                  ) : (
+                    <Alert
+                      message={t("product_detail_page.login_to_review")}
+                      type="info"
+                      showIcon
+                      style={{ marginBottom: 24 }}
+                      action={
+                        <Button
+                          size="small"
+                          type="primary"
+                          onClick={() => navigate("/login")}
+                        >
+                          {t("product_detail_page.login")}
+                        </Button>
+                      }
+                    />
+                  )}
 
-                        <Divider />
+                  <Divider />
 
-                        <div>
-                          {ratingDistribution.map((item) => (
-                            <div
-                              key={item.stars}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginBottom: 8,
-                              }}
-                            >
-                              <Text style={{ width: 20 }}>{item.stars}</Text>
-                              <StarOutlined
-                                style={{ color: "#faad14", marginRight: 8 }}
-                              />
-                              <Progress
-                                percent={item.percentage}
-                                showInfo={false}
-                                style={{ flex: 1, marginRight: 8 }}
-                              />
-                              <Text type="secondary" style={{ width: 40 }}>
-                                {item.count}
-                              </Text>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-                    </Col>
+                  <Title level={4}>
+                    {t("product_detail_page.old_reviews")}
+                  </Title>
+                  {review && review.length ? (
+                    <List
+                      loading={isLoadingReviews}
+                      dataSource={review || []}
+                      locale={{
+                        emptyText: t("product_detail_page.no_reviews"),
+                      }}
+                      style={{
+                        maxHeight: 200,
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                      }}
+                      renderItem={(review: Review) => {
+                        const reviewDate = new Date(
+                          review.created_at
+                        ).toLocaleDateString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        });
 
-                    <Col xs={24} md={16}>
-                      <List
-                        dataSource={reviews}
-                        renderItem={(review) => (
+                        return (
                           <List.Item>
                             <Card style={{ width: "100%" }}>
-                              <List.Item.Meta
-                                avatar={
-                                  <Avatar
-                                    src={`https://ui-avatars.com/api/?name=${review.userName}&background=random`}
-                                  />
-                                }
-                                title={
-                                  <Space>
-                                    <Text strong>{review.userName}</Text>
-                                    {review.verified && (
-                                      <Badge
-                                        count="Đã mua hàng"
-                                        style={{
-                                          backgroundColor: "#52c41a",
-                                          fontSize: "10px",
-                                        }}
-                                      />
-                                    )}
-                                  </Space>
-                                }
-                                description={
-                                  <Space direction="vertical" size="small">
-                                    <Space>
-                                      <Rate
-                                        disabled
-                                        value={review.rating}
-                                        style={{ fontSize: 14 }}
-                                      />
-                                      <Text
-                                        type="secondary"
-                                        style={{ fontSize: 12 }}
-                                      >
-                                        {review.date}
-                                      </Text>
-                                    </Space>
-                                    <Text>{review.comment}</Text>
-                                  </Space>
-                                }
-                              />
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "8px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "flex-start",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "8px",
+                                    }}
+                                  >
+                                    <Avatar
+                                      src={`https://ui-avatars.com/api/?name=${review.customer_name}&background=random`}
+                                      size="default"
+                                    />
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                      }}
+                                    >
+                                      <Space align="center">
+                                        <Text strong>
+                                          {currentUser?.id == review.customer_id
+                                            ? t("product_detail_page.you")
+                                            : review.customer_name}
+                                        </Text>
+                                      </Space>
+                                    </div>
+                                  </div>
+
+                                  <Text
+                                    type="secondary"
+                                    style={{
+                                      fontSize: 12,
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {reviewDate}
+                                  </Text>
+                                </div>
+
+                                <Paragraph style={{ margin: "0 0 0 45px" }}>
+                                  {review.comment}
+                                </Paragraph>
+                              </div>
                             </Card>
                           </List.Item>
-                        )}
-                      />
-
-                      <div style={{ textAlign: "center", marginTop: 16 }}>
-                        <Button>Xem thêm đánh giá</Button>
-                      </div>
-                    </Col>
-                  </Row>
+                        );
+                      }}
+                    />
+                  ) : (
+                    <Text>{t("product_detail_page.no_reviews")}</Text>
+                  )}
                 </TabPane>
               </Tabs>
             </Card>

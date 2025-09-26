@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends BaseRepository<User, Long, UserCriteria, UserDTO> {
@@ -66,4 +67,7 @@ public interface UserRepository extends BaseRepository<User, Long, UserCriteria,
             @Param("full_name") String fullName,
             @Param("phone_number") String phoneNumber,
             Pageable pageable);
+
+    @Query("SELECT COUNT(u.id) FROM User u WHERE u.createdAt >= :startDate AND u.createdAt < :endDate")
+    Long countUsersBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

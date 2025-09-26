@@ -1,0 +1,15 @@
+{
+  "title": "Thống kê dữ liệu",
+  "total_revenue": "Doanh thu",
+  "total_orders": "Đơn hàng",
+  "total_customers": "Khách hàng",
+  "total_products": "Sản phẩm",
+  "sum_products": "Tổng số sản phẩm",
+  "7_days": "Doanh thu 7 ngày gần nhất",
+  "top_products": "Top sản phẩm bán chạy",
+  "totalAmount": "Doanh thu",
+  "date": "Ngày",
+  "productName": "Tên sản phẩm",
+  "quantitySold": "Số lượng bán",
+  "growthRate": "% so với tháng trước"
+}

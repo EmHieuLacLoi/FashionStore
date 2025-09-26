@@ -39,6 +39,7 @@ export const columns = (
     dataIndex: "total_amount",
     width: 120,
     isPrimary: false,
+    dataType: "number",
     render: (text, record) => formatNumber(record?.total_amount || 0),
   },
   {

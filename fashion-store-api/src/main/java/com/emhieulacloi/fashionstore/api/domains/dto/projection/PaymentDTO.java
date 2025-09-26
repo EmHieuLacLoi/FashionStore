@@ -11,6 +11,12 @@ public interface PaymentDTO {
     
     @JsonProperty("order_id")
     Long getOrderId();
+
+    @JsonProperty("order_code")
+    String getOrderCode();
+
+    @JsonProperty("order_status")
+    Integer getOrderStatus();
     
     @JsonProperty("payment_method")
     Integer getPaymentMethod();

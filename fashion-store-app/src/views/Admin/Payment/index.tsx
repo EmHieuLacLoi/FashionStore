@@ -125,11 +125,10 @@ const PaymentView = () => {
         initialFilterValues={lastSearchParams}
         total={pagination.total}
         columnsConfig={columnsConfig}
-        create={create}
         handleEdit={handleEditData}
         handleDelete={handleDeleteData}
         onDelete={onDelete}
-        keyName={"transaction_id"}
+        keyName={"order_code"}
         hideMultipleDeleteButton={true}
       />
       <FormComponent

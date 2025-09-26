@@ -26,12 +26,6 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponseDTO save(ReviewRequestDTO dto) {
         Long currentCustomerId = AuthUtils.getCurrentUserId();
 
-        if (reviewRepository.existsByCustomerIdAndProductId(currentCustomerId, dto.getProductId())) {
-            throw new CommonException()
-                    .setErrorCode("review.duplicate", messageResource)
-                    .setStatusCode(HttpStatus.BAD_REQUEST);
-        }
-
         Review review = reviewMapper.toEntity(dto);
         review.setCustomerId(currentCustomerId);
 

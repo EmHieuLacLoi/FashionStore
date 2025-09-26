@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,6 +76,8 @@ public class PaymentServiceImpl implements PaymentService {
                 orderRepository.save(order);
             }
         }
+
+        existingPayment.setPaymentDate(Timestamp.from(Instant.now()));
 
         Payment updated = paymentRepository.save(existingPayment);
         return paymentMapper.entityToResponse(updated);

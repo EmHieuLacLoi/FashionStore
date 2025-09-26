@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -66,4 +67,7 @@ public interface OrderRepository extends BaseRepository<Order, Long, OrderCriter
     WHERE o.id = :id
     """, nativeQuery = true)
     Optional<OrderDTO> findByQueryId(@Param("id") Long id);
+
+    @Query("SELECT COUNT(o.id) FROM Order o WHERE o.createdAt >= :startDate AND o.createdAt < :endDate")
+    Long countOrdersBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

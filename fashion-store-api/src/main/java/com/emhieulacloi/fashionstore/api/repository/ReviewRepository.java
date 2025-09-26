@@ -31,13 +31,14 @@ public interface ReviewRepository extends BaseRepository<Review, Long, ReviewCri
             uu.id AS updatedById,
             uu.username AS updatedByName
     FROM `reviews` g 
-    LEFT JOIN product p ON g.product_id = p.id
+    LEFT JOIN products p ON g.product_id = p.id
     LEFT JOIN user u ON g.customer_id = u.id
     LEFT JOIN user uc ON g.created_by = uc.id
     LEFT JOIN user uu ON g.updated_by = uu.id
     WHERE 
         (:#{#criteria.productId} IS NULL OR g.product_id = :#{#criteria.productId}) AND 
         (:#{#criteria.customerId} IS NULL OR g.customer_id = :#{#criteria.customerId})
+    ORDER BY g.id DESC
     """,
             countQuery = """
     SELECT
@@ -60,7 +61,7 @@ public interface ReviewRepository extends BaseRepository<Review, Long, ReviewCri
             uu.id AS updatedById,
             uu.username AS updatedByName
     FROM `reviews` g 
-    LEFT JOIN product p ON g.product_id = p.id
+    LEFT JOIN products p ON g.product_id = p.id
     LEFT JOIN user u ON g.customer_id = u.id
     LEFT JOIN user uc ON g.created_by = uc.id
     LEFT JOIN user uu ON g.updated_by = uu.id

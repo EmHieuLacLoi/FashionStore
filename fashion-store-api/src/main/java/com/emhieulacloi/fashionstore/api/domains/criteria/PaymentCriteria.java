@@ -4,17 +4,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class PaymentCriteria {
-    private Long orderId;
+    private String orderCode;
     private Integer paymentMethod;
     private Integer status;
-    private BigDecimal amountFrom;
-    private BigDecimal amountTo;
-    private LocalDateTime paymentDateFrom;
-    private LocalDateTime paymentDateTo;
-    private String transactionId;
+    private BigDecimal maxAmount;
+    private BigDecimal minAmount;
+
+    public String getOrderCode() {
+        return orderCode == null || orderCode.isEmpty() ? null : "%" + orderCode.trim() + "%";
+    }
+
 }

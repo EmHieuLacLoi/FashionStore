@@ -31,5 +31,15 @@
   "description": "Description",
   "introduction": "Introduction",
   "reviews": "Reviews ({{count}})",
-  "related_products": "Related products"
+  "related_products": "Related products",
+  "no_reviews": "No reviews",
+  "write_your_reviews": "Write your reviews",
+  "your_review": "Your review",
+  "review_required": "Review required",
+  "review_placeholder": "Does this product have good quality? Do you like it?",
+  "submit_review": "Submit review",
+  "login_to_review": "You need to login to review this product",
+  "login": "Login",
+  "old_reviews": "Old reviews",
+  "you": "You"
 }

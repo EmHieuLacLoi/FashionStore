@@ -8,12 +8,14 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
   {
     dataIndex: "price",
     width: 120,
+    dataType: "number",
     isPrimary: false,
     render: (text, record) => formatNumber(record?.price || 0),
   },
   {
     dataIndex: "original_price",
     width: 120,
+    dataType: "number",
     isPrimary: false,
     render: (text, record) =>
       record?.original_price ? formatNumber(record.original_price) : "-",
@@ -22,6 +24,7 @@ export const columns = (t: TFunction): ColumnModelBaseTable[] => [
     dataIndex: "stock_quantity",
     width: 120,
     isPrimary: false,
+    dataType: "number",
     render: (text, record) => record?.stock_quantity || 0,
   },
   {

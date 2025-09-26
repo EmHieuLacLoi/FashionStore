@@ -36,12 +36,6 @@ const OrderDetailComponent: React.FC<OrderDetailComponentProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-    }
-  }, [data]);
-
   const itemColumns: TableProps<any>["columns"] = [
     {
       title: t("order.detail.product_name"),

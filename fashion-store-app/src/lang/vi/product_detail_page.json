@@ -31,5 +31,15 @@
   "description": "Mô tả sản phẩm",
   "introduction": "Giới thiệu về sản phẩm",
   "reviews": "Đánh giá ({{count}})",
-  "related_products": "Sản phẩm liên quan"
+  "related_products": "Sản phẩm liên quan",
+  "no_reviews": "Không có đánh giá",
+  "write_your_reviews": "Viết đánh giá của bạn",
+  "your_review": "Đánh giá của bạn",
+  "review_required": "Vui lòng nhập đánh giá!",
+  "review_placeholder": "Sản phẩm này có tốt không? Bạn có thích nó không?",
+  "submit_review": "Gửi đánh giá",
+  "login_to_review": "Bạn cần đăng nhập để có thể gửi đánh giá",
+  "login": "Đăng nhập",
+  "old_reviews": "Các đánh giá trước đây",
+  "you": "Bạn"
 }

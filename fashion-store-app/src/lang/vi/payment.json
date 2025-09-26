@@ -6,11 +6,10 @@
     "delete": "Xóa thanh toán"
   },
   "attribute": {
-    "order_id": "ID đơn hàng",
+    "order_code": "Mã đơn hàng",
     "amount": "Số tiền",
     "payment_method": "Phương thức thanh toán",
     "status": "Trạng thái",
-    "transaction_id": "Mã giao dịch",
     "payment_date": "Ngày thanh toán",
     "created_at": "Ngày tạo",
     "created_by": "Người tạo",
@@ -18,8 +17,8 @@
     "updated_by": "Người cập nhật"
   },
   "form": {
-    "orderId": "ID đơn hàng",
-    "orderIdPlaceholder": "Nhập ID đơn hàng",
+    "orderCode": "Mã đơn hàng",
+    "orderCodePlaceholder": "Nhập mã đơn hàng",
     "amount": "Số tiền",
     "amountPlaceholder": "Nhập số tiền",
     "paymentMethod": "Phương thức thanh toán",
@@ -33,7 +32,8 @@
     "minAmount": "Số tiền tối thiểu",
     "minAmountPlaceholder": "Nhập số tiền tối thiểu",
     "maxAmount": "Số tiền tối đa",
-    "maxAmountPlaceholder": "Nhập số tiền tối đa"
+    "maxAmountPlaceholder": "Nhập số tiền tối đa",
+    "paymentMethodSearch": "Phương thức t/t"
   },
   "constant": {
     "CREDIT_CARD": "Thẻ tín dụng",

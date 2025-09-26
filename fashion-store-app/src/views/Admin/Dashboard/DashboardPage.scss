@@ -1,0 +1,12 @@
+/* Thêm transition để hiệu ứng mượt mà */
+.kpi-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Khi di chuột vào thẻ có class .kpi-card */
+.kpi-card:hover {
+  transform: scale(1.05); /* Phóng to 5% */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Thêm hiệu ứng bóng đổ để thẻ "nổi" lên */
+  z-index: 10; /* Đảm bảo thẻ được nổi lên trên các thẻ khác */
+  position: relative; /* Cần có để z-index hoạt động */
+}

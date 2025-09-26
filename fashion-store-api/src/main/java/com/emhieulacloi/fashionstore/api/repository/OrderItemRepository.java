@@ -3,6 +3,7 @@ package com.emhieulacloi.fashionstore.api.repository;
 import com.emhieulacloi.fashionstore.api.base.repository.BaseRepository;
 import com.emhieulacloi.fashionstore.api.domains.criteria.OrderItemCriteria;
 import com.emhieulacloi.fashionstore.api.domains.dto.projection.OrderItemDTO;
+import com.emhieulacloi.fashionstore.api.domains.dto.response.TopProduct;
 import com.emhieulacloi.fashionstore.api.domains.entity.OrderItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,4 +76,12 @@ public interface OrderItemRepository extends BaseRepository<OrderItem, Long, Ord
     List<OrderItemDTO> findAllByOrderIdIn(List<Long> orderIds);
 
     List<OrderItem> findAllByDesignId(Long designId);
+
+    @Query("SELECT new com.emhieulacloi.fashionstore.api.domains.dto.response.TopProduct(p.name, SUM(oi.quantity)) " +
+            "FROM OrderItem oi " +
+            "LEFT JOIN ProductVariant pv ON oi.productVariantId = pv.id " +
+            "LEFT JOIN Product p ON pv.productId = p.id " +
+            "GROUP BY p.id, p.name " +
+            "ORDER BY SUM(oi.quantity) DESC")
+    List<TopProduct> findTopSellingProducts(Pageable pageable);
 }

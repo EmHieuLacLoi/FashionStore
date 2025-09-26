@@ -12,6 +12,7 @@ import product_detail_page from "./product_detail_page.json";
 import checkout_page from "./checkout_page.json";
 import design_page from "./design_page.json";
 import user from "./user.json";
+import dashboard from "./dashboard.json";
 
 export default {
   common,
@@ -28,4 +29,5 @@ export default {
   checkout_page,
   design_page,
   user,
+  dashboard,
 };

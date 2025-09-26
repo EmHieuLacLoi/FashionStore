@@ -17,6 +17,12 @@ public class PaymentResponseDTO {
     
     @JsonProperty("order_id")
     private Long orderId;
+
+    @JsonProperty("order_code")
+    private String orderCode;
+
+    @JsonProperty("order_status")
+    private Integer orderStatus;
     
     @JsonProperty("payment_method")
     private Integer paymentMethod;
