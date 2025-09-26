@@ -11,5 +11,32 @@
   "date": "Date",
   "growthRate": "% from last month",
   "productName": "Product Name",
-  "quantitySold": "Quantity Sold"
+  "quantitySold": "Quantity Sold",
+  "about_us": {
+    "title": "About Fashion Store",
+    "des": "We bring you a modern, personalized and sustainable shopping experience.",
+    "mission": "Mission",
+    "personal": "Personalized shopping experience",
+    "personal_des": "We believe that fashion is a way to express yourself. Our mission is to help you easily discover, customize and own your own style.",
+    "quality": "Quality Assurance",
+    "fast": "Fast Shipping",
+    "support": "Customer Support",
+    "journey": "Journey",
+    "journey_start": "Start",
+    "journey_start_des": "Launch the website.",
+    "journey_1": "Personalization",
+    "journey_1_des": "Release new features for customers to customize their own style.",
+    "team": "Team",
+    "CTA": "Create the difference with us",
+    "CTA_des": "Explore the new collection and customize products to match your style.",
+    "buy_now": "Shop Now",
+    "design": "Design Your Shirt",
+    "dev": "Developer",
+    "customer": "Customer First",
+    "customer_des": "Listen and serve with all our heart.",
+    "new": "Continuous Innovation",
+    "new_des": "Experiment, learn, and improve every day.",
+    "team_connect": "Sustainable Collaboration",
+    "team_connect_des": "Together, we create greater value."
+  }
 }

@@ -11,5 +11,32 @@
   "date": "Ngày",
   "productName": "Tên sản phẩm",
   "quantitySold": "Số lượng bán",
-  "growthRate": "% so với tháng trước"
+  "growthRate": "% so với tháng trước",
+  "about_us": {
+    "title": "Về Fashion Store",
+    "des": "Chúng tôi mang đến trải nghiệm mua sắm thời trang hiện đại, cá nhân hóa và bền vững.",
+    "mission": "Sứ mệnh",
+    "personal": "Tôn vinh phong cách cá nhân của bạn",
+    "personal_des": "Chúng tôi tin rằng thời trang là cách thể hiện con người. Nhiệm vụ của chúng tôi là giúp bạn dễ dàng khám phá, tùy biến và sở hữu phong cách của riêng mình.",
+    "quality": "Chất lượng đảm bảo",
+    "fast": "Giao hàng nhanh chóng",
+    "support": "Hỗ trợ tận tâm",
+    "journey": "Hành trình của chúng tôi",
+    "journey_start": "Bắt đầu",
+    "journey_start_des": "Ra mắt trang web.",
+    "journey_1": "Cá nhân hóa",
+    "journey_1_des": "Ra mắt tính năng thiết kế áo 2D/3D, cho phép khách hàng tùy biến sản phẩm.",
+    "team": "Đội ngũ",
+    "CTA": "Cùng chúng tôi tạo nên điều khác biệt",
+    "CTA_des": "Khám phá bộ sưu tập mới và tùy biến sản phẩm theo phong cách của bạn.",
+    "buy_now": "Mua sắm ngay",
+    "design": "Thiết kế áo",
+    "dev": "Nhà phát triển",
+    "customer": "Khách hàng là trọng tâm",
+    "customer_des": "Lắng nghe và phục vụ với toàn bộ trái tim.",
+    "new": "Đổi mới không ngừng",
+    "new_des": "Thử nghiệm, học hỏi và cải tiến mỗi ngày.",
+    "team_connect": "Hợp tác bền vững",
+    "team_connect_des": "Cùng nhau tạo ra nhiều giá trị hơn."
+  }
 }

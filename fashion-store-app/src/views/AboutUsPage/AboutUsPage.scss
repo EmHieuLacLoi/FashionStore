@@ -4,8 +4,8 @@
   --spacing-md: 24px;
   --spacing-lg: 40px;
   --radius: 12px;
-  --shadow: 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-lg: 0 6px 20px rgba(0,0,0,0.12);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.12);
 
   background: #fafafa;
   min-height: 100vh;
@@ -64,7 +64,7 @@
   .value-card {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    transition: transform .2s ease, box-shadow .2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     background: #fff;
 
     &:hover {
@@ -97,6 +97,7 @@
     .time {
       color: #8c8c8c;
       font-weight: 600;
+      margin-left: 16px;
     }
   }
 
@@ -124,13 +125,23 @@
   }
 
   @media (max-width: 992px) {
-    .metrics { grid-template-columns: repeat(2, 1fr); }
-    .cards { grid-template-columns: 1fr; }
-    .team-grid { grid-template-columns: repeat(2, 1fr); }
+    .metrics {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .cards {
+      grid-template-columns: 1fr;
+    }
+    .team-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   @media (max-width: 576px) {
-    .metrics { grid-template-columns: 1fr; }
-    .team-grid { grid-template-columns: 1fr; }
+    .metrics {
+      grid-template-columns: 1fr;
+    }
+    .team-grid {
+      grid-template-columns: 1fr;
+    }
   }
 }
