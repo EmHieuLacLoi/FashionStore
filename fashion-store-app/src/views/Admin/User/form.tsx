@@ -164,6 +164,52 @@ const FormComponent: React.FC<FormComponentProps> = ({
               </Form.Item>
             </Col>
 
+            {type == "create" && (
+              <Col span={12}>
+                <Form.Item
+                  name="password"
+                  label={t("auth.register.password")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t("auth.register.password_required"),
+                    },
+                    {
+                      validator: (_, value) => {
+                        if (!value) return Promise.resolve();
+                        if (value.length < 8) {
+                          return Promise.reject(
+                            t("auth.register.password_min")
+                          );
+                        }
+                        if (!/[A-Z]/.test(value)) {
+                          return Promise.reject(
+                            t("auth.register.password_uppercase")
+                          );
+                        }
+                        if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                          return Promise.reject(
+                            t("auth.register.password_special")
+                          );
+                        }
+                        if (/\s/.test(value)) {
+                          return Promise.reject(
+                            t("auth.register.password_whitespace")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    autoComplete="off"
+                    placeholder={t("auth.register.password_placeholder")}
+                  />
+                </Form.Item>
+              </Col>
+            )}
+
             <Col span={12}>
               <Form.Item
                 label={t("user.form.email")}
